@@ -3,6 +3,7 @@
   import { fade, fly } from 'svelte/transition';
   import { chrono, libelleDuree } from '../lib/durees';
   import { heure } from '../lib/format';
+  import { alarme } from '../lib/alarme.svelte';
   import { minuteurs, type Minuteur } from '../lib/minuteurs.svelte';
   import { portail } from '../lib/portail';
 
@@ -100,6 +101,17 @@
           </li>
         {/each}
       </ul>
+      <label class="option">
+        <input
+          type="checkbox"
+          checked={alarme.active}
+          onchange={(e) => alarme.definirActive(e.currentTarget.checked, minuteurs.fins)}
+        />
+        <span>
+          <strong>Sonner même écran verrouillé ou en silencieux</strong>
+          <span class="discret petit">Ta musique est mise en pause tant qu'un minuteur tourne.</span>
+        </span>
+      </label>
       <h3 class="section-titre">Nouveau minuteur</h3>
       <div class="presets">
         {#each PRESETS as p (p)}
@@ -301,6 +313,26 @@
   .mini {
     font-size: 13px;
     font-weight: 700;
+  }
+
+  .option {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 0 4px;
+  }
+
+  .option input {
+    width: 24px;
+    height: 24px;
+    margin: 2px 0 0;
+    accent-color: var(--accent);
+    flex: none;
+  }
+
+  .option span {
+    display: flex;
+    flex-direction: column;
   }
 
   .presets {

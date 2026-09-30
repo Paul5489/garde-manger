@@ -1,6 +1,7 @@
 // Minuteurs : plusieurs en même temps. On enregistre l'heure de fin, pas un compte à rebours,
 // pour rester juste même si l'iPhone met l'application en pause (arrière-plan, écran verrouillé).
 
+import { alarme } from './alarme.svelte';
 import { bip, deverrouillerSon, finSonnerie } from './son';
 import { ecrireLocal, lireLocal } from './stockage-local';
 
@@ -45,9 +46,28 @@ class Minuteurs {
   constructor() {
     this.#verifier();
     this.#demarrerHorloge();
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') this.#verifier();
+    // Commandes Pause / Lecture de l'écran verrouillé.
+    alarme.surCommandes({
+      pause: () => this.liste.filter((m) => m.etat === 'actif').forEach((m) => this.pause(m.id)),
+      lecture: () => this.liste.filter((m) => m.etat === 'pause').forEach((m) => this.reprendre(m.id)),
     });
+    this.#programmerAlarme();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') return;
+      this.#verifier();
+      if (!alarme.enLecture) this.#programmerAlarme();
+    });
+  }
+
+  /** Fins des minuteurs en cours, pour la sonnerie écran verrouillé. */
+  get fins() {
+    return this.liste
+      .filter((m) => m.etat === 'actif' && m.fin)
+      .map((m) => ({ fin: m.fin!, libelle: m.libelle }));
+  }
+
+  #programmerAlarme() {
+    alarme.programmer(this.fins);
   }
 
   restant(m: Minuteur): number {
@@ -70,6 +90,7 @@ class Minuteurs {
     };
     this.liste = [...this.liste, m];
     this.#enregistrer();
+    this.#programmerAlarme();
     this.#demarrerHorloge();
     return m;
   }
@@ -81,6 +102,7 @@ class Minuteurs {
       return r ? [r] : [];
     });
     this.#enregistrer();
+    this.#programmerAlarme();
     if (!this.sonnent.length) finSonnerie();
   }
 
@@ -153,7 +175,8 @@ class Minuteurs {
     }
     // Sonnerie : répétée tant que non arrêtée, 2 minutes maximum.
     const aSonner = this.sonnent.filter((m) => maintenant - (m.finiA ?? maintenant) < SONNERIE_MAX);
-    if (aSonner.length && document.visibilityState === 'visible' && maintenant - this.#dernierBip > 1400) {
+    // Bips de l'appli ouverte : seulement si la piste de sonnerie ne joue pas déjà.
+    if (aSonner.length && !alarme.enLecture && document.visibilityState === 'visible' && maintenant - this.#dernierBip > 1400) {
       this.#dernierBip = maintenant;
       bip();
       navigator.vibrate?.([200, 100, 200]);
