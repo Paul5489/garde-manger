@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Search, Settings } from '@lucide/svelte';
+  import AideInstallation from '../composants/AideInstallation.svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
   import { UNIVERS } from '../lib/archive';
   import { etat } from '../lib/etat.svelte';
@@ -46,6 +47,7 @@
 </div>
 
 <div class="contenu">
+  <AideInstallation />
   <button class="faux-champ" onclick={chercher}>
     <Search size={19} />
     Rechercher une recette, un ingrédient…

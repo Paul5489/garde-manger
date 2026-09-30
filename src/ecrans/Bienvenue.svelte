@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AideInstallation from '../composants/AideInstallation.svelte';
   import Importeur from '../composants/Importeur.svelte';
 </script>
 
@@ -6,6 +7,8 @@
   <img src="{import.meta.env.BASE_URL}icone.svg" alt="" class="logo" width="96" height="96" />
   <h1 class="titre-serif">Garde-manger</h1>
   <p class="intro">Tes recettes, techniques, courses et bocaux, dans ta poche et hors ligne.</p>
+
+  <AideInstallation />
 
   <div class="carte etapes">
     <h2>Pour commencer</h2>
