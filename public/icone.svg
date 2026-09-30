@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#b5471f"/>
+  <!-- couvercle -->
+  <rect x="172" y="118" width="168" height="46" rx="12" fill="#3a2a20"/>
+  <rect x="172" y="150" width="168" height="10" fill="#2a1e17" opacity=".5"/>
+  <!-- col -->
+  <rect x="190" y="162" width="132" height="26" fill="#f4ead9"/>
+  <!-- corps du bocal -->
+  <rect x="146" y="180" width="220" height="222" rx="52" fill="#f7efe3"/>
+  <!-- contenu fermenté -->
+  <path d="M158 300 C 200 282, 236 318, 276 300 S 340 286, 354 296 L 354 350 Q 354 390 314 390 L 198 390 Q 158 390 158 350 Z" fill="#6f8f4e"/>
+  <circle cx="214" cy="336" r="9" fill="#a7c283"/>
+  <circle cx="262" cy="352" r="6" fill="#a7c283"/>
+  <circle cx="306" cy="330" r="8" fill="#a7c283"/>
+  <!-- étiquette -->
+  <rect x="186" y="214" width="140" height="52" rx="10" fill="#e8d6b8"/>
+  <rect x="206" y="233" width="100" height="6" rx="3" fill="#b5471f"/>
+  <rect x="222" y="246" width="68" height="5" rx="2.5" fill="#b5471f" opacity=".6"/>
+  <!-- reflet -->
+  <rect x="168" y="206" width="12" height="120" rx="6" fill="#ffffff" opacity=".55"/>
+</svg>

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Refuse tout enregistrement contenant des recettes (droit d’auteur).
+exec node scripts/verifier-depot.mjs

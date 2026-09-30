@@ -1,0 +1,25 @@
+# Dépendances et build
+node_modules/
+dist/
+dev-dist/
+.vite/
+*.log
+.DS_Store
+
+# ─────────────────────────────────────────────────────────────
+# DONNÉES PROTÉGÉES — ne jamais versionner ni publier
+# (recettes sous droit d'auteur, usage personnel uniquement)
+# ─────────────────────────────────────────────────────────────
+archive-recettes/
+**/archive-recettes/
+archive_complete.json
+**/archive_complete*.json
+index.json
+**/donnees/
+**/donnees-privees/
+tests/fixtures-privees/
+*.recettes.json
+
+# Sauvegardes de données personnelles exportées depuis l'appli
+sauvegarde-garde-manger*.json
+garde-manger-sauvegarde*.json

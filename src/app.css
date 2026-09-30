@@ -1,0 +1,427 @@
+/* Garde-manger — styles communs. Mode sombre automatique, zones sûres de l'iPhone. */
+
+:root {
+  color-scheme: light dark;
+  --fond: #f7f3ec;
+  --surface: #ffffff;
+  --surface-2: #efe8dc;
+  --surface-3: #e5dccd;
+  --texte: #221d18;
+  --texte-2: #6d6359;
+  --texte-3: #978b7f;
+  --trait: #e2d9cb;
+  --accent: #b5471f;
+  --accent-doux: #f6e0d5;
+  --sur-accent: #ffffff;
+  --vert: #4f7a3a;
+  --vert-doux: #e2ecd8;
+  --ambre: #a86a00;
+  --ambre-doux: #f7e9cc;
+  --rouge: #b3261e;
+  --u-asiatique: #b23a2c;
+  --u-francaise: #2f5d8a;
+  --u-techniques: #6b5844;
+  --u-fermentation: #4f7a3a;
+  --ombre: 0 1px 2px rgb(60 40 20 / 0.06), 0 4px 16px rgb(60 40 20 / 0.06);
+  --rayon: 14px;
+  --rayon-petit: 10px;
+  --haut: env(safe-area-inset-top, 0px);
+  --bas: env(safe-area-inset-bottom, 0px);
+  --gauche: env(safe-area-inset-left, 0px);
+  --droite: env(safe-area-inset-right, 0px);
+  --hauteur-onglets: 52px;
+  --police: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --police-titre: ui-serif, 'New York', 'Iowan Old Style', Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #141210;
+    --surface: #1f1c19;
+    --surface-2: #2a2622;
+    --surface-3: #36312c;
+    --texte: #f2ece3;
+    --texte-2: #b3a99d;
+    --texte-3: #8a8076;
+    --trait: #37322c;
+    --accent: #ec8456;
+    --accent-doux: #3d251a;
+    --sur-accent: #1b0f09;
+    --vert: #9cc47e;
+    --vert-doux: #243020;
+    --ambre: #e3b155;
+    --ambre-doux: #372b14;
+    --rouge: #f2887f;
+    --u-asiatique: #d9604f;
+    --u-francaise: #6a9bd0;
+    --u-techniques: #b39b7f;
+    --u-fermentation: #8cb86c;
+    --ombre: 0 1px 2px rgb(0 0 0 / 0.3);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: 17px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body {
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Pas de zoom automatique d'iOS sur les champs : 17 px minimum. */
+input,
+select,
+textarea {
+  font-size: 17px;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+a {
+  color: var(--accent);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin: 0;
+}
+
+.titre-serif {
+  font-family: var(--police-titre);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ───── Écrans ───── */
+
+.ecran {
+  position: fixed;
+  inset: 0 0 calc(var(--hauteur-onglets) + var(--bas)) 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  background: var(--fond);
+}
+
+.ecran.cache {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.contenu {
+  padding: 0 calc(16px + var(--droite)) 32px calc(16px + var(--gauche));
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.grand-titre {
+  padding: calc(var(--haut) + 18px) calc(16px + var(--droite)) 8px calc(16px + var(--gauche));
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.grand-titre h1 {
+  font-family: var(--police-titre);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* Barre du haut des pages empilées (fiche, réglages) */
+.barre-haut {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: calc(var(--haut) + 48px);
+  padding: var(--haut) calc(6px + var(--droite)) 0 calc(4px + var(--gauche));
+  background: color-mix(in srgb, var(--fond) 82%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 0.5px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.barre-haut.avec-trait {
+  border-bottom-color: var(--trait);
+}
+
+.barre-haut .titre-barre {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.barre-haut.avec-trait .titre-barre {
+  opacity: 1;
+}
+
+/* ───── Boutons ───── */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: var(--sur-accent);
+  font-weight: 600;
+  font-size: 17px;
+  text-decoration: none;
+}
+
+.bouton:active {
+  filter: brightness(0.92);
+}
+
+.bouton:disabled {
+  opacity: 0.5;
+}
+
+.bouton.secondaire {
+  background: var(--surface-2);
+  color: var(--texte);
+}
+
+.bouton.plein {
+  width: 100%;
+}
+
+.bouton-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  background: none;
+  color: var(--accent);
+  border-radius: 22px;
+  padding: 0 8px;
+  gap: 2px;
+  font-size: 17px;
+}
+
+.bouton-icone:active {
+  background: var(--surface-2);
+}
+
+/* ───── Cartes et listes ───── */
+
+.carte {
+  background: var(--surface);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+}
+
+.liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  overflow: hidden;
+}
+
+.liste > li + li {
+  border-top: 0.5px solid var(--trait);
+}
+
+.section-titre {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texte-2);
+  margin: 24px 4px 8px;
+}
+
+/* ───── Puces (filtres, étiquettes) ───── */
+
+.puce {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  border: 1px solid var(--trait);
+  background: var(--surface);
+  font-size: 15px;
+  white-space: nowrap;
+  color: var(--texte);
+}
+
+.puce.active {
+  background: var(--texte);
+  border-color: var(--texte);
+  color: var(--fond);
+}
+
+.etiquette {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--texte-2);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.discret {
+  color: var(--texte-2);
+}
+
+.petit {
+  font-size: 14px;
+}
+
+.vide {
+  text-align: center;
+  color: var(--texte-2);
+  padding: 32px 16px;
+}
+
+/* Champs */
+.champ {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--trait);
+  background: var(--surface);
+  outline: none;
+}
+
+.champ:focus {
+  border-color: var(--accent);
+}
+
+/* Texte Markdown */
+.markdown {
+  overflow-wrap: break-word;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  font-family: var(--police-titre);
+  margin: 1.4em 0 0.5em;
+}
+
+.markdown h1 {
+  font-size: 24px;
+}
+
+.markdown h2 {
+  font-size: 21px;
+}
+
+.markdown h3 {
+  font-size: 18px;
+}
+
+.markdown h4 {
+  font-size: 16px;
+  font-family: var(--police);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--texte-2);
+}
+
+.markdown p {
+  margin: 0.6em 0;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.3em;
+  margin: 0.5em 0;
+}
+
+.markdown li {
+  margin: 0.25em 0;
+}
+
+.markdown .page {
+  display: block;
+  margin: 1.2em 0 0.4em;
+  font-size: 12px;
+  color: var(--texte-3);
+  text-align: right;
+  scroll-margin-top: calc(var(--haut) + 60px);
+}
+
+.markdown .page::before {
+  content: 'p. ';
+}
+
+.markdown .cible {
+  background: var(--ambre-doux);
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: var(--ambre);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
