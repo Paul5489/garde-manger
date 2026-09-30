@@ -6,6 +6,7 @@ export const ONGLETS: Onglet[] = ['accueil', 'recherche', 'frigo', 'courses', 'b
 export type Route =
   | { nom: Onglet }
   | { nom: 'fiche'; id: string; page?: number }
+  | { nom: 'cuisine'; id: string }
   | { nom: 'reglages' };
 
 export function lireRoute(hash: string): Route {
@@ -16,9 +17,14 @@ export function lireRoute(hash: string): Route {
     const page = reste[1]?.match(/^p(\d+)$/)?.[1];
     return page ? { nom: 'fiche', id, page: Number(page) } : { nom: 'fiche', id };
   }
+  if (nom === 'cuisine' && reste[0]) return { nom: 'cuisine', id: decodeURIComponent(reste[0]) };
   if (nom === 'reglages') return { nom: 'reglages' };
   if ((ONGLETS as string[]).includes(nom)) return { nom: nom as Onglet };
   return { nom: 'accueil' };
+}
+
+export function lienCuisine(id: string): string {
+  return `#/cuisine/${encodeURIComponent(id)}`;
 }
 
 export function lienFiche(id: string, page?: number): string {

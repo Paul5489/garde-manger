@@ -1,19 +1,28 @@
+<script lang="ts" module>
+  // Position de lecture de chaque fiche, pour y revenir avec « Retour » (même après le mode cuisine).
+  const positions = new Map<string, number>();
+</script>
+
 <script lang="ts">
   import { tick } from 'svelte';
-  import { Clock, ExternalLink, Users } from '@lucide/svelte';
+  import { ChefHat, Clock, ExternalLink, Timer, Users } from '@lucide/svelte';
   import BarreHaut from '../composants/BarreHaut.svelte';
   import CarteFermentation from '../composants/CarteFermentation.svelte';
   import Ingredients from '../composants/Ingredients.svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
   import Markdown from '../composants/Markdown.svelte';
   import TableauDenrees from '../composants/TableauDenrees.svelte';
+  import ReglagePortions from '../composants/ReglagePortions.svelte';
   import TexteComplet from '../composants/TexteComplet.svelte';
-  import TexteRenvois from '../composants/TexteRenvois.svelte';
+  import TexteEtape from '../composants/TexteEtape.svelte';
   import { NOMS_SOURCES, NOMS_TYPES, categorieDe } from '../lib/archive';
   import { etat } from '../lib/etat.svelte';
+  import { libelleDuree } from '../lib/durees';
   import { duree, nombre } from '../lib/format';
+  import { minuteurs } from '../lib/minuteurs.svelte';
+  import { portions, portionsDeBase } from '../lib/portions.svelte';
   import { fichesDeLaPage } from '../lib/renvois';
-  import { lienFiche } from '../lib/routeur.svelte';
+  import { lienCuisine, lienFiche } from '../lib/routeur.svelte';
   import { casseLisible, insecables, majuscule } from '../lib/texte';
   import type { Duree, Etape, Fiche, GroupeMateriel, Resume } from '../lib/types';
 
@@ -23,14 +32,11 @@
   let conteneur = $state<HTMLElement>();
   let defile = $state(false);
 
-  // Position de lecture de chaque fiche, pour y revenir avec « Retour ».
-  const positions = new Map<string, number>();
   let idAffiche = '';
 
   $effect(() => {
     const cible = id;
     const pageCible = page;
-    if (idAffiche && conteneur) positions.set(idAffiche, conteneur.scrollTop);
     let annule = false;
     etat.fiche(cible).then(async (f) => {
       if (annule) return;
@@ -123,13 +129,28 @@
 
   const livre = $derived(fiche?.source.id === 'cuisine-de-reference');
 
+  const coef = $derived(fiche ? portions.coef(fiche.id) : 1);
+  const titreCourt = $derived(
+    fiche ? (fiche.titre.length > 28 ? fiche.titre.slice(0, 26).trimEnd() + '…' : fiche.titre) : '',
+  );
+  const quantitesReglables = $derived(
+    !!(fiche?.ingredients?.length || fiche?.preparations_de_base?.length || fiche?.ingredients_supplementaires?.length),
+  );
+
   function surDefilement() {
+    if (idAffiche && conteneur) positions.set(idAffiche, conteneur.scrollTop);
     defile = (conteneur?.scrollTop ?? 0) > 60;
   }
 </script>
 
 <div class="ecran calque" bind:this={conteneur} onscroll={surDefilement}>
-  <BarreHaut titre={fiche?.titre ?? ''} avecTrait={defile} />
+  <BarreHaut titre={fiche?.titre ?? ''} avecTrait={defile}>
+    {#snippet actions()}
+      {#if fiche?.etapes?.length}
+        <a class="bouton-icone" href={lienCuisine(fiche.id)} aria-label="Mode cuisine"><ChefHat size={24} /></a>
+      {/if}
+    {/snippet}
+  </BarreHaut>
 
   {#if fiche === undefined}
     <p class="vide">Chargement…</p>
@@ -161,17 +182,22 @@
         </div>
       {/if}
 
+      {#if f.etapes?.length}
+        <a class="bouton plein cuisiner" href={lienCuisine(f.id)}><ChefHat size={22} /> Cuisiner pas à pas</a>
+      {/if}
+
       {#if f.fermentation}<CarteFermentation fermentation={f.fermentation} />{/if}
 
       {#if f.ingredients?.length}
         <section>
           <h2 class="titre-section">Ingrédients</h2>
-          <div class="carte bloc"><Ingredients groupes={f.ingredients} source={f.source.id} /></div>
+          <ReglagePortions id={f.id} base={portionsDeBase(f)} unite={f.portions?.unite} rendement={f.rendement} />
+          <div class="carte bloc"><Ingredients groupes={f.ingredients} source={f.source.id} {coef} /></div>
         </section>
       {/if}
 
       {#each f.ingredients_supplementaires ?? [] as t, i (i)}
-        <TableauDenrees tableau={t} source={f.source.id} />
+        <TableauDenrees tableau={t} source={f.source.id} {coef} />
       {/each}
 
       {#if f.etapes?.length}
@@ -187,12 +213,23 @@
                 <span class="numero" aria-hidden="true">{e.numero ?? i + 1}</span>
                 <div class="corps-etape">
                   <p class="texte-etape">
-                    {insecables(majuscule(e.texte))}
-                    {#if e.duree}<span class="etiquette duree"><Clock size={13} /> {texteDuree(e.duree)}</span>{/if}
+                    <TexteEtape texte={majuscule(e.texte)} {livre} libelle="{titreCourt} — étape {e.numero ?? i + 1}" ficheId={f.id} />
+                    {#if e.duree?.minutes}
+                      {@const sec = e.duree.minutes * 60}
+                      <button
+                        class="etiquette duree"
+                        onclick={() => minuteurs.lancer(`${titreCourt} — étape ${e.numero ?? i + 1}`, sec, { ficheId: f.id })}
+                        aria-label="Lancer un minuteur de {libelleDuree(sec)}"
+                      >
+                        <Timer size={13} /> {texteDuree(e.duree)}
+                      </button>
+                    {:else if e.duree}<span class="etiquette duree"><Clock size={13} /> {texteDuree(e.duree)}</span>{/if}
                   </p>
                   {#if e.details?.length}
                     <ul class="details">
-                      {#each e.details as d, j (j)}<li>{#if livre}<TexteRenvois texte={insecables(d)} />{:else}{insecables(d)}{/if}</li>{/each}
+                      {#each e.details as d, j (j)}
+                        <li><TexteEtape texte={d} {livre} libelle="{titreCourt} — étape {e.numero ?? i + 1}" ficheId={f.id} /></li>
+                      {/each}
                     </ul>
                   {/if}
                   {#each renvois(e) as r (r.id)}
@@ -274,7 +311,10 @@
       {#if f.type !== 'recette'}
         {#if f.texte_complet}
           <section class="texte-integral">
-            <TexteComplet texte={f.texte_complet} titre={f.titre} tableaux={f.preparations_de_base} source={f.source.id} />
+            {#if f.preparations_de_base?.length}
+              <ReglagePortions id={f.id} rendement="quantités du livre" />
+            {/if}
+            <TexteComplet texte={f.texte_complet} titre={f.titre} tableaux={f.preparations_de_base} source={f.source.id} {coef} />
           </section>
         {:else if f.sections?.length}
           {#each f.sections as s, i (i)}
@@ -433,6 +473,20 @@
   .duree {
     margin-left: 4px;
     vertical-align: 1px;
+    border: none;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  button.duree {
+    background: var(--ambre-doux);
+    color: var(--ambre);
+    min-height: 28px;
+  }
+
+  .cuisiner {
+    margin-top: 18px;
   }
 
   .details {

@@ -1,10 +1,12 @@
 <script lang="ts">
   import BandeauMiseAJour from './composants/BandeauMiseAJour.svelte';
+  import BarreMinuteurs from './composants/BarreMinuteurs.svelte';
   import BarreOnglets from './composants/BarreOnglets.svelte';
   import Accueil from './ecrans/Accueil.svelte';
   import Bienvenue from './ecrans/Bienvenue.svelte';
   import Bientot from './ecrans/Bientot.svelte';
   import Fiche from './ecrans/Fiche.svelte';
+  import ModeCuisine from './ecrans/ModeCuisine.svelte';
   import Recherche from './ecrans/Recherche.svelte';
   import Reglages from './ecrans/Reglages.svelte';
   import { etat } from './lib/etat.svelte';
@@ -19,7 +21,8 @@
     if (!visites.has(o)) visites = new Set([...visites, o]);
   });
 
-  const pageEmpilee = $derived(routeur.route.nom === 'fiche' || routeur.route.nom === 'reglages');
+  const pageEmpilee = $derived(['fiche', 'reglages', 'cuisine'].includes(routeur.route.nom));
+  const enCuisine = $derived(routeur.route.nom === 'cuisine');
 
   // Liens internes (#/…) : navigation avec historique pour le bouton Retour.
   function surClic(e: MouseEvent) {
@@ -65,9 +68,12 @@
     <Fiche id={routeur.route.id} page={routeur.route.page} />
   {:else if routeur.route.nom === 'reglages'}
     <Reglages />
+  {:else if routeur.route.nom === 'cuisine'}
+    <ModeCuisine id={routeur.route.id} />
   {/if}
 
-  <BarreOnglets />
+  {#if !enCuisine}<BarreOnglets />{/if}
+  <BarreMinuteurs {enCuisine} />
 {/if}
 
 <BandeauMiseAJour />

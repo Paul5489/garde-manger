@@ -9,8 +9,16 @@
     titre = '',
     tableaux = [],
     source,
+    coef = 1,
     renvoiIngredients = false,
-  }: { texte: string; titre?: string; tableaux?: Tableau[]; source: SourceId; renvoiIngredients?: boolean } = $props();
+  }: {
+    texte: string;
+    titre?: string;
+    tableaux?: Tableau[];
+    source: SourceId;
+    coef?: number;
+    renvoiIngredients?: boolean;
+  } = $props();
 
   const morceaux = $derived(retirerTitreRepete(texte, titre).split(REPERE_TABLEAU));
   // Les tableaux sont insérés à leur place quand leur nombre correspond aux repères du texte.
@@ -21,7 +29,7 @@
   <Markdown texte={m} />
   {#if i < morceaux.length - 1}
     {#if enLigne}
-      <TableauDenrees tableau={tableaux[i]} {source} />
+      <TableauDenrees tableau={tableaux[i]} {source} {coef} />
     {:else if renvoiIngredients}
       <p class="renvoi-tableau">Tableau des denrées : voir « Ingrédients » plus haut.</p>
     {:else if tableaux.length}
@@ -32,7 +40,7 @@
 {#if !enLigne && tableaux.length}
   <h2 class="section-titre">Tableaux des denrées</h2>
   {#each tableaux as t, i (i)}
-    <TableauDenrees tableau={t} {source} />
+    <TableauDenrees tableau={t} {source} {coef} />
   {/each}
 {/if}
 
