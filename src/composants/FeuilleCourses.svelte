@@ -4,6 +4,7 @@
   import Feuille from './Feuille.svelte';
   import { annonce } from '../lib/annonce.svelte';
   import { courses } from '../lib/courses.svelte';
+  import { frigo } from '../lib/frigo.svelte';
   import { pluriel } from '../lib/format';
   import { propositionsDeLaFiche } from '../lib/liste-courses';
   import { portions, texteQuantites } from '../lib/portions.svelte';
@@ -13,12 +14,12 @@
   let { fiche, ouvert = $bindable(false) }: { fiche: Fiche; ouvert: boolean } = $props();
 
   const coef = $derived(portions.coef(fiche.id));
-  const sections = $derived(propositionsDeLaFiche(fiche, coef));
+  const sections = $derived(propositionsDeLaFiche(fiche, coef, frigo.auPlacard));
   const quantites = $derived(texteQuantites(fiche, coef));
   const dejaLa = $derived(courses.recette(fiche.id));
 
   let choix = $state(new Set<string>());
-  // À chaque ouverture : on repart des choix proposés (eau, sel, poivre, alternatives et facultatifs décochés).
+  // À chaque ouverture : on repart des choix proposés (placard, alternatives et facultatifs décochés).
   $effect(() => {
     if (!ouvert) return;
     choix = new Set(sections.flatMap((s, i) => s.items.flatMap((p, j) => (p.coche ? [`${i}-${j}`] : []))));

@@ -157,17 +157,6 @@ export function cleCourses(nom: string): string {
   return mots.join(' ') || normaliser(nom).trim();
 }
 
-/** Toujours à la maison : proposé décoché quand on ajoute une recette (le placard réglable viendra à l'étape 4). */
-const TOUJOURS_LA = new Set(
-  ['sel', 'poivre', 'sel fin', 'gros sel', 'sel gros', 'poivre moulin', 'sel poivre', 'poivre noir', 'pincee sel'].map(cleCourses),
-);
-
-export function estToujoursLa(cle: string): boolean {
-  // L'eau du robinet, sous toutes ses formes (« eau froide », « eau ou fond blanc »), mais pas l'eau de vie ni l'eau de rose.
-  if (/^eau( |$)/.test(cle) && !/^eau (vie|rose|fleur|gazeuse|minerale)/.test(cle)) return true;
-  return TOUJOURS_LA.has(cle);
-}
-
 // ───── Quantités ─────
 
 /** Ramène une quantité à l'unité de base de sa famille : kg → g, l / cl → ml, sans unité → pièce. */
@@ -226,7 +215,7 @@ export interface Proposition {
   cle: string;
   rayon: string;
   apport: Apport;
-  /** Proposé coché (pas les alternatives, les facultatifs ni l'eau, le sel, le poivre). */
+  /** Proposé coché (pas les alternatives, les facultatifs ni ce qui est au placard). */
   coche: boolean;
   /** Détail affiché dans la feuille de choix (« 40 g », « PM »). */
   quantite: string;
@@ -237,7 +226,9 @@ export interface SectionPropositions {
   items: Proposition[];
 }
 
-function proposition(item: Ingredient, fiche: Pick<Fiche, 'id' | 'source'>, coef: number): Proposition | null {
+type AuPlacard = (nom: string) => boolean;
+
+function proposition(item: Ingredient, fiche: Pick<Fiche, 'id' | 'source'>, coef: number, auPlacard: AuPlacard): Proposition | null {
   const nom = nomPourCourses(item.nom ?? item.texte_original ?? '');
   if (!nom) return null;
   const cle = cleCourses(nom);
@@ -249,28 +240,38 @@ function proposition(item: Ingredient, fiche: Pick<Fiche, 'id' | 'source'>, coef
     cle,
     rayon: rayonDe(nom),
     apport,
-    coche: !item.alternative_du_precedent && !item.optionnel && !estToujoursLa(cle),
+    coche: !item.alternative_du_precedent && !item.optionnel && !auPlacard(item.nom ?? nom),
     quantite: apport.valeur !== undefined ? quantiteTotale([apport]) : m.pm ? 'PM' : '',
   };
 }
 
-function section(titre: string | undefined, groupes: GroupeIngredients[], fiche: Pick<Fiche, 'id' | 'source'>, coef: number): SectionPropositions[] {
+function section(
+  titre: string | undefined,
+  groupes: GroupeIngredients[],
+  fiche: Pick<Fiche, 'id' | 'source'>,
+  coef: number,
+  auPlacard: AuPlacard,
+): SectionPropositions[] {
   return groupes.map((g, i) => ({
     titre: [i === 0 ? titre : undefined, g.groupe?.trim() ? casseLisible(g.groupe) : undefined].filter(Boolean).join(' — ') || undefined,
-    items: (g.items ?? []).map((it) => proposition(it, fiche, coef)).filter((p): p is Proposition => !!p),
+    items: (g.items ?? []).map((it) => proposition(it, fiche, coef, auPlacard)).filter((p): p is Proposition => !!p),
   }));
 }
 
-/** Ingrédients d'une fiche (y compris tableaux des denrées), prêts à ajouter aux courses. */
+/**
+ * Ingrédients d'une fiche (y compris tableaux des denrées), prêts à ajouter aux courses.
+ * Ceux du placard (eau, sel…), les alternatives et les facultatifs sont proposés décochés.
+ */
 export function propositionsDeLaFiche(
   fiche: Pick<Fiche, 'id' | 'source' | 'ingredients' | 'ingredients_supplementaires' | 'preparations_de_base'>,
   coef = 1,
+  auPlacard: AuPlacard = () => false,
 ): SectionPropositions[] {
   const tableau = (t: { titre?: string }) => casseLisible((t.titre ?? '').replace(/\s+/g, ' ').trim()) || undefined;
   return [
-    ...section(undefined, fiche.ingredients ?? [], fiche, coef),
-    ...(fiche.ingredients_supplementaires ?? []).flatMap((t) => section(tableau(t), t.ingredients ?? [], fiche, coef)),
-    ...(fiche.preparations_de_base ?? []).flatMap((t) => section(tableau(t), t.ingredients ?? [], fiche, coef)),
+    ...section(undefined, fiche.ingredients ?? [], fiche, coef, auPlacard),
+    ...(fiche.ingredients_supplementaires ?? []).flatMap((t) => section(tableau(t), t.ingredients ?? [], fiche, coef, auPlacard)),
+    ...(fiche.preparations_de_base ?? []).flatMap((t) => section(tableau(t), t.ingredients ?? [], fiche, coef, auPlacard)),
   ].filter((s) => s.items.length);
 }
 

@@ -7,7 +7,7 @@ export type Route =
   | { nom: Onglet }
   | { nom: 'fiche'; id: string; page?: number }
   | { nom: 'cuisine'; id: string }
-  | { nom: 'reglages' };
+  | { nom: 'reglages'; section?: string };
 
 export function lireRoute(hash: string): Route {
   const chemin = hash.replace(/^#\/?/, '');
@@ -18,7 +18,7 @@ export function lireRoute(hash: string): Route {
     return page ? { nom: 'fiche', id, page: Number(page) } : { nom: 'fiche', id };
   }
   if (nom === 'cuisine' && reste[0]) return { nom: 'cuisine', id: decodeURIComponent(reste[0]) };
-  if (nom === 'reglages') return { nom: 'reglages' };
+  if (nom === 'reglages') return reste[0] ? { nom: 'reglages', section: reste[0] } : { nom: 'reglages' };
   if ((ONGLETS as string[]).includes(nom)) return { nom: nom as Onglet };
   return { nom: 'accueil' };
 }

@@ -80,9 +80,23 @@ touche **Mettre à jour**. (Il faut être connecté à Internet à ce moment-là
   son rayon — l'appli s'en souviendra la prochaine fois.
 - En bas : **Recettes de la liste** (le ✕ retire les ingrédients d'une recette) et **Vider la liste**.
 
-## 9. Sauvegarder mes données personnelles
+## 9. Avec ce que j'ai (onglet Frigo)
 
-Tes favoris, notes, carnet et courses ne sont que dans l'iPhone. Fais une sauvegarde de temps en temps
+1. Onglet **Frigo** : écris un ingrédient que tu as (« poir… »), puis touche la suggestion, ou **OK** sur le clavier.
+2. Ajoute-en autant que tu veux : les recettes apparaissent en dessous, rangées par ce qu'il te manque
+   (« Tu as tout », « Il manque 1 ingrédient »…), avec la liste des manquants et le score (« 3/4 »).
+3. Touche une recette pour l'ouvrir (et, par exemple, ajouter ce qui manque aux courses).
+- Toucher un ingrédient choisi le retire ; **Tout effacer** vide la liste. Elle est gardée pour la prochaine fois.
+- Écris des noms simples : « poireau » trouve aussi « blancs de poireaux », « crème » trouve « crème liquide ».
+- **Toujours à la maison** (le placard : eau, sel, poivre, huile, sucre) : jamais compté comme manquant, et décoché
+  quand tu ajoutes une recette aux courses. Pour le modifier : lien **Modifier** sous le champ, ou Réglages ›
+  **Avec ce que j'ai** (ajoute par exemple beurre, farine…).
+- **Synonymes** (Réglages › Avec ce que j'ai) : une ligne par groupe de noms qui veulent dire la même chose,
+  séparés par des virgules, puis **Enregistrer**. Exemple : `Coriandre, cilantro, persil chinois`.
+
+## 10. Sauvegarder mes données personnelles
+
+Tes favoris, notes, carnet, courses, frigo, placard et synonymes ne sont que dans l'iPhone. Fais une sauvegarde de temps en temps
 (et avant de changer de téléphone) :
 
 1. Garde-manger › ⚙️ **Réglages** › **Mes données** › **Sauvegarder mes données**.

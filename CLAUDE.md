@@ -48,7 +48,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 112 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 129 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -74,12 +74,12 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
 
 ## 5. Architecture
 
-- **Vite 8 + TypeScript + Svelte 5 (runes)** — appli légère (bundle ~122 Ko gzip). **vite-plugin-pwa** (generateSW,
+- **Vite 8 + TypeScript + Svelte 5 (runes)** — appli légère (bundle ~129 Ko gzip). **vite-plugin-pwa** (generateSW,
   `registerType: 'prompt'`) : précache de tout le code, jamais de JSON. **Dexie 4** (IndexedDB), **MiniSearch 7**
   (recherche), **marked** (Markdown), **@lucide/svelte** (icônes).
 - **Routage par hash** (`#/recherche`, `#/fiche/<id>`, `#/fiche/<id>/p272`, `#/cuisine/<id>`, `#/reglages`) : marche hors ligne
   et sur GitHub Pages sans configuration. `base` Vite = `process.env.BASE_URL` (`/garde-manger/` à la publication).
-- **Onglets** (barre en bas) : Accueil, Recherche, Frigo (étape 4), Courses (étape 3), Bocaux (étape 5). Les onglets
+- **Onglets** (barre en bas) : Accueil, Recherche, Frigo, Courses, Bocaux (étape 5). Les onglets
   visités restent montés (on retrouve sa place) ; fiche / réglages / mode cuisine sont des pages empilées par-dessus.
 - **Import** dans un Web Worker : lecture → validation → allègement → résumés (`Resume`) + index MiniSearch sérialisé →
   écriture Dexie. Au démarrage on ne charge que le catalogue léger ; les fiches complètes à la demande ; l'index à la 1re recherche.
@@ -88,6 +88,15 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   enregistrement a `modifieLe` (ms). Chargées en mémoire au démarrage (`perso.svelte.ts`, `courses.svelte.ts`,
   `$state.raw` + mises à jour immuables : ne jamais écrire un proxy `$state` dans IndexedDB).
   L'import des recettes passe par `remplacerRecettes()` (db.ts) qui ne touche qu'à `fiches` et `meta` (testé).
+- **Avec ce que j'ai** : l'import écrit `meta.ingredients` (`IndexIngredients` : pour chaque recette, les noms bruts
+  de ses ingrédients, alternatives regroupées, facultatifs marqués ; ~280 Ko). Absent ou `version` ancienne
+  (`VERSION_INDEX_INGREDIENTS`) → reconstruit par `index-ingredients.worker.ts` depuis `db.fiches` (cas de l'iPhone
+  de Paul, importé avant l'étape 4). Au classement, les noms deviennent des **jetons** (`normalisation.ts`) :
+  mots normalisés + singulier, sans mots vides ni mots de préparation (les couleurs et « frais » restent),
+  **composés** fixes (« pomme de terre », « lait de coco », « vinaigre de vin »… avec une « famille » éventuelle :
+  « huile d'olive » est une huile), puis **synonymes** (éditables). Correspondance = les jetons de l'un sont tous
+  dans l'autre (« poireau » ↔ « blancs de poireaux »). Classement : manquants croissants puis part possédée ;
+  placard et facultatifs neutres. Réglages perso dans `reglages` : `frigo`, `placard`, `synonymes` (null = défaut).
 - Sauvegarde : JSON `{ format: 'garde-manger-sauvegarde', version: 1, exporteLe, donnees: { <table>: [...] } }`,
   restauration = **fusion** (ajout, ou remplacement si `modifieLe` plus récent ; jamais d'effacement).
   Fichier préparé à l'ouverture des Réglages car iOS n'ouvre le menu Partager que juste après un toucher.
@@ -116,8 +125,13 @@ src/lib/
   courses.svelte.ts               liste de courses : ajout d'une recette (remplace l'ajout précédent), articles libres,
                                   cocher, rayon choisi à la main (mémorisé par clé), retirer une recette, vider
   liste-courses.ts                nomPourCourses (sans « émincé », « pour… »), cleCourses (fusion), RAYONS + rayonDe
-                                  (règles regex, ~95 % classés), estToujoursLa (eau/sel/poivre : constante provisoire,
-                                  à remplacer par le placard de l'étape 4), quantiteTotale, propositionsDeLaFiche, texteListe
+                                  (règles regex, ~95 % classés), quantiteTotale, propositionsDeLaFiche (placard décoché),
+                                  texteListe
+  normalisation.ts                Dictionnaire (jetons d'un nom, alternatives « ou »), COMPOSES, SYNONYMES_DEFAUT,
+                                  PLACARD_DEFAUT, correspond, predicatListe, lire/ecrireSynonymes (texte des Réglages)
+  classement-frigo.ts             construireIndexIngredients, preparer, classer, construireVocabulaire, suggestions
+  frigo.svelte.ts                 ingrédients possédés, placard, synonymes, index (chargé ou reconstruit), résultats
+  index-ingredients.worker.ts     reconstruction de l'index des ingrédients hors fil principal
   sauvegarde.ts                   exporter, lireSauvegarde (validation, messages clairs), restaurer (fusion)
   partage.ts, annonce.svelte.ts   menu Partager (texte / fichier) avec repli ; petit message temporaire en bas
   etat.svelte.ts                  état global : statut, catalogue, parId, index (chargé à la demande), fiche(id)
@@ -136,7 +150,7 @@ src/lib/
   eveil.svelte.ts                 garder l'écran allumé
   markdown.ts                     rendu Markdown sûr (HTML brut ignoré, <!-- page N --> → ancre #p-N, titres en capitales adoucis)
   renvois.ts                      page du livre → fiche technique (source.pages) ; liens « voir p. 57 » dans le texte
-  routeur.svelte.ts               routes, historique, bouton Retour ; lienFiche, lienCuisine
+  routeur.svelte.ts               routes, historique, bouton Retour ; lienFiche, lienCuisine ; #/reglages/<section>
   stockage-local.ts, portail.ts   localStorage protégé ; déplacer un élément à la racine (feuilles au-dessus des onglets)
 src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFiches (affichage progressif), FeuilleFiltres,
                                   Ingredients (toucher = rayer), TableauDenrees, TexteComplet (insère les tableaux des
@@ -144,9 +158,10 @@ src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFich
                                   ReglagePortions, CarteFermentation, BarreMinuteurs (pastille, liste, alarme), Importeur,
                                   BandeauMiseAJour, AideInstallation (encadré « écran d'accueil » dans Safari iOS), IconeBocal,
                                   Feuille (feuille du bas générique, sans champ de saisie : le clavier iOS la cacherait),
-                                  Etoiles, FormulaireRealisation, CarnetFiche, FeuilleCourses, SauvegardePerso, Annonce
+                                  Etoiles, FormulaireRealisation, CarnetFiche, FeuilleCourses, SauvegardePerso, Annonce,
+                                  LigneFrigo, ReglagesFrigo (placard + synonymes)
 src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Courses,
-                                  Bientot (onglets à venir : Frigo, Bocaux)
+                                  Frigo, Bientot (onglet à venir : Bocaux)
 tests/                            archive-reelle.ts (accès à la vraie archive) + tests par module
 ```
 
@@ -177,6 +192,10 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   courses = un article par nom avec les quantités additionnées par unité (« 500 g + 2 pièces »), unités « entières »
   (pièce, botte, boîte…) arrondies au-dessus ; eau/sel/poivre, alternatives et facultatifs proposés décochés ;
   12 rayons dans l'ordre d'un magasin (dont « Produits asiatiques ») ; restauration d'une sauvegarde = fusion.
+- 30/09/2026 : écran allumé en mode cuisine **confirmé par Paul** dans l'appli installée.
+- 30/09/2026 (étape 4, choix par défaut) : placard d'origine = eau, sel, poivre, huile, sucre ; résultats groupés
+  « Tu as tout / Il manque 1 / 2 / 3 ou plus » puis par part possédée ; synonymes édités comme un texte
+  (une ligne par groupe, virgules) ; « crème » générique couvre crème liquide et crème fraîche.
 
 ## 9. Fait
 
@@ -193,26 +212,25 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   feuille « Ajouter aux courses » avec les portions choisies, fusion, rayons, articles libres, panier, partage,
   pastille sur l'onglet), sauvegarde/restauration JSON (Réglages › Mes données), portions et étape du mode cuisine
   mémorisées. Testé dans le panneau navigateur (390 × 844, clair/sombre) ; **à faire tester sur l'iPhone**.
+- **Étape 4** (30/09/2026) : onglet Frigo « Avec ce que j'ai » (saisie avec suggestions, ingrédients gardés,
+  résultats par manquants avec filtre d'univers), normalisation + composés + synonymes éditables, placard réglable
+  (aussi utilisé par « Ajouter aux courses »), Réglages › Avec ce que j'ai. Tests sur la vraie archive (99 % des noms
+  compris, potages en tête pour poireaux/pommes de terre/crème, classement complet < 10 ms). **À faire tester sur l'iPhone**.
 
 ## 10. Reste à faire (ordre convenu, faire tester chaque étape sur l'iPhone)
 
-0. **Confirmer avec Paul** dans l'appli installée : écran qui reste allumé en mode cuisine ; minuteur qui sonne écran
-   verrouillé + mode silencieux (piste audio). Non confirmé à ce jour ; si la piste ne joue pas en arrière-plan, pistes :
+0. **Confirmer avec Paul** dans l'appli installée : minuteur qui sonne écran verrouillé + mode silencieux (piste audio).
+   Écran allumé : confirmé le 30/09/2026. Sonnerie : non confirmée à ce jour ; si la piste ne joue pas en arrière-plan, pistes :
    raccourci iOS « Démarrer le minuteur » (`shortcuts://run-shortcut?name=…&input=text&text=<minutes>`) ou .ics avec alarme.
-1. **Faire tester l'étape 3 sur l'iPhone** : menu Partager (liste de courses, fichier de sauvegarde → « Enregistrer
-   dans Fichiers » / AirDrop), restauration depuis Fichiers, champ date iOS, clavier sur le champ « Ajouter un article ».
-2. **Étape 4** — « Avec ce que j'ai » (onglet Frigo) : saisie avec suggestions, normalisation (étendre `ingredients.ts` :
-   singulier, sans accents, précisions après la virgule, mots « haché, frais, émincé… »), **fichier de synonymes éditable**
-   (échalote/échalotes, crème liquide/crème fleurette, oignon nouveau/cébette/jeunes oignons…), **placard** réglable
-   (sel, poivre, eau, huile, sucre… toujours présents), classement par part d'ingrédients possédés + ce qui manque.
-   Gestion placard/synonymes dans Réglages (table `reglages`, incluse dans la sauvegarde). Remplacer `estToujoursLa`
-   (liste-courses.ts) par le placard pour les cases décochées de « Ajouter aux courses ». Tests sur la vraie archive.
-3. **Étape 5** — « Mes bocaux » : bocal depuis une fiche Noma (pré-rempli par `fermentation`) ou libre (kimchi) ; nom, début,
+1. **Faire tester les étapes 3 et 4 sur l'iPhone** : menu Partager (liste de courses, fichier de sauvegarde →
+   « Enregistrer dans Fichiers » / AirDrop), restauration depuis Fichiers, champ date iOS, clavier sur les champs
+   « Ajouter un article » et Frigo (suggestions), reconstruction de l'index des ingrédients au 1er passage sur Frigo.
+2. **Étape 5** — « Mes bocaux » : bocal depuis une fiche Noma (pré-rempli par `fermentation`) ou libre (kimchi) ; nom, début,
    poids, % sel, température, durée min/max, étapes successives, statut (en cours/terminé/raté), journal daté + photo
    compressée ; accueil « Jour 4 sur 5 à 7 », barre de progression, « à goûter aujourd'hui », « prêt » ; bouton
    « Ajouter au Calendrier » (.ics avec VALARM : dégustations, fin prévue) ; modèles réutilisables. **Tests du calcul des jours**.
-4. **Étape 6** — finitions : relire `GUIDE_IPHONE.md` (§ 2 parle encore d'iCloud Drive alors que l'import se fait
-   par Téléchargements/AirDrop ; ajouter Frigo et Bocaux), relecture accessibilité/mode sombre, vérifier hors ligne
+3. **Étape 6** — finitions : relire `GUIDE_IPHONE.md` (§ 2 parle encore d'iCloud Drive alors que l'import se fait
+   par Téléchargements/AirDrop ; ajouter Bocaux), relecture accessibilité/mode sombre, vérifier hors ligne
    en mode avion. (`fake-indexeddb` sert désormais aux tests des données perso.)
 
 ## 11. Problèmes connus et limites
@@ -227,6 +245,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   mise à l'échelle des lignes rédigées (« 2 oignon »).
 - Repérage des ingrédients d'une étape par mots-clés simples (peut citer un ingrédient de même nom d'un autre groupe :
   le groupe est alors indiqué).
+- Frigo : quelques noms bruités de l'archive restent tels quels (« Petit oignon Beurre », listes à virgules de la
+  Cuisine de référence réduites au 1er nom) ; « crème » ou « huile » génériques couvrent toutes les variantes.
+  Les sous-préparations (fond brun, pâte brisée…) comptent comme manquantes si on ne les a pas saisies.
 - Restaurer une sauvegarde **ajoute** : un favori retiré depuis la sauvegarde revient (pas de trace des suppressions).
 - Menu Partager : en http (test par le Wi-Fi) le fichier de sauvegarde est téléchargé et la liste copiée
   (pas de `navigator.share` hors https). Tester le partage dans l'appli installée.

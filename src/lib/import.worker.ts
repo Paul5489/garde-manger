@@ -2,6 +2,7 @@
 // Import de l'archive dans un fil d'exécution séparé : l'écran reste fluide pendant l'import.
 
 import { documentDeRecherche, ErreurArchive, lireArchive, resumer } from './archive';
+import { construireIndexIngredients } from './classement-frigo';
 import { db, remplacerRecettes } from './db';
 import { creerIndex } from './moteur';
 import type { InfosArchive } from './types';
@@ -55,6 +56,7 @@ self.onmessage = async (e: MessageEvent<MessageImport>) => {
     await remplacerRecettes(db, archive.fiches, [
       { cle: 'catalogue', valeur: catalogue },
       { cle: 'index', valeur: indexJson },
+      { cle: 'ingredients', valeur: construireIndexIngredients(archive.fiches) },
       { cle: 'archive', valeur: infos },
     ]);
 

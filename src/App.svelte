@@ -8,17 +8,19 @@
   import Bientot from './ecrans/Bientot.svelte';
   import Courses from './ecrans/Courses.svelte';
   import Fiche from './ecrans/Fiche.svelte';
+  import Frigo from './ecrans/Frigo.svelte';
   import ModeCuisine from './ecrans/ModeCuisine.svelte';
   import Recherche from './ecrans/Recherche.svelte';
   import Reglages from './ecrans/Reglages.svelte';
   import { courses } from './lib/courses.svelte';
   import { etat } from './lib/etat.svelte';
+  import { frigo } from './lib/frigo.svelte';
   import { perso } from './lib/perso.svelte';
   import { ONGLETS, routeur, type Onglet } from './lib/routeur.svelte';
 
   etat.demarrer();
   // Données personnelles (favoris, notes, courses) : indépendantes des recettes importées.
-  Promise.all([perso.charger(), courses.charger()]).catch((e) => console.error(e));
+  Promise.all([perso.charger(), courses.charger(), frigo.charger()]).catch((e) => console.error(e));
 
   // Les onglets déjà ouverts restent en mémoire : on retrouve sa place en revenant.
   let visites = $state(new Set<Onglet>());
@@ -59,8 +61,7 @@
       <main class="ecran" class:cache={routeur.onglet !== o || pageEmpilee} inert={routeur.onglet !== o || pageEmpilee}>
         {#if o === 'accueil'}<Accueil />
         {:else if o === 'recherche'}<Recherche />
-        {:else if o === 'frigo'}
-          <Bientot titre="Avec ce que j'ai" etape={4} texte="Indique les ingrédients que tu as : l'appli te proposera les recettes réalisables et ce qu'il te manque." />
+        {:else if o === 'frigo'}<Frigo />
         {:else if o === 'courses'}<Courses />
         {:else}
           <Bientot titre="Mes bocaux" etape={5} texte="Le suivi de tes fermentations : jours écoulés, dégustations, rappels dans le Calendrier." />
@@ -72,7 +73,7 @@
   {#if routeur.route.nom === 'fiche'}
     <Fiche id={routeur.route.id} page={routeur.route.page} />
   {:else if routeur.route.nom === 'reglages'}
-    <Reglages />
+    <Reglages section={routeur.route.section} />
   {:else if routeur.route.nom === 'cuisine'}
     <ModeCuisine id={routeur.route.id} />
   {/if}

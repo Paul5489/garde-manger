@@ -1,13 +1,21 @@
 <script lang="ts">
   import BarreHaut from '../composants/BarreHaut.svelte';
   import Importeur from '../composants/Importeur.svelte';
+  import ReglagesFrigo from '../composants/ReglagesFrigo.svelte';
   import SauvegardePerso from '../composants/SauvegardePerso.svelte';
   import { NOMS_SOURCES } from '../lib/archive';
   import { etat } from '../lib/etat.svelte';
   import { date, heure, nombre } from '../lib/format';
   import type { SourceId } from '../lib/types';
 
+  let { section }: { section?: string } = $props();
+
   let conteneur = $state<HTMLElement>();
+
+  // « #/reglages/frigo » : ouvre les Réglages directement sur une section.
+  $effect(() => {
+    if (section) requestAnimationFrame(() => conteneur?.querySelector(`#reglages-${section}`)?.scrollIntoView({ block: 'start' }));
+  });
   let defile = $state(false);
 
   const parSource = $derived.by(() => {
@@ -53,6 +61,9 @@
       <Importeur libelle="Mettre à jour les recettes" />
     </div>
 
+    <h2 class="section-titre" id="reglages-frigo">Avec ce que j'ai</h2>
+    <ReglagesFrigo />
+
     <h2 class="section-titre">Mes données</h2>
     <div class="carte bloc">
       <SauvegardePerso />
@@ -86,6 +97,10 @@
 
   .bloc {
     padding: 14px 16px 16px;
+  }
+
+  #reglages-frigo {
+    scroll-margin-top: calc(var(--haut) + 56px);
   }
 
   dl {

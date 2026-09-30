@@ -6,7 +6,7 @@ import Dexie, { type EntityTable } from 'dexie';
 import type { Fiche } from './types';
 
 export interface EntreeMeta {
-  cle: 'archive' | 'catalogue' | 'index';
+  cle: 'archive' | 'catalogue' | 'index' | 'ingredients';
   valeur: unknown;
 }
 
@@ -70,7 +70,7 @@ export interface RecetteCourses {
   modifieLe: number;
 }
 
-/** Réglages personnels (rayons choisis pour certains articles ; bientôt placard et synonymes). */
+/** Réglages personnels : rayons choisis à la main, frigo, placard, synonymes (null = liste d'origine). */
 export interface ReglagePerso {
   cle: string;
   valeur: unknown;

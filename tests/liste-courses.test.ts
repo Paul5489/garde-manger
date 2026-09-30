@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import type { ArticleCourses } from '../src/lib/db';
 import {
   cleCourses,
-  estToujoursLa,
   nomPourCourses,
   parRayon,
   propositionsDeLaFiche,
@@ -11,11 +10,13 @@ import {
   texteListe,
   versUniteDeBase,
 } from '../src/lib/liste-courses';
+import { Dictionnaire, PLACARD_DEFAUT, predicatListe } from '../src/lib/normalisation';
 import { mesureIngredient } from '../src/lib/quantites';
 import type { Fiche } from '../src/lib/types';
 import { archiveBrute, archiveDisponible } from './archive-reelle';
 
-const esp = (s: string) => s.replace(/[  ]/g, ' ');
+const esp = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ');
+const auPlacard = predicatListe(new Dictionnaire(), PLACARD_DEFAUT);
 
 describe('noms pour la liste de courses', () => {
   it('retire préparations, précisions et « pour … »', () => {
@@ -45,11 +46,11 @@ describe('noms pour la liste de courses', () => {
     expect(cleCourses('Vin blanc')).not.toBe(cleCourses('Vin rouge'));
   });
 
-  it('eau, sel et poivre sont toujours à la maison (pas l’eau de vie)', () => {
-    for (const n of ['Eau', 'eau froide', 'Sel fin', 'Gros sel', 'Poivre du moulin', 'Sel et poivre'])
-      expect(estToujoursLa(cleCourses(nomPourCourses(n))), n).toBe(true);
-    for (const n of ['Eau de vie', 'Eau de fleur d’oranger', 'Sucre', 'Poivron'])
-      expect(estToujoursLa(cleCourses(nomPourCourses(n))), n).toBe(false);
+  it('placard d’origine : eau, sel, poivre, huile, sucre (pas l’eau de vie ni l’huile de sésame)', () => {
+    for (const n of ['Eau', 'eau froide', 'eau ou fond blanc', 'Sel fin', 'Gros sel', 'Poivre du moulin', 'Sel et poivre', 'Huile d’olive', 'Sucre semoule'])
+      expect(auPlacard(n), n).toBe(true);
+    for (const n of ['Eau de vie', 'Eau de fleur d’oranger', 'Huile de sésame', 'Sucre de palme', 'Poivron', 'Poivre du Sichuan', 'Beurre'])
+      expect(auPlacard(n), n).toBe(false);
   });
 });
 
@@ -147,7 +148,7 @@ describe('ajout d’une recette aux courses', () => {
   };
 
   it('quantités multipliées par le coefficient, choix cochés par défaut', () => {
-    const [s1, s2] = propositionsDeLaFiche(fiche, 2);
+    const [s1, s2] = propositionsDeLaFiche(fiche, 2, auPlacard);
     expect(s1.items.map((p) => [p.nom, esp(p.quantite), p.coche])).toEqual([
       ['Oignons', '400 g', true],
       ['Sel fin', 'PM', false],
@@ -229,7 +230,7 @@ describe.skipIf(!archiveDisponible)('sur la vraie archive', () => {
     let autres = 0;
     for (const f of fiches)
       for (const p of propositionsDeLaFiche(f).flatMap((s) => s.items)) {
-        if (estToujoursLa(p.cle)) continue;
+        if (/^eau\b/i.test(p.nom) && auPlacard(p.nom)) continue;
         total++;
         if (p.rayon === 'autres') autres++;
       }

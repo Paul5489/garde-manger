@@ -1,9 +1,11 @@
 // Données personnelles dans une base IndexedDB simulée (fake-indexeddb) : magasins, sauvegarde, réimport.
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { construireIndexIngredients } from '../src/lib/classement-frigo';
 import { courses } from '../src/lib/courses.svelte';
 import { BaseGardeManger, db, remplacerRecettes } from '../src/lib/db';
 import { propositionsDeLaFiche } from '../src/lib/liste-courses';
+import { frigo } from '../src/lib/frigo.svelte';
 import { perso } from '../src/lib/perso.svelte';
 import { compter, ErreurSauvegarde, exporter, lireSauvegarde, nomFichierSauvegarde, restaurer } from '../src/lib/sauvegarde';
 import type { Fiche } from '../src/lib/types';
@@ -139,6 +141,55 @@ describe('liste de courses', () => {
     await courses.basculer(courses.articles[0].id);
     await courses.retirerCoches();
     expect(await db.courses.count()).toBe(0);
+  });
+});
+
+describe('avec ce que j’ai', () => {
+  beforeEach(async () => {
+    await toutVider(db);
+    await frigo.charger();
+  });
+
+  it('ingrédients choisis : sans doublon, gardés dans le téléphone', async () => {
+    await frigo.ajouter('poireaux');
+    await frigo.ajouter('  Poireaux ');
+    await frigo.ajouter('crème');
+    await frigo.charger();
+    expect(frigo.possedes).toEqual(['Poireaux', 'Crème']);
+    await frigo.retirer('Poireaux');
+    await frigo.vider();
+    await frigo.charger();
+    expect(frigo.possedes).toEqual([]);
+  });
+
+  it('placard et synonymes modifiables, puis retour à l’origine', async () => {
+    expect(frigo.auPlacard('Beurre doux')).toBe(false);
+    await frigo.ajouterAuPlacard('beurre');
+    await frigo.retirerDuPlacard('Sucre');
+    await frigo.charger();
+    expect(frigo.placard).toEqual(['Beurre', 'Eau', 'Huile', 'Poivre', 'Sel']);
+    expect(frigo.auPlacard('Beurre doux')).toBe(true);
+    await frigo.definirPlacard(null);
+    expect(frigo.placardModifie).toBe(false);
+
+    await frigo.definirSynonymes([['Coriandre', 'Persil chinois']]);
+    await frigo.charger();
+    expect(frigo.synonymes).toEqual([['Coriandre', 'Persil chinois']]);
+    expect([...frigo.dico.jetons('persil chinois')]).toEqual(['coriandre']);
+    await frigo.definirSynonymes(null);
+    expect(frigo.synonymesModifies).toBe(false);
+  });
+
+  it('classe les recettes de l’index enregistré à l’import', async () => {
+    const index = construireIndexIngredients([
+      ficheExemple('afpa-soupe', [{ nom: 'Poireaux' }, { nom: 'Pommes de terre' }, { nom: 'Sel' }]),
+      ficheExemple('afpa-tarte', [{ nom: 'Pommes' }, { nom: 'Pâte brisée' }]),
+    ]);
+    await db.meta.put({ cle: 'ingredients', valeur: index });
+    await frigo.chargerIndex('2026-09-30T10:00:00Z');
+    expect(frigo.statutIndex).toBe('pret');
+    await frigo.ajouter('Blancs de poireaux');
+    expect(frigo.resultats.map((r) => [r.id, r.manquants])).toEqual([['afpa-soupe', ['Pommes de terre']]]);
   });
 });
 
