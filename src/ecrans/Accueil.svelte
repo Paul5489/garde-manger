@@ -1,8 +1,10 @@
 <script lang="ts">
   import { Search, Settings } from '@lucide/svelte';
   import AideInstallation from '../composants/AideInstallation.svelte';
+  import CarteBocal from '../composants/CarteBocal.svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
   import { UNIVERS } from '../lib/archive';
+  import { bocaux } from '../lib/bocaux.svelte';
   import { etat } from '../lib/etat.svelte';
   import { nombre } from '../lib/format';
   import { perso } from '../lib/perso.svelte';
@@ -73,6 +75,22 @@
     {/each}
   </div>
 
+  {#if bocaux.parRubrique['a-gouter'].length || bocaux.parRubrique.prets.length || bocaux.parRubrique['en-cours'].length}
+    {@const r = bocaux.parRubrique}
+    <h2 class="section-titre">Mes bocaux</h2>
+    {#if r['a-gouter'].length}
+      <p class="rappel ambre">🥄 À goûter aujourd'hui : <strong>{r['a-gouter'].map((b) => b.nom).join(', ')}</strong></p>
+    {/if}
+    {#if r.prets.length}
+      <p class="rappel vert">✓ Prêt : <strong>{r.prets.map((b) => b.nom).join(', ')}</strong></p>
+    {/if}
+    <div class="bocaux">
+      {#each [...r['a-gouter'], ...r.prets, ...r['en-cours']] as b (b.id)}
+        <CarteBocal bocal={b} maintenant={bocaux.maintenant} />
+      {/each}
+    </div>
+  {/if}
+
   {#if favoris.length}
     <h2 class="section-titre">Mes favoris</h2>
     <ListeFiches fiches={favoris} />
@@ -104,6 +122,29 @@
     color: var(--texte-3);
     font-size: 17px;
     text-align: left;
+  }
+
+  .rappel {
+    margin: 0 0 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+  }
+
+  .rappel.ambre {
+    background: var(--ambre-doux);
+    color: var(--ambre);
+  }
+
+  .rappel.vert {
+    background: var(--vert-doux);
+    color: var(--vert);
+  }
+
+  .bocaux {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .univers {

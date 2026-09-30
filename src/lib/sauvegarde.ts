@@ -27,6 +27,9 @@ const CLES: Record<TablePerso, string> = {
   courses: 'id',
   recettesCourses: 'ficheId',
   reglages: 'cle',
+  bocaux: 'id',
+  journal: 'id',
+  modelesBocaux: 'id',
 };
 
 /** Champs indispensables en plus de la clé. */
@@ -35,6 +38,9 @@ const CHAMPS: Partial<Record<TablePerso, [string, 'string' | 'object' | 'number'
   realisations: [['ficheId', 'string'], ['date', 'string']],
   courses: [['nom', 'string'], ['cle', 'string'], ['apports', 'object']],
   recettesCourses: [['titre', 'string'], ['coef', 'number']],
+  bocaux: [['nom', 'string'], ['debut', 'string'], ['etapes', 'object'], ['statut', 'string']],
+  journal: [['bocalId', 'string'], ['date', 'string']],
+  modelesBocaux: [['nom', 'string'], ['etapes', 'object']],
 };
 
 export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
@@ -44,6 +50,9 @@ export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
   courses: ['article de courses', 'articles de courses'],
   recettesCourses: ['recette dans les courses', 'recettes dans les courses'],
   reglages: ['réglage', 'réglages'],
+  bocaux: ['bocal', 'bocaux'],
+  journal: ['note de bocal', 'notes de bocaux'],
+  modelesBocaux: ['modèle de bocal', 'modèles de bocaux'],
 };
 
 export function nomFichierSauvegarde(d: Date = new Date()): string {

@@ -94,9 +94,32 @@ touche **Mettre à jour**. (Il faut être connecté à Internet à ce moment-là
 - **Synonymes** (Réglages › Avec ce que j'ai) : une ligne par groupe de noms qui veulent dire la même chose,
   séparés par des virgules, puis **Enregistrer**. Exemple : `Coriandre, cilantro, persil chinois`.
 
-## 10. Sauvegarder mes données personnelles
+## 10. Mes bocaux (fermentations)
 
-Tes favoris, notes, carnet, courses, frigo, placard et synonymes ne sont que dans l'iPhone. Fais une sauvegarde de temps en temps
+**Démarrer un bocal**
+- Depuis une recette Noma : sur la fiche, bouton **🫙 Démarrer un bocal** (sel, température, durées et étapes
+  sont pré-remplis). Vérifie la date, indique le poids : l'appli calcule le sel à peser.
+- Librement (ton kimchi) : onglet **Bocaux** › **Nouveau** › **Bocal libre**. Coche « Enregistrer aussi comme
+  modèle » pour le refaire en un toucher la prochaine fois (Nouveau › Mes modèles).
+- Plusieurs étapes (vinaigre : fermentation alcoolique puis acétification) : « Ajouter une étape ».
+
+**Suivre**
+- L'onglet Bocaux et l'Accueil affichent « Jour 4 sur 5 à 7 », une barre (la partie verte = la période où
+  c'est prêt) et les listes **À goûter aujourd'hui** et **Prêts**. Le chiffre vert sur l'onglet = à goûter + prêts.
+- Sur la page du bocal : **Noter une dégustation** (texte + photo) → il sort de « À goûter aujourd'hui » pour la journée.
+- **Étape suivante** quand une étape est finie ; **Terminé** ou **Raté** à la fin (les bocaux finis restent dans
+  « Terminés », on peut les remettre en cours).
+
+**Rappels dans le Calendrier**
+- Page du bocal › **Rappels** › **Ajouter au Calendrier** : goûter, prêt et dernier délai, à 18 h, avec une alerte
+  (même appli fermée).
+- Si rien ne s'ouvre : **Envoyer le fichier…** › **Enregistrer dans Fichiers**, puis dans l'app Fichiers touche le
+  fichier `rappels-….ics` › **Ajouter tout**.
+
+## 11. Sauvegarder mes données personnelles
+
+Tes favoris, notes, carnet, courses, frigo, placard, synonymes et bocaux (avec les photos du journal) ne sont
+que dans l'iPhone. Fais une sauvegarde de temps en temps
 (et avant de changer de téléphone) :
 
 1. Garde-manger › ⚙️ **Réglages** › **Mes données** › **Sauvegarder mes données**.

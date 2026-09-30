@@ -1,6 +1,8 @@
 // Données personnelles dans une base IndexedDB simulée (fake-indexeddb) : magasins, sauvegarde, réimport.
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { etatEtape } from '../src/lib/bocaux';
+import { bocaux } from '../src/lib/bocaux.svelte';
 import { construireIndexIngredients } from '../src/lib/classement-frigo';
 import { courses } from '../src/lib/courses.svelte';
 import { BaseGardeManger, db, remplacerRecettes } from '../src/lib/db';
@@ -193,6 +195,83 @@ describe('avec ce que j’ai', () => {
   });
 });
 
+describe('mes bocaux', () => {
+  beforeEach(async () => {
+    await toutVider(db);
+    await bocaux.charger();
+  });
+
+  const vinaigre = {
+    nom: 'Vinaigre de poire',
+    ficheId: 'noma-vinaigre',
+    selPct: undefined,
+    etapes: [
+      { nom: 'Fermentation alcoolique', min: 7, max: 10, unite: 'jours' as const },
+      { nom: 'Acétification', min: 10, max: 14, unite: 'jours' as const },
+    ],
+  };
+
+  it('créer, passer à l’étape suivante, terminer : tout est gardé', async () => {
+    const debut = new Date(Date.now() - 8 * 86_400_000);
+    const b = await bocaux.creer({ ...vinaigre, notes: '  ', type: '' }, debut);
+    expect(b.notes).toBeUndefined();
+    expect(b.type).toBeUndefined();
+    expect(bocaux.parRubrique.prets.map((x) => x.id)).toEqual([b.id]);
+    await bocaux.etapeSuivante(b.id);
+    await bocaux.charger();
+    const b2 = bocaux.bocal(b.id)!;
+    expect(b2.etapeCourante).toBe(1);
+    expect(etatEtape(b2).ecoule).toBe(0);
+    expect(bocaux.parRubrique['en-cours'].map((x) => x.id)).toEqual([b.id]);
+    await bocaux.changerStatut(b.id, 'termine');
+    expect(bocaux.bocal(b.id)?.finLe).toBeDefined();
+    expect(bocaux.parRubrique.finis).toHaveLength(1);
+  });
+
+  it('modifier les réglages garde l’avancement', async () => {
+    const b = await bocaux.creer(vinaigre, new Date());
+    await bocaux.etapeSuivante(b.id);
+    const debutEtape2 = bocaux.bocal(b.id)!.etapes[1].debut;
+    await bocaux.modifier(b.id, { ...vinaigre, nom: 'Vinaigre de poire williams', poidsG: 1500 }, b.debut);
+    const m = bocaux.bocal(b.id)!;
+    expect([m.nom, m.poidsG, m.etapeCourante, m.etapes[1].debut]).toEqual(['Vinaigre de poire williams', 1500, 1, debutEtape2]);
+  });
+
+  it('journal : « goûté aujourd’hui », photos, suppression avec le bocal', async () => {
+    const b = await bocaux.creer({ nom: 'Kimchi', etapes: [{ nom: 'Lacto', min: 5, max: 7, unite: 'jours' }] }, new Date(Date.now() - 4 * 86_400_000));
+    expect(bocaux.parRubrique['a-gouter'].map((x) => x.nom)).toEqual(['Kimchi']);
+    const n1 = await bocaux.ajouterAuJournal(b.id, '  Encore doux  ', 'data:image/jpeg;base64,AAAA');
+    expect(n1.texte).toBe('Encore doux');
+    expect(bocaux.parRubrique['a-gouter']).toEqual([]);
+    expect(bocaux.aSignaler).toBe(0);
+    expect((await bocaux.journalDe(b.id))[0].photo).toBe('data:image/jpeg;base64,AAAA');
+    await bocaux.supprimerDuJournal(n1);
+    expect(bocaux.bocal(b.id)?.derniereNoteLe).toBeUndefined();
+    await bocaux.ajouterAuJournal(b.id, 'Acidulé');
+    await bocaux.supprimer(b.id);
+    expect(await db.journal.count()).toBe(0);
+    expect(await db.bocaux.count()).toBe(0);
+  });
+
+  it('modèles réutilisables (sans dates)', async () => {
+    const b = await bocaux.creer(vinaigre, new Date());
+    await bocaux.etapeSuivante(b.id);
+    const m = await bocaux.enregistrerModele(bocaux.bocal(b.id)!);
+    expect(m.etapes.every((e) => e.debut === undefined)).toBe(true);
+    await bocaux.charger();
+    expect(bocaux.modeles.map((x) => x.nom)).toEqual(['Vinaigre de poire']);
+    await bocaux.supprimerModele(m.id);
+    expect(await db.modelesBocaux.count()).toBe(0);
+  });
+
+  it('bocaux et journal font partie de la sauvegarde', async () => {
+    const b = await bocaux.creer({ nom: 'Kimchi', etapes: [{ nom: 'Lacto', unite: 'jours' }] }, new Date());
+    await bocaux.ajouterAuJournal(b.id, 'Mis en bocal');
+    const s = lireSauvegarde(JSON.parse(JSON.stringify(await exporter(db))));
+    expect([compter(s).bocaux, compter(s).journal]).toEqual([1, 1]);
+  });
+});
+
 describe('sauvegarde des données personnelles', () => {
   it('nom du fichier', () => {
     expect(nomFichierSauvegarde(new Date(2026, 8, 30))).toBe('garde-manger-sauvegarde-2026-09-30.json');
@@ -212,7 +291,17 @@ describe('sauvegarde des données personnelles', () => {
     const fichier = JSON.stringify(await exporter(a, 'test'));
     expect(fichier).not.toContain('"fiches"'); // jamais les recettes
     const s = lireSauvegarde(JSON.parse(fichier));
-    expect(compter(s)).toEqual({ favoris: 2, notes: 1, realisations: 1, courses: 1, recettesCourses: 1, reglages: 1 });
+    expect(compter(s)).toEqual({
+      favoris: 2,
+      notes: 1,
+      realisations: 1,
+      courses: 1,
+      recettesCourses: 1,
+      reglages: 1,
+      bocaux: 0,
+      journal: 0,
+      modelesBocaux: 0,
+    });
     expect(await restaurer(s, b)).toEqual({ ajoutes: 7, misAJour: 0, inchanges: 0 });
     expect(await b.courses.get('c1')).toEqual(await a.courses.get('c1'));
     // Restaurer deux fois ne duplique rien

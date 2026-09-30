@@ -5,13 +5,16 @@
   import BarreOnglets from './composants/BarreOnglets.svelte';
   import Accueil from './ecrans/Accueil.svelte';
   import Bienvenue from './ecrans/Bienvenue.svelte';
-  import Bientot from './ecrans/Bientot.svelte';
+  import Bocal from './ecrans/Bocal.svelte';
+  import Bocaux from './ecrans/Bocaux.svelte';
   import Courses from './ecrans/Courses.svelte';
+  import EditionBocal from './ecrans/EditionBocal.svelte';
   import Fiche from './ecrans/Fiche.svelte';
   import Frigo from './ecrans/Frigo.svelte';
   import ModeCuisine from './ecrans/ModeCuisine.svelte';
   import Recherche from './ecrans/Recherche.svelte';
   import Reglages from './ecrans/Reglages.svelte';
+  import { bocaux } from './lib/bocaux.svelte';
   import { courses } from './lib/courses.svelte';
   import { etat } from './lib/etat.svelte';
   import { frigo } from './lib/frigo.svelte';
@@ -20,7 +23,7 @@
 
   etat.demarrer();
   // Données personnelles (favoris, notes, courses) : indépendantes des recettes importées.
-  Promise.all([perso.charger(), courses.charger(), frigo.charger()]).catch((e) => console.error(e));
+  Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger()]).catch((e) => console.error(e));
 
   // Les onglets déjà ouverts restent en mémoire : on retrouve sa place en revenant.
   let visites = $state(new Set<Onglet>());
@@ -29,7 +32,7 @@
     if (!visites.has(o)) visites = new Set([...visites, o]);
   });
 
-  const pageEmpilee = $derived(['fiche', 'reglages', 'cuisine'].includes(routeur.route.nom));
+  const pageEmpilee = $derived(['fiche', 'reglages', 'cuisine', 'bocal', 'bocal-edition'].includes(routeur.route.nom));
   const enCuisine = $derived(routeur.route.nom === 'cuisine');
 
   // Liens internes (#/…) : navigation avec historique pour le bouton Retour.
@@ -63,9 +66,7 @@
         {:else if o === 'recherche'}<Recherche />
         {:else if o === 'frigo'}<Frigo />
         {:else if o === 'courses'}<Courses />
-        {:else}
-          <Bientot titre="Mes bocaux" etape={5} texte="Le suivi de tes fermentations : jours écoulés, dégustations, rappels dans le Calendrier." />
-        {/if}
+        {:else}<Bocaux />{/if}
       </main>
     {/if}
   {/each}
@@ -74,6 +75,12 @@
     <Fiche id={routeur.route.id} page={routeur.route.page} />
   {:else if routeur.route.nom === 'reglages'}
     <Reglages section={routeur.route.section} />
+  {:else if routeur.route.nom === 'bocal'}
+    <Bocal id={routeur.route.id} />
+  {:else if routeur.route.nom === 'bocal-edition'}
+    {#key `${routeur.route.id}|${routeur.route.fiche}|${routeur.route.modele}`}
+      <EditionBocal id={routeur.route.id} fiche={routeur.route.fiche} modele={routeur.route.modele} />
+    {/key}
   {:else if routeur.route.nom === 'cuisine'}
     <ModeCuisine id={routeur.route.id} />
   {/if}

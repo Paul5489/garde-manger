@@ -43,3 +43,18 @@ export async function enregistrerFichier(fichier: File): Promise<ResultatPartage
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
   return 'telecharge';
 }
+
+/**
+ * Ouvre des rappels .ics : sur iPhone, iOS propose « Ajouter au calendrier ».
+ * (Même principe qu'un lien vers un fichier .ics : le navigateur le passe au Calendrier.)
+ */
+export function ouvrirCalendrier(ics: string): void {
+  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}

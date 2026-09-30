@@ -3,6 +3,7 @@
 // réimporter les recettes ne touche jamais aux données personnelles (liées par id de fiche).
 
 import Dexie, { type EntityTable } from 'dexie';
+import type { Bocal, EntreeJournal, ModeleBocal } from './bocaux';
 import type { Fiche } from './types';
 
 export interface EntreeMeta {
@@ -86,6 +87,9 @@ export class BaseGardeManger extends Dexie {
   courses!: EntityTable<ArticleCourses, 'id'>;
   recettesCourses!: EntityTable<RecetteCourses, 'ficheId'>;
   reglages!: EntityTable<ReglagePerso, 'cle'>;
+  bocaux!: EntityTable<Bocal, 'id'>;
+  journal!: EntityTable<EntreeJournal, 'id'>;
+  modelesBocaux!: EntityTable<ModeleBocal, 'id'>;
 
   constructor(nom = 'garde-manger') {
     super(nom);
@@ -103,11 +107,27 @@ export class BaseGardeManger extends Dexie {
       recettesCourses: 'ficheId',
       reglages: 'cle',
     });
+    this.version(3).stores({
+      // Mes bocaux : bocaux, journal (notes et photos), modèles réutilisables
+      bocaux: 'id, statut',
+      journal: 'id, bocalId',
+      modelesBocaux: 'id',
+    });
   }
 }
 
 /** Tables des données personnelles (celles de la sauvegarde). */
-export const TABLES_PERSO = ['favoris', 'notes', 'realisations', 'courses', 'recettesCourses', 'reglages'] as const;
+export const TABLES_PERSO = [
+  'favoris',
+  'notes',
+  'realisations',
+  'courses',
+  'recettesCourses',
+  'reglages',
+  'bocaux',
+  'journal',
+  'modelesBocaux',
+] as const;
 export type TablePerso = (typeof TABLES_PERSO)[number];
 
 export const db = new BaseGardeManger();

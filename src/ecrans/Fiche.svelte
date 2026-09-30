@@ -8,6 +8,7 @@
   import { ChefHat, Clock, ExternalLink, Heart, ShoppingBasket, Timer, Users } from '@lucide/svelte';
   import BarreHaut from '../composants/BarreHaut.svelte';
   import CarnetFiche from '../composants/CarnetFiche.svelte';
+  import CarteBocal from '../composants/CarteBocal.svelte';
   import CarteFermentation from '../composants/CarteFermentation.svelte';
   import Etoiles from '../composants/Etoiles.svelte';
   import FeuilleCourses from '../composants/FeuilleCourses.svelte';
@@ -19,6 +20,7 @@
   import TexteComplet from '../composants/TexteComplet.svelte';
   import TexteEtape from '../composants/TexteEtape.svelte';
   import { NOMS_SOURCES, NOMS_TYPES, categorieDe } from '../lib/archive';
+  import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
   import { etat } from '../lib/etat.svelte';
   import { libelleDuree } from '../lib/durees';
@@ -27,7 +29,7 @@
   import { perso } from '../lib/perso.svelte';
   import { portions, portionsDeBase } from '../lib/portions.svelte';
   import { fichesDeLaPage } from '../lib/renvois';
-  import { lienCuisine, lienFiche } from '../lib/routeur.svelte';
+  import { lienCuisine, lienFiche, lienNouveauBocal } from '../lib/routeur.svelte';
   import { casseLisible, insecables, majuscule } from '../lib/texte';
   import type { Duree, Etape, Fiche, GroupeMateriel, Resume } from '../lib/types';
 
@@ -226,7 +228,14 @@
         <a class="bouton plein cuisiner" href={lienCuisine(f.id)}><ChefHat size={22} /> Cuisiner pas à pas</a>
       {/if}
 
-      {#if f.fermentation}<CarteFermentation fermentation={f.fermentation} />{/if}
+      {#if f.fermentation}
+        <CarteFermentation fermentation={f.fermentation} />
+        {@const enCours = bocaux.liste.filter((b) => b.ficheId === f.id && b.statut === 'en-cours')}
+        {#each enCours as b (b.id)}
+          <div class="bocal-fiche"><CarteBocal bocal={b} maintenant={bocaux.maintenant} /></div>
+        {/each}
+        <a class="bouton secondaire plein demarrer" href={lienNouveauBocal({ fiche: f.id })}>🫙 Démarrer un bocal</a>
+      {/if}
 
       {#if f.ingredients?.length}
         <section>
@@ -546,6 +555,14 @@
 
   .favori {
     color: var(--rouge);
+  }
+
+  .bocal-fiche {
+    margin-top: 10px;
+  }
+
+  .demarrer {
+    margin-top: 10px;
   }
 
   .resume-carnet {

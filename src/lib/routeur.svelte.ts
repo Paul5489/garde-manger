@@ -7,7 +7,9 @@ export type Route =
   | { nom: Onglet }
   | { nom: 'fiche'; id: string; page?: number }
   | { nom: 'cuisine'; id: string }
-  | { nom: 'reglages'; section?: string };
+  | { nom: 'reglages'; section?: string }
+  | { nom: 'bocal'; id: string }
+  | { nom: 'bocal-edition'; id?: string; fiche?: string; modele?: string };
 
 export function lireRoute(hash: string): Route {
   const chemin = hash.replace(/^#\/?/, '');
@@ -18,6 +20,16 @@ export function lireRoute(hash: string): Route {
     return page ? { nom: 'fiche', id, page: Number(page) } : { nom: 'fiche', id };
   }
   if (nom === 'cuisine' && reste[0]) return { nom: 'cuisine', id: decodeURIComponent(reste[0]) };
+  if (nom === 'bocal' && reste[0]) {
+    const d = (i: number) => (reste[i] ? decodeURIComponent(reste[i]) : undefined);
+    if (reste[0] === 'nouveau') {
+      if (reste[1] === 'fiche' && reste[2]) return { nom: 'bocal-edition', fiche: d(2) };
+      if (reste[1] === 'modele' && reste[2]) return { nom: 'bocal-edition', modele: d(2) };
+      return { nom: 'bocal-edition' };
+    }
+    if (reste[1] === 'modifier') return { nom: 'bocal-edition', id: d(0) };
+    return { nom: 'bocal', id: d(0)! };
+  }
   if (nom === 'reglages') return reste[0] ? { nom: 'reglages', section: reste[0] } : { nom: 'reglages' };
   if ((ONGLETS as string[]).includes(nom)) return { nom: nom as Onglet };
   return { nom: 'accueil' };
@@ -25,6 +37,21 @@ export function lireRoute(hash: string): Route {
 
 export function lienCuisine(id: string): string {
   return `#/cuisine/${encodeURIComponent(id)}`;
+}
+
+export function lienBocal(id: string): string {
+  return `#/bocal/${encodeURIComponent(id)}`;
+}
+
+/** Nouveau bocal : libre, depuis une fiche de fermentation, ou depuis un modèle. */
+export function lienNouveauBocal(depuis: { fiche?: string; modele?: string } = {}): string {
+  if (depuis.fiche) return `#/bocal/nouveau/fiche/${encodeURIComponent(depuis.fiche)}`;
+  if (depuis.modele) return `#/bocal/nouveau/modele/${encodeURIComponent(depuis.modele)}`;
+  return '#/bocal/nouveau';
+}
+
+export function lienModifierBocal(id: string): string {
+  return `#/bocal/${encodeURIComponent(id)}/modifier`;
 }
 
 export function lienFiche(id: string, page?: number): string {
@@ -63,6 +90,13 @@ class Routeur {
   remplacer(lien: string) {
     const cible = lien.startsWith('#') ? lien : `#${lien}`;
     history.replaceState({ n: 0 }, '', cible);
+    this.#synchroniser();
+  }
+
+  /** Remplace la page affichée par une autre, au même niveau (ex. formulaire → bocal créé). */
+  remplacerPage(lien: string) {
+    const cible = lien.startsWith('#') ? lien : `#${lien}`;
+    history.replaceState({ n: this.profondeur }, '', cible);
     this.#synchroniser();
   }
 

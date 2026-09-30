@@ -48,7 +48,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 129 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 148 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -74,12 +74,14 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
 
 ## 5. Architecture
 
-- **Vite 8 + TypeScript + Svelte 5 (runes)** — appli légère (bundle ~129 Ko gzip). **vite-plugin-pwa** (generateSW,
+- **Vite 8 + TypeScript + Svelte 5 (runes)** — appli légère (bundle ~141 Ko gzip). **vite-plugin-pwa** (generateSW,
   `registerType: 'prompt'`) : précache de tout le code, jamais de JSON. **Dexie 4** (IndexedDB), **MiniSearch 7**
   (recherche), **marked** (Markdown), **@lucide/svelte** (icônes).
-- **Routage par hash** (`#/recherche`, `#/fiche/<id>`, `#/fiche/<id>/p272`, `#/cuisine/<id>`, `#/reglages`) : marche hors ligne
+- **Routage par hash** (`#/recherche`, `#/fiche/<id>`, `#/fiche/<id>/p272`, `#/cuisine/<id>`, `#/reglages[/frigo]`,
+  `#/bocal/<id>`, `#/bocal/<id>/modifier`, `#/bocal/nouveau[/fiche/<id>|/modele/<id>]`) : marche hors ligne
   et sur GitHub Pages sans configuration. `base` Vite = `process.env.BASE_URL` (`/garde-manger/` à la publication).
-- **Onglets** (barre en bas) : Accueil, Recherche, Frigo, Courses, Bocaux (étape 5). Les onglets
+- **Onglets** (barre en bas) : Accueil, Recherche, Frigo, Courses, Bocaux (pastilles : articles à acheter ;
+  bocaux à goûter + prêts). Pages empilées : fiche, réglages, mode cuisine, bocal, édition de bocal. Les onglets
   visités restent montés (on retrouve sa place) ; fiche / réglages / mode cuisine sont des pages empilées par-dessus.
 - **Import** dans un Web Worker : lecture → validation → allègement → résumés (`Resume`) + index MiniSearch sérialisé →
   écriture Dexie. Au démarrage on ne charge que le catalogue léger ; les fiches complètes à la demande ; l'index à la 1re recherche.
@@ -97,6 +99,12 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   « huile d'olive » est une huile), puis **synonymes** (éditables). Correspondance = les jetons de l'un sont tous
   dans l'autre (« poireau » ↔ « blancs de poireaux »). Classement : manquants croissants puis part possédée ;
   placard et facultatifs neutres. Réglages perso dans `reglages` : `frigo`, `placard`, `synonymes` (null = défaut).
+- **Bocaux** (Dexie **version(3)** : `bocaux`, `journal` (photos en data URL JPEG ~1280 px, chargé bocal par bocal),
+  `modelesBocaux`). Un bocal a toujours ≥ 1 étape (`min`/`max` en jours ou heures, facultatifs) ; début de la 1re =
+  `debut` du bocal, des suivantes = `debut` posé à « Étape suivante » (sinon estimé). Jour N = jours de calendrier
+  écoulés (mise en bocal = « aujourd'hui », jour 0). Phases : attente → à goûter (dès min − 20 %, au moins 1 j avant)
+  → prêt (min..max) → dépassé. `derniereNoteLe` = « goûté aujourd'hui ». Rappels : .ics (heure locale flottante,
+  18 h, VALARM à l'heure) ouvert par un lien blob (Calendrier iOS) ou partagé en fichier.
 - Sauvegarde : JSON `{ format: 'garde-manger-sauvegarde', version: 1, exporteLe, donnees: { <table>: [...] } }`,
   restauration = **fusion** (ajout, ou remplacement si `modifieLe` plus récent ; jamais d'effacement).
   Fichier préparé à l'ouverture des Réglages car iOS n'ouvre le menu Partager que juste après un toucher.
@@ -132,6 +140,11 @@ src/lib/
   classement-frigo.ts             construireIndexIngredients, preparer, classer, construireVocabulaire, suggestions
   frigo.svelte.ts                 ingrédients possédés, placard, synonymes, index (chargé ou reconstruit), résultats
   index-ingredients.worker.ts     reconstruction de l'index des ingrédients hors fil principal
+  bocaux.ts                       types Bocal/EntreeJournal/ModeleBocal, joursEntre, etatEtape (phase, progression, fins),
+                                  libelleAvancement (« Jour 4 sur 5 à 7 »), rubrique, reglagesDepuisFiche (Noma),
+                                  evenementsCalendrier, fichierIcs (échappement, pliage 75 octets)
+  bocaux.svelte.ts                liste + modèles en mémoire, horloge (minute), étapes, statut, journal, modèles
+  photo.ts                        compression des photos (canvas → JPEG)
   sauvegarde.ts                   exporter, lireSauvegarde (validation, messages clairs), restaurer (fusion)
   partage.ts, annonce.svelte.ts   menu Partager (texte / fichier) avec repli ; petit message temporaire en bas
   etat.svelte.ts                  état global : statut, catalogue, parId, index (chargé à la demande), fiche(id)
@@ -159,9 +172,9 @@ src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFich
                                   BandeauMiseAJour, AideInstallation (encadré « écran d'accueil » dans Safari iOS), IconeBocal,
                                   Feuille (feuille du bas générique, sans champ de saisie : le clavier iOS la cacherait),
                                   Etoiles, FormulaireRealisation, CarnetFiche, FeuilleCourses, SauvegardePerso, Annonce,
-                                  LigneFrigo, ReglagesFrigo (placard + synonymes)
+                                  LigneFrigo, ReglagesFrigo (placard + synonymes), CarteBocal (avancement + barre)
 src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Courses,
-                                  Frigo, Bientot (onglet à venir : Bocaux)
+                                  Frigo, Bocaux (onglet), Bocal (page d'un bocal), EditionBocal (nouveau / modifier)
 tests/                            archive-reelle.ts (accès à la vraie archive) + tests par module
 ```
 
@@ -192,10 +205,13 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   courses = un article par nom avec les quantités additionnées par unité (« 500 g + 2 pièces »), unités « entières »
   (pièce, botte, boîte…) arrondies au-dessus ; eau/sel/poivre, alternatives et facultatifs proposés décochés ;
   12 rayons dans l'ordre d'un magasin (dont « Produits asiatiques ») ; restauration d'une sauvegarde = fusion.
-- 30/09/2026 : écran allumé en mode cuisine **confirmé par Paul** dans l'appli installée.
+- 30/09/2026 : écran allumé en mode cuisine **et** sonnerie des minuteurs écran verrouillé / silencieux
+  **confirmés par Paul** dans l'appli installée.
 - 30/09/2026 (étape 4, choix par défaut) : placard d'origine = eau, sel, poivre, huile, sucre ; résultats groupés
   « Tu as tout / Il manque 1 / 2 / 3 ou plus » puis par part possédée ; synonymes édités comme un texte
   (une ligne par groupe, virgules) ; « crème » générique couvre crème liquide et crème fraîche.
+- 30/09/2026 (étape 5, choix par défaut) : rappels du Calendrier à 18 h ; dégustation un peu avant la durée
+  minimale ; pas de modèle de bocal fourni d'office (les fiches Noma servent de base, Paul crée les siens).
 
 ## 9. Fait
 
@@ -216,21 +232,20 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   résultats par manquants avec filtre d'univers), normalisation + composés + synonymes éditables, placard réglable
   (aussi utilisé par « Ajouter aux courses »), Réglages › Avec ce que j'ai. Tests sur la vraie archive (99 % des noms
   compris, potages en tête pour poireaux/pommes de terre/crème, classement complet < 10 ms). **À faire tester sur l'iPhone**.
+- **Étape 5** (30/09/2026) : onglet Bocaux (à goûter aujourd'hui / prêts / en cours / terminés), bocal depuis une
+  fiche Noma (50 fiches testées) ou libre, étapes successives, sel à peser, journal daté avec photo compressée,
+  modèles réutilisables, rappels .ics, section « Mes bocaux » de l'Accueil, bouton « Démarrer un bocal » sur les
+  fiches de fermentation. Tests du calcul des jours (changement d'heure, fin d'année, heures). **À faire tester sur l'iPhone**.
 
 ## 10. Reste à faire (ordre convenu, faire tester chaque étape sur l'iPhone)
 
-0. **Confirmer avec Paul** dans l'appli installée : minuteur qui sonne écran verrouillé + mode silencieux (piste audio).
-   Écran allumé : confirmé le 30/09/2026. Sonnerie : non confirmée à ce jour ; si la piste ne joue pas en arrière-plan, pistes :
-   raccourci iOS « Démarrer le minuteur » (`shortcuts://run-shortcut?name=…&input=text&text=<minutes>`) ou .ics avec alarme.
-1. **Faire tester les étapes 3 et 4 sur l'iPhone** : menu Partager (liste de courses, fichier de sauvegarde →
+1. **Faire tester les étapes 3, 4 et 5 sur l'iPhone** : menu Partager (liste de courses, fichier de sauvegarde →
    « Enregistrer dans Fichiers » / AirDrop), restauration depuis Fichiers, champ date iOS, clavier sur les champs
-   « Ajouter un article » et Frigo (suggestions), reconstruction de l'index des ingrédients au 1er passage sur Frigo.
-2. **Étape 5** — « Mes bocaux » : bocal depuis une fiche Noma (pré-rempli par `fermentation`) ou libre (kimchi) ; nom, début,
-   poids, % sel, température, durée min/max, étapes successives, statut (en cours/terminé/raté), journal daté + photo
-   compressée ; accueil « Jour 4 sur 5 à 7 », barre de progression, « à goûter aujourd'hui », « prêt » ; bouton
-   « Ajouter au Calendrier » (.ics avec VALARM : dégustations, fin prévue) ; modèles réutilisables. **Tests du calcul des jours**.
-3. **Étape 6** — finitions : relire `GUIDE_IPHONE.md` (§ 2 parle encore d'iCloud Drive alors que l'import se fait
-   par Téléchargements/AirDrop ; ajouter Bocaux), relecture accessibilité/mode sombre, vérifier hors ligne
+   « Ajouter un article » et Frigo (suggestions), reconstruction de l'index des ingrédients au 1er passage sur Frigo,
+   **« Ajouter au Calendrier » (lien blob .ics) depuis l'appli installée** — si ça n'ouvre rien, garder « Envoyer le
+   fichier » (Fichiers › Ajouter tout) ou essayer une URL `data:text/calendar` ; photo du journal (appareil / photothèque).
+2. **Étape 6** — finitions : relire `GUIDE_IPHONE.md` (§ 2 parle encore d'iCloud Drive alors que l'import se fait
+   par Téléchargements/AirDrop), relecture accessibilité/mode sombre, vérifier hors ligne
    en mode avion. (`fake-indexeddb` sert désormais aux tests des données perso.)
 
 ## 11. Problèmes connus et limites
@@ -238,7 +253,7 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
 - **iCloud Drive de Paul plein** : le dossier Garde-manger du Mac n'est pas envoyé vers iCloud.
   Utiliser `http://<IP>:5180/archive` (serveur dev lancé) ou AirDrop pour les futurs imports.
 - Safari et l'appli installée ont des **stockages séparés** : toujours importer/utiliser depuis l'icône.
-- Une web app iOS ne peut pas programmer de notification sans serveur : sonnerie = piste audio (à confirmer, voir §10.0).
+- Une web app iOS ne peut pas programmer de notification sans serveur : sonnerie = piste audio (confirmée par Paul le 30/09/2026).
   Minuteurs à plus de 2 h de leur fin : non inclus dans la piste tant que l'appli n'est pas rouverte. La piste coupe la musique.
 - Bips Web Audio (secours) muets en mode silencieux ; la vidéo de repli « écran allumé » n'a pas marché en http sur l'iPhone.
 - Quantités écrites dans le texte des étapes non recalculées (note affichée). Accord des pluriels non géré après
@@ -248,6 +263,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
 - Frigo : quelques noms bruités de l'archive restent tels quels (« Petit oignon Beurre », listes à virgules de la
   Cuisine de référence réduites au 1er nom) ; « crème » ou « huile » génériques couvrent toutes les variantes.
   Les sous-préparations (fond brun, pâte brisée…) comptent comme manquantes si on ne les a pas saisies.
+- Bocaux : les photos alourdissent la sauvegarde (~150 Ko chacune). Rappels du Calendrier : figés au moment de
+  l'ajout (si on passe à l'étape suivante plus tôt ou plus tard, rajouter les rappels ; les anciens restent).
 - Restaurer une sauvegarde **ajoute** : un favori retiré depuis la sauvegarde revient (pas de trace des suppressions).
 - Menu Partager : en http (test par le Wi-Fi) le fichier de sauvegarde est téléchargé et la liste copiée
   (pas de `navigator.share` hors https). Tester le partage dans l'appli installée.

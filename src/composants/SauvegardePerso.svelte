@@ -1,6 +1,7 @@
 <script lang="ts">
   // Réglages › Mes données : exporter / restaurer une sauvegarde des données personnelles.
   import { FileDown, FileUp } from '@lucide/svelte';
+  import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
   import { db } from '../lib/db';
   import { date, pluriel } from '../lib/format';
@@ -39,7 +40,7 @@
 
   function resume(s: Sauvegarde): string {
     const c = compter(s);
-    const parties = (['favoris', 'notes', 'realisations', 'courses'] as const)
+    const parties = (['favoris', 'notes', 'realisations', 'courses', 'bocaux', 'modelesBocaux'] as const)
       .filter((t) => c[t] > 0)
       .map((t) => pluriel(c[t], NOMS_TABLES[t][0], NOMS_TABLES[t][1]));
     return parties.length ? parties.join(', ') : 'aucune donnée pour l’instant';
@@ -79,7 +80,7 @@
       const quand = s.exporteLe ? ` du ${date(s.exporteLe)}` : '';
       if (!confirm(`Sauvegarde${quand} : ${resume(s)}.\n\nL'ajouter aux données de ce téléphone ? Rien ne sera effacé.`)) return;
       const bilan = await restaurer(s);
-      await Promise.all([perso.charger(), courses.charger(), frigo.charger()]);
+      await Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger()]);
       await preparer();
       message = `✓ Sauvegarde restaurée : ${pluriel(bilan.ajoutes, 'élément ajouté', 'éléments ajoutés')}${
         bilan.misAJour ? `, ${pluriel(bilan.misAJour, 'mis à jour', 'mis à jour')}` : ''

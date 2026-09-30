@@ -1,6 +1,7 @@
 <script lang="ts">
   import { House, Search, Refrigerator, ShoppingBasket } from '@lucide/svelte';
   import IconeBocal from './IconeBocal.svelte';
+  import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
   import { routeur, type Onglet } from '../lib/routeur.svelte';
 
@@ -32,7 +33,14 @@
             <span class="badge" aria-label="{courses.restants.length} à acheter">{courses.restants.length > 99 ? '99+' : courses.restants.length}</span>
           {/if}
         </span>
-      {:else}<IconeBocal size={25} strokeWidth={actif ? 2.3 : 1.8} />{/if}
+      {:else}
+        <span class="icone-badge">
+          <IconeBocal size={25} strokeWidth={actif ? 2.3 : 1.8} />
+          {#if bocaux.aSignaler}
+            <span class="badge vert" aria-label="{bocaux.aSignaler} à goûter ou prêts">{bocaux.aSignaler}</span>
+          {/if}
+        </span>
+      {/if}
       <span>{o.libelle}</span>
     </button>
   {/each}
@@ -76,6 +84,11 @@
   .icone-badge {
     position: relative;
     display: flex;
+  }
+
+  .badge.vert {
+    background: var(--vert);
+    color: var(--surface);
   }
 
   .badge {
