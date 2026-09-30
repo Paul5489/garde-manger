@@ -9,7 +9,8 @@
     "preview": "vite preview --host",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
-    "icones": "pwa-assets-generator"
+    "icones": "pwa-assets-generator",
+    "publier": "node scripts/publier.mjs"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
