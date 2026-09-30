@@ -11,7 +11,11 @@
     <h2>Pour commencer</h2>
     <ol>
       <li>Touche <strong>Importer mes recettes</strong>.</li>
-      <li>Dans <strong>iCloud Drive</strong>, ouvre le dossier <strong>Garde-manger</strong> et touche <strong>archive_complete.json</strong>.</li>
+      <li>
+        Touche <strong>Parcourir</strong>, puis choisis <strong>archive_complete.json</strong> : dans
+        <strong>Sur mon iPhone › Téléchargements</strong> (reçu par AirDrop ou téléchargé), ou dans
+        <strong>iCloud Drive › Garde-manger</strong>.
+      </li>
       <li>Patiente quelques secondes : les recettes sont copiées dans le téléphone.</li>
     </ol>
     <Importeur />

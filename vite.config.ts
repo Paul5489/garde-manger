@@ -27,6 +27,20 @@ function archiveDuMac(): Plugin {
         res.setHeader('Cache-Control', 'no-store');
         createReadStream(ARCHIVE_MAC).pipe(res);
       });
+      // http://<IP du Mac>:5180/archive dans Safari sur l'iPhone : télécharge le fichier
+      // dans Fichiers › Téléchargements (réseau Wi-Fi de la maison uniquement, sans iCloud).
+      server.middlewares.use('/archive', (req, res, suite) => {
+        if (req.url !== '/' && req.url !== '') return suite();
+        if (!existsSync(ARCHIVE_MAC)) {
+          res.statusCode = 404;
+          res.end('Archive introuvable sur le Mac');
+          return;
+        }
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', 'attachment; filename="archive_complete.json"');
+        res.setHeader('Cache-Control', 'no-store');
+        createReadStream(ARCHIVE_MAC).pipe(res);
+      });
     },
   };
 }

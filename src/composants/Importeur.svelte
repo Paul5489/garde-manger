@@ -49,13 +49,8 @@
     : undefined;
 </script>
 
-<input
-  bind:this={champ}
-  type="file"
-  accept="application/json,.json"
-  onchange={fichierChoisi}
-  hidden
-/>
+<!-- Pas de filtre de type : sur iPhone, un filtre peut griser le fichier .json. Le contenu est vérifié à l'import. -->
+<input bind:this={champ} type="file" onchange={fichierChoisi} hidden />
 
 <div class="importeur">
   {#if enCours}
