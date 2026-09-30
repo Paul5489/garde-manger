@@ -2,7 +2,7 @@
 // Import de l'archive dans un fil d'exécution séparé : l'écran reste fluide pendant l'import.
 
 import { documentDeRecherche, ErreurArchive, lireArchive, resumer } from './archive';
-import { db } from './db';
+import { db, remplacerRecettes } from './db';
 import { creerIndex } from './moteur';
 import type { InfosArchive } from './types';
 
@@ -52,15 +52,11 @@ self.onmessage = async (e: MessageEvent<MessageImport>) => {
       nomFichier,
       ignorees: archive.ignorees,
     };
-    await db.transaction('rw', db.fiches, db.meta, async () => {
-      await db.fiches.clear();
-      await db.fiches.bulkPut(archive.fiches);
-      await db.meta.bulkPut([
-        { cle: 'catalogue', valeur: catalogue },
-        { cle: 'index', valeur: indexJson },
-        { cle: 'archive', valeur: infos },
-      ]);
-    });
+    await remplacerRecettes(db, archive.fiches, [
+      { cle: 'catalogue', valeur: catalogue },
+      { cle: 'index', valeur: indexJson },
+      { cle: 'archive', valeur: infos },
+    ]);
 
     envoyer({ etat: 'termine', infos });
   } catch (err) {

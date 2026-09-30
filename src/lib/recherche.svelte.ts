@@ -3,13 +3,16 @@
 import { NOMS_SOURCES, NOMS_TYPES, UNIVERS } from './archive';
 import { etat } from './etat.svelte';
 import { chercher } from './moteur';
+import { perso } from './perso.svelte';
 import { collator } from './texte';
 import type { Resume, SourceId, Univers } from './types';
 
 export type TypeFiltre = 'recette' | 'technique' | 'chapitre';
 export type TempsFiltre = '30' | '60' | '120' | 'long';
+export type PersoFiltre = 'favoris' | 'cuisinees';
 
 export interface Filtres {
+  perso: PersoFiltre[];
   univers: Univers[];
   sources: SourceId[];
   types: TypeFiltre[];
@@ -22,6 +25,7 @@ export interface Filtres {
 export type CleFiltre = keyof Filtres;
 
 export const filtresVides = (): Filtres => ({
+  perso: [],
   univers: [],
   sources: [],
   types: [],
@@ -38,7 +42,13 @@ export const NOMS_TEMPS: Record<TempsFiltre, string> = {
   long: 'Plus de 2 h',
 };
 
+export const NOMS_PERSO: Record<PersoFiltre, string> = {
+  favoris: 'Favoris',
+  cuisinees: 'Déjà cuisinées',
+};
+
 export const NOMS_FILTRES: Record<CleFiltre, string> = {
+  perso: 'Mes fiches',
   univers: 'Univers',
   types: 'Type de fiche',
   sources: 'Source',
@@ -72,6 +82,8 @@ function valeurs(r: Resume, cle: CleFiltre): string[] {
       return r.cuisines;
     case 'typesDePlat':
       return r.typesDePlat;
+    case 'perso':
+      return [...(perso.estFavori(r.id) ? ['favoris'] : []), ...(perso.aCuisine(r.id) ? ['cuisinees'] : [])];
     case 'temps':
       return (Object.keys(NOMS_TEMPS) as TempsFiltre[]).filter((t) => tempsCorrespond(r, t));
   }
@@ -93,6 +105,7 @@ export function libelleValeur(cle: CleFiltre, v: string): string {
   if (cle === 'sources') return NOMS_SOURCES[v as SourceId] ?? v;
   if (cle === 'types') return NOMS_TYPES[v as TypeFiltre] ?? v;
   if (cle === 'temps') return NOMS_TEMPS[v as TempsFiltre] ?? v;
+  if (cle === 'perso') return NOMS_PERSO[v as PersoFiltre] ?? v;
   return v;
 }
 
@@ -139,6 +152,7 @@ class EtatRecherche {
       sources: Object.keys(NOMS_SOURCES),
       types: ['recette', 'technique', 'chapitre'],
       temps: Object.keys(NOMS_TEMPS),
+      perso: Object.keys(NOMS_PERSO),
     };
     const ordre = ordreFixe[cle];
     return [...compte.entries()]

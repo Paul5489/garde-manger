@@ -56,6 +56,44 @@ Tes favoris, notes, courses et bocaux sont conservés.
 Quand une nouvelle version est publiée, un bandeau **« Nouvelle version disponible »** apparaît en haut :
 touche **Mettre à jour**. (Il faut être connecté à Internet à ce moment-là.)
 
-## 7. Sauvegarder mes données personnelles
+## 7. Favoris, notes et carnet
 
-*(arrive à l'étape 3 : export d'un fichier de sauvegarde, à ranger dans iCloud Drive)*
+- **Favori** : touche le **cœur** en haut d'une fiche. Tes favoris apparaissent sur l'Accueil
+  (« Mes favoris ») et dans Recherche › Filtres › **Mes fiches**.
+- **Ma note** : en bas de chaque fiche, section **Mon carnet**. Écris ce que tu veux (« moins de sel ») :
+  c'est enregistré tout seul. La note s'affiche ensuite en haut de la fiche.
+- **Cuisiné le…** : à la fin du mode cuisine (« Bon appétit ! »), donne des étoiles et touche
+  **Noter dans mon carnet**. Ou, sur la fiche : **J'ai cuisiné cette recette**.
+- Le nombre de portions choisi sur une fiche est retenu, et le mode cuisine reprend à la même étape
+  (pendant 12 heures).
+
+## 8. Liste de courses
+
+1. Sur une fiche, règle le nombre de portions, puis touche **Ajouter aux courses** (sous les ingrédients).
+2. Décoche ce que tu as déjà (l'eau, le sel et le poivre sont décochés d'office), puis touche **Ajouter**.
+3. Onglet **Courses** : les articles sont rangés par rayon ; les doublons de plusieurs recettes sont
+   additionnés (« Oignons : 700 g »). Le chiffre sur l'onglet = ce qu'il reste à acheter.
+- **Au magasin** : touche un article pour le cocher (il passe dans « Dans le panier »).
+- **Ajouter un article à la main** : écris-le dans le champ en haut, puis **OK** sur le clavier.
+- **Envoyer la liste** (Messages, Notes…) : bouton **Partager** (carré avec une flèche) en haut.
+- **Modifier** (en haut à droite) : supprimer un article (rond rouge), ou le toucher pour changer
+  son rayon — l'appli s'en souviendra la prochaine fois.
+- En bas : **Recettes de la liste** (le ✕ retire les ingrédients d'une recette) et **Vider la liste**.
+
+## 9. Sauvegarder mes données personnelles
+
+Tes favoris, notes, carnet et courses ne sont que dans l'iPhone. Fais une sauvegarde de temps en temps
+(et avant de changer de téléphone) :
+
+1. Garde-manger › ⚙️ **Réglages** › **Mes données** › **Sauvegarder mes données**.
+2. Dans le menu qui s'ouvre, choisis **AirDrop** › ton Mac (le fichier arrive dans Téléchargements),
+   ou **Enregistrer dans Fichiers**.
+   > Ton iCloud Drive est plein : « Enregistrer dans Fichiers › Sur mon iPhone » garde le fichier dans le
+   > téléphone seulement. Pour être tranquille, envoie aussi une copie au Mac par AirDrop.
+
+Le fichier s'appelle `garde-manger-sauvegarde-AAAA-MM-JJ.json`. Les recettes n'y sont pas (elles viennent
+de l'archive).
+
+**Restaurer** (nouvel iPhone, ou après une réinstallation) : importe d'abord les recettes, puis Réglages ›
+**Restaurer une sauvegarde** › choisis le fichier. Rien n'est effacé : le contenu de la sauvegarde s'ajoute
+à ce qui est déjà dans le téléphone (pour un même élément, c'est la version la plus récente qui reste).

@@ -44,7 +44,12 @@ export function lireArchive(donnees: unknown): ArchiveLue {
       'Ce fichier est la liste légère (index.json). Choisis plutôt « archive_complete.json », dans le dossier « donnees ».',
     );
   }
-  const obj = donnees as { fiches?: unknown; genere_le?: unknown } | null;
+  const obj = donnees as { fiches?: unknown; genere_le?: unknown; format?: unknown } | null;
+  if (obj && typeof obj === 'object' && obj.format === 'garde-manger-sauvegarde') {
+    throw new ErreurArchive(
+      'Ce fichier est une sauvegarde de tes données, pas les recettes. Pour la restaurer : Réglages › « Restaurer une sauvegarde ».',
+    );
+  }
   if (!obj || typeof obj !== 'object' || !Array.isArray(obj.fiches)) {
     throw new ErreurArchive("Ce fichier n'est pas une archive de recettes. Choisis « archive_complete.json ».");
   }

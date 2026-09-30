@@ -14,7 +14,7 @@ const fichiers = execFileSync('git', ['ls-files', '--cached', '-z'], { cwd: raci
 
 const problemes = [];
 for (const f of fichiers) {
-  if (/(^|\/)(archive-recettes|donnees)\//.test(f) || /archive_complete|sauvegarde-garde-manger/.test(f))
+  if (/(^|\/)(archive-recettes|donnees)\//.test(f) || /archive_complete|sauvegarde-garde-manger|garde-manger-sauvegarde/.test(f))
     problemes.push(`fichier de données suivi par Git : ${f}`);
 }
 

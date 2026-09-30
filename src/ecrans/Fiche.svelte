@@ -5,9 +5,12 @@
 
 <script lang="ts">
   import { tick } from 'svelte';
-  import { ChefHat, Clock, ExternalLink, Timer, Users } from '@lucide/svelte';
+  import { ChefHat, Clock, ExternalLink, Heart, ShoppingBasket, Timer, Users } from '@lucide/svelte';
   import BarreHaut from '../composants/BarreHaut.svelte';
+  import CarnetFiche from '../composants/CarnetFiche.svelte';
   import CarteFermentation from '../composants/CarteFermentation.svelte';
+  import Etoiles from '../composants/Etoiles.svelte';
+  import FeuilleCourses from '../composants/FeuilleCourses.svelte';
   import Ingredients from '../composants/Ingredients.svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
   import Markdown from '../composants/Markdown.svelte';
@@ -16,10 +19,12 @@
   import TexteComplet from '../composants/TexteComplet.svelte';
   import TexteEtape from '../composants/TexteEtape.svelte';
   import { NOMS_SOURCES, NOMS_TYPES, categorieDe } from '../lib/archive';
+  import { courses } from '../lib/courses.svelte';
   import { etat } from '../lib/etat.svelte';
   import { libelleDuree } from '../lib/durees';
-  import { duree, nombre } from '../lib/format';
+  import { date, duree, jourEnDate, nombre } from '../lib/format';
   import { minuteurs } from '../lib/minuteurs.svelte';
+  import { perso } from '../lib/perso.svelte';
   import { portions, portionsDeBase } from '../lib/portions.svelte';
   import { fichesDeLaPage } from '../lib/renvois';
   import { lienCuisine, lienFiche } from '../lib/routeur.svelte';
@@ -137,6 +142,15 @@
     !!(fiche?.ingredients?.length || fiche?.preparations_de_base?.length || fiche?.ingredients_supplementaires?.length),
   );
 
+  let feuilleCourses = $state(false);
+  const dansCourses = $derived(fiche ? courses.recette(fiche.id) : undefined);
+  const noteCarnet = $derived(fiche ? perso.note(fiche.id) : '');
+  const faites = $derived(fiche ? perso.realisationsDe(fiche.id) : []);
+
+  function allerAuCarnet() {
+    conteneur?.querySelector('#carnet')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function surDefilement() {
     if (idAffiche && conteneur) positions.set(idAffiche, conteneur.scrollTop);
     defile = (conteneur?.scrollTop ?? 0) > 60;
@@ -146,6 +160,18 @@
 <div class="ecran calque" bind:this={conteneur} onscroll={surDefilement}>
   <BarreHaut titre={fiche?.titre ?? ''} avecTrait={defile}>
     {#snippet actions()}
+      {#if fiche}
+        {@const favori = perso.estFavori(fiche.id)}
+        <button
+          class="bouton-icone"
+          class:favori
+          onclick={() => fiche && perso.basculerFavori(fiche.id)}
+          aria-label={favori ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+          aria-pressed={favori}
+        >
+          <Heart size={24} fill={favori ? 'currentColor' : 'none'} />
+        </button>
+      {/if}
       {#if fiche?.etapes?.length}
         <a class="bouton-icone" href={lienCuisine(fiche.id)} aria-label="Mode cuisine"><ChefHat size={24} /></a>
       {/if}
@@ -182,6 +208,20 @@
         </div>
       {/if}
 
+      {#if noteCarnet || faites.length}
+        <button class="carte resume-carnet" onclick={allerAuCarnet}>
+          {#if faites.length}
+            <span class="ligne-cuisine">
+              <ChefHat size={16} />
+              {faites.length === 1 ? 'Cuisiné le' : `Cuisiné ${faites.length} fois, dernière le`}
+              {date(jourEnDate(faites[0].date))}
+              <Etoiles valeur={faites[0].note} taille={14} modifiable={false} />
+            </span>
+          {/if}
+          {#if noteCarnet}<span class="note-resume">{noteCarnet}</span>{/if}
+        </button>
+      {/if}
+
       {#if f.etapes?.length}
         <a class="bouton plein cuisiner" href={lienCuisine(f.id)}><ChefHat size={22} /> Cuisiner pas à pas</a>
       {/if}
@@ -193,6 +233,7 @@
           <h2 class="titre-section">Ingrédients</h2>
           <ReglagePortions id={f.id} base={portionsDeBase(f)} unite={f.portions?.unite} rendement={f.rendement} />
           <div class="carte bloc"><Ingredients groupes={f.ingredients} source={f.source.id} {coef} /></div>
+          {@render boutonCourses()}
         </section>
       {/if}
 
@@ -313,6 +354,7 @@
           <section class="texte-integral">
             {#if f.preparations_de_base?.length}
               <ReglagePortions id={f.id} rendement="quantités du livre" />
+              {#if !f.ingredients?.length}{@render boutonCourses()}{/if}
             {/if}
             <TexteComplet texte={f.texte_complet} titre={f.titre} tableaux={f.preparations_de_base} source={f.source.id} {coef} />
           </section>
@@ -340,6 +382,8 @@
         </details>
       {/if}
 
+      <CarnetFiche fiche={f} />
+
       <footer class="pied">
         <p>
           <strong>{f.source.nom}</strong>{#if f.source.auteur} — {f.source.auteur}{/if}
@@ -356,8 +400,19 @@
         {/if}
       </footer>
     </article>
+    <FeuilleCourses fiche={f} bind:ouvert={feuilleCourses} />
   {/if}
 </div>
+
+{#snippet boutonCourses()}
+  <button class="bouton secondaire plein ajout-courses" onclick={() => (feuilleCourses = true)}>
+    <ShoppingBasket size={20} />
+    {dansCourses ? 'Mettre à jour les courses' : 'Ajouter aux courses'}
+  </button>
+  {#if dansCourses}
+    <p class="dans-courses">✓ Dans ta liste de courses{#if dansCourses.quantites}&nbsp;(pour {dansCourses.quantites}){/if}</p>
+  {/if}
+{/snippet}
 
 <style>
   .calque {
@@ -487,6 +542,52 @@
 
   .cuisiner {
     margin-top: 18px;
+  }
+
+  .favori {
+    color: var(--rouge);
+  }
+
+  .resume-carnet {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: none;
+    border-left: 4px solid var(--ambre);
+    text-align: left;
+    font-size: 15.5px;
+  }
+
+  .ligne-cuisine {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    color: var(--texte-2);
+    font-size: 14.5px;
+  }
+
+  .note-resume {
+    white-space: pre-line;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ajout-courses {
+    margin-top: 12px;
+  }
+
+  .dans-courses {
+    margin: 8px 4px 0;
+    font-size: 14px;
+    color: var(--vert);
+    text-align: center;
   }
 
   .details {

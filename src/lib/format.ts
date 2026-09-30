@@ -57,3 +57,14 @@ export function dureeJours(min: number, max = min): string {
 export function pluriel(n: number, mot: string, motPluriel = mot + 's'): string {
   return `${nombre(n, 0)} ${Math.abs(n) >= 2 ? motPluriel : mot}`;
 }
+
+/** Date du jour (heure locale) au format AAAA-MM-JJ. */
+export function aujourdhui(d: Date = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** « 2026-09-30 » → Date à midi (heure locale), pour l'affichage sans décalage de fuseau. */
+export function jourEnDate(jour: string): Date {
+  const [a, m, j] = jour.split('-').map(Number);
+  return new Date(a, (m ?? 1) - 1, j ?? 1, 12);
+}

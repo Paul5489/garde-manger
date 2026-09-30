@@ -1,12 +1,33 @@
 <script lang="ts" module>
-  // Étape en cours de chaque recette (on reprend là où on en était).
-  const positions = new Map<string, number>();
+  import { ecrireLocal, lireLocal } from '../lib/stockage-local';
+
+  // Étape en cours de chaque recette, gardée dans le téléphone : on reprend là où on en était
+  // (même après avoir fermé l'appli), pendant 12 heures.
+  const CLE_ETAPES = 'etapes-cuisine';
+  const REPRISE_MAX = 12 * 3600_000;
+
+  function etapeMemorisee(id: string): number {
+    const e = lireLocal<Record<string, [number, number]>>(CLE_ETAPES, {})[id];
+    return e && Date.now() - e[1] < REPRISE_MAX ? e[0] : 0;
+  }
+
+  function memoriserEtape(id: string, index: number) {
+    const maintenant = Date.now();
+    const toutes = Object.fromEntries(
+      Object.entries(lireLocal<Record<string, [number, number]>>(CLE_ETAPES, {})).filter(
+        ([cle, [, t]]) => cle !== id && maintenant - t < REPRISE_MAX,
+      ),
+    );
+    if (index > 0) toutes[id] = [index, maintenant];
+    ecrireLocal(CLE_ETAPES, toutes);
+  }
 </script>
 
 <script lang="ts">
   import { onDestroy, tick } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import { ALargeSmall, ChevronLeft, ChevronRight, ListChecks, Sun, SunDim, Timer, X } from '@lucide/svelte';
+  import FormulaireRealisation from '../composants/FormulaireRealisation.svelte';
   import Ingredients from '../composants/Ingredients.svelte';
   import TexteEtape from '../composants/TexteEtape.svelte';
   import { libelleDuree } from '../lib/durees';
@@ -16,11 +37,10 @@
   import { ingredientsDeLEtape } from '../lib/ingredients';
   import { minuteurs } from '../lib/minuteurs.svelte';
   import { portail } from '../lib/portail';
-  import { portions, portionsDeBase } from '../lib/portions.svelte';
+  import { portions, portionsDeBase, texteQuantites } from '../lib/portions.svelte';
   import { ligneIngredient } from '../lib/quantites';
   import { fichesDeLaPage } from '../lib/renvois';
   import { lienFiche, routeur } from '../lib/routeur.svelte';
-  import { ecrireLocal, lireLocal } from '../lib/stockage-local';
   import { casseLisible, insecables, majuscule } from '../lib/texte';
   import type { Etape, Fiche } from '../lib/types';
 
@@ -32,12 +52,13 @@
   let taille = $state(lireLocal<number>('taille-cuisine', 1));
   let listeOuverte = $state(false);
   let zone = $state<HTMLElement>();
+  let noteEnregistree = $state(false);
 
   $effect(() => {
     const cible = id;
     etat.fiche(cible).then((f) => {
       fiche = f ?? null;
-      index = positions.get(cible) ?? 0;
+      index = f ? Math.min(etapeMemorisee(cible), (f.etapes?.length ?? 0) + 1) : 0;
     });
   });
 
@@ -58,7 +79,8 @@
     if (!fiche || i < 0 || i >= nbDiapos) return;
     sens = i > index ? 1 : -1;
     index = i;
-    positions.set(fiche.id, i);
+    // Arrivé à la fin : la prochaine fois, on repart de la mise en place.
+    memoriserEtape(fiche.id, i === nbDiapos - 1 ? 0 : i);
     tick().then(() => zone?.scrollTo({ top: 0 }));
   }
 
@@ -84,7 +106,13 @@
   function clavier(e: KeyboardEvent) {
     if (e.key === 'ArrowRight') aller(index + 1);
     if (e.key === 'ArrowLeft') aller(index - 1);
-    if (e.key === 'Escape') routeur.retour();
+    if (e.key === 'Escape') quitter();
+  }
+
+  /** Retour à la fiche (même si l'appli a été rechargée entre-temps et qu'il n'y a plus d'historique). */
+  function quitter() {
+    if (routeur.profondeur > 0) routeur.retour();
+    else routeur.remplacer(lienFiche(id));
   }
 
   function changerTaille() {
@@ -112,7 +140,7 @@
 
 <div class="cuisine taille-{taille}">
   <header class="entete">
-    <button class="bouton-icone" onclick={() => routeur.retour()} aria-label="Quitter le mode cuisine">
+    <button class="bouton-icone" onclick={quitter} aria-label="Quitter le mode cuisine">
       <X size={26} />
     </button>
     <div class="progression">
@@ -223,7 +251,20 @@
               <p class="emoji" aria-hidden="true">🍽️</p>
               <h1>Bon appétit !</h1>
               <p class="discret">{f.titre}</p>
-              <button class="bouton plein" onclick={() => routeur.retour()}>Revenir à la fiche</button>
+              {#if noteEnregistree}
+                <p class="carte note-ok">✓ Noté dans ton carnet (en bas de la fiche).</p>
+              {:else}
+                <div class="carte bloc-carnet">
+                  <FormulaireRealisation
+                    ficheId={f.id}
+                    quantites={texteQuantites(f, coef)}
+                    onenregistre={() => (noteEnregistree = true)}
+                  />
+                </div>
+              {/if}
+              <button class="bouton plein" class:secondaire={!noteEnregistree} onclick={quitter}>
+                Revenir à la fiche
+              </button>
             </div>
           {/if}
         </article>
@@ -465,6 +506,20 @@
 
   .fin .bouton {
     margin-top: 24px;
+  }
+
+  .bloc-carnet {
+    margin: 24px auto 0;
+    max-width: 440px;
+    padding: 16px;
+  }
+
+  .note-ok {
+    margin: 24px auto 0;
+    max-width: 440px;
+    padding: 14px 16px;
+    color: var(--vert);
+    font-weight: 600;
   }
 
   .pied {

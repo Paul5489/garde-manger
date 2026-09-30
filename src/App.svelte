@@ -1,18 +1,24 @@
 <script lang="ts">
+  import Annonce from './composants/Annonce.svelte';
   import BandeauMiseAJour from './composants/BandeauMiseAJour.svelte';
   import BarreMinuteurs from './composants/BarreMinuteurs.svelte';
   import BarreOnglets from './composants/BarreOnglets.svelte';
   import Accueil from './ecrans/Accueil.svelte';
   import Bienvenue from './ecrans/Bienvenue.svelte';
   import Bientot from './ecrans/Bientot.svelte';
+  import Courses from './ecrans/Courses.svelte';
   import Fiche from './ecrans/Fiche.svelte';
   import ModeCuisine from './ecrans/ModeCuisine.svelte';
   import Recherche from './ecrans/Recherche.svelte';
   import Reglages from './ecrans/Reglages.svelte';
+  import { courses } from './lib/courses.svelte';
   import { etat } from './lib/etat.svelte';
+  import { perso } from './lib/perso.svelte';
   import { ONGLETS, routeur, type Onglet } from './lib/routeur.svelte';
 
   etat.demarrer();
+  // Données personnelles (favoris, notes, courses) : indépendantes des recettes importées.
+  Promise.all([perso.charger(), courses.charger()]).catch((e) => console.error(e));
 
   // Les onglets déjà ouverts restent en mémoire : on retrouve sa place en revenant.
   let visites = $state(new Set<Onglet>());
@@ -55,8 +61,7 @@
         {:else if o === 'recherche'}<Recherche />
         {:else if o === 'frigo'}
           <Bientot titre="Avec ce que j'ai" etape={4} texte="Indique les ingrédients que tu as : l'appli te proposera les recettes réalisables et ce qu'il te manque." />
-        {:else if o === 'courses'}
-          <Bientot titre="Courses" etape={3} texte="Ta liste de courses, remplie depuis les recettes, avec partage en un toucher." />
+        {:else if o === 'courses'}<Courses />
         {:else}
           <Bientot titre="Mes bocaux" etape={5} texte="Le suivi de tes fermentations : jours écoulés, dégustations, rappels dans le Calendrier." />
         {/if}
@@ -74,6 +79,7 @@
 
   {#if !enCuisine}<BarreOnglets />{/if}
   <BarreMinuteurs {enCuisine} />
+  <Annonce {enCuisine} />
 {/if}
 
 <BandeauMiseAJour />

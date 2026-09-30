@@ -7,7 +7,7 @@
 
   let { ouvert = $bindable(false) }: { ouvert: boolean } = $props();
 
-  const sections: CleFiltre[] = ['univers', 'types', 'sources', 'temps', 'categories', 'cuisines', 'typesDePlat'];
+  const sections: CleFiltre[] = ['perso', 'univers', 'types', 'sources', 'temps', 'categories', 'cuisines', 'typesDePlat'];
 </script>
 
 {#if ouvert}
@@ -25,7 +25,7 @@
     <div class="defilement">
       {#each sections as cle (cle)}
         {@const options = recherche.options(cle).filter((o) => o.nombre > 0 || (recherche.filtres[cle] as string[]).includes(o.valeur))}
-        {#if options.length > 1 || (recherche.filtres[cle] as string[]).length}
+        {#if options.length > 1 || (cle === 'perso' && options.length) || (recherche.filtres[cle] as string[]).length}
           <section>
             <h3>{NOMS_FILTRES[cle]}</h3>
             <div class="puces">

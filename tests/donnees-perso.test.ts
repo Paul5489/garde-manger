@@ -1,0 +1,220 @@
+// Données personnelles dans une base IndexedDB simulée (fake-indexeddb) : magasins, sauvegarde, réimport.
+import 'fake-indexeddb/auto';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { courses } from '../src/lib/courses.svelte';
+import { BaseGardeManger, db, remplacerRecettes } from '../src/lib/db';
+import { propositionsDeLaFiche } from '../src/lib/liste-courses';
+import { perso } from '../src/lib/perso.svelte';
+import { compter, ErreurSauvegarde, exporter, lireSauvegarde, nomFichierSauvegarde, restaurer } from '../src/lib/sauvegarde';
+import type { Fiche } from '../src/lib/types';
+
+const esp = (s: string) => s.replace(/[  ]/g, ' ');
+
+function ficheExemple(id: string, items: { nom: string; quantite?: number; unite?: string }[]): Fiche {
+  return { id, type: 'recette', titre: id, source: { id: 'afpa', nom: 'AFPA' }, ingredients: [{ items }] };
+}
+
+async function toutVider(base: BaseGardeManger) {
+  await Promise.all(base.tables.map((t) => t.clear()));
+}
+
+describe('réimport des recettes', () => {
+  it('ne touche jamais aux données personnelles', async () => {
+    const base = new BaseGardeManger('test-reimport');
+    await base.favoris.put({ ficheId: 'afpa-a', modifieLe: 1 });
+    await base.notes.put({ ficheId: 'afpa-a', texte: 'Moins de sel', modifieLe: 1 });
+    await base.courses.put({ id: 'c1', nom: 'Beurre', cle: 'beurre', rayon: 'cremerie', apports: [], coche: false, ajouteLe: 1, modifieLe: 1 });
+    for (let i = 0; i < 2; i++)
+      await remplacerRecettes(base, [ficheExemple('afpa-a', [])], [{ cle: 'archive', valeur: { nbFiches: 1 } }]);
+    expect(await base.fiches.count()).toBe(1);
+    expect(await base.favoris.count()).toBe(1);
+    expect((await base.notes.get('afpa-a'))?.texte).toBe('Moins de sel');
+    expect(await base.courses.count()).toBe(1);
+    base.close();
+  });
+});
+
+describe('favoris, notes et carnet', () => {
+  beforeEach(async () => {
+    await toutVider(db);
+    await perso.charger();
+  });
+
+  it('favori ajouté puis retiré, gardé dans le téléphone', async () => {
+    await perso.basculerFavori('afpa-a');
+    await perso.basculerFavori('afpa-b');
+    expect(perso.idsFavoris).toEqual(['afpa-b', 'afpa-a']);
+    await perso.basculerFavori('afpa-b');
+    await perso.charger();
+    expect(perso.estFavori('afpa-a')).toBe(true);
+    expect(perso.estFavori('afpa-b')).toBe(false);
+  });
+
+  it('note : enregistrée, puis effacée quand on la vide', async () => {
+    await perso.definirNote('afpa-a', 'Doubler l’ail  ');
+    await perso.charger();
+    expect(perso.note('afpa-a')).toBe('Doubler l’ail');
+    await perso.definirNote('afpa-a', '   ');
+    expect(await db.notes.count()).toBe(0);
+  });
+
+  it('« cuisiné le… » : le plus récent d’abord', async () => {
+    await perso.ajouterRealisation({ ficheId: 'afpa-a', date: '2026-09-12', note: 4 });
+    await perso.ajouterRealisation({ ficheId: 'afpa-b', date: '2026-09-30', note: 5, commentaire: '  ' });
+    await perso.ajouterRealisation({ ficheId: 'afpa-a', date: '2026-08-01', note: 3 });
+    await perso.charger();
+    expect(perso.realisations.map((r) => r.date)).toEqual(['2026-09-30', '2026-09-12', '2026-08-01']);
+    expect(perso.realisations[0].commentaire).toBeUndefined();
+    expect(perso.idsCuisines).toEqual(['afpa-b', 'afpa-a']);
+    expect(perso.realisationsDe('afpa-a')).toHaveLength(2);
+    await perso.supprimerRealisation(perso.realisations[0].id);
+    expect(await db.realisations.count()).toBe(2);
+  });
+});
+
+describe('liste de courses', () => {
+  const soupe = ficheExemple('afpa-soupe', [
+    { nom: 'Oignons émincés', quantite: 0.2, unite: 'kg' },
+    { nom: 'Beurre', quantite: 0.03, unite: 'kg' },
+  ]);
+  const tarte = ficheExemple('afpa-tarte', [
+    { nom: 'Oignons', quantite: 0.5, unite: 'kg' },
+    { nom: 'Oignons', quantite: 2, unite: 'pièce' },
+    { nom: 'Farine', quantite: 0.25, unite: 'kg' },
+  ]);
+  const ajouter = (f: Fiche, coef = 1) =>
+    courses.ajouterRecette({ ficheId: f.id, titre: f.titre, coef }, propositionsDeLaFiche(f, coef).flatMap((s) => s.items));
+  const article = (nom: string) => courses.articles.find((a) => a.nom === nom);
+  const total = async (nom: string) => esp((await import('../src/lib/liste-courses')).quantiteTotale(article(nom)?.apports ?? []));
+
+  beforeEach(async () => {
+    await toutVider(db);
+    await courses.charger();
+  });
+
+  it('fusionne les doublons de plusieurs recettes', async () => {
+    await ajouter(soupe);
+    await ajouter(tarte);
+    expect(courses.articles.map((a) => a.nom).sort()).toEqual(['Beurre', 'Farine', 'Oignons']);
+    expect(await total('Oignons')).toBe('700 g + 2 pièces');
+    expect(courses.recettes.map((r) => r.ficheId)).toEqual(['afpa-tarte', 'afpa-soupe']);
+  });
+
+  it('rajouter une recette remplace ses quantités (autres portions)', async () => {
+    await ajouter(soupe);
+    await ajouter(soupe, 2);
+    expect(await total('Oignons')).toBe('400 g');
+    expect(courses.recettes).toHaveLength(1);
+    expect(courses.recettes[0].coef).toBe(2);
+  });
+
+  it('retirer une recette garde ce qui vient d’ailleurs', async () => {
+    await ajouter(soupe);
+    await ajouter(tarte);
+    await courses.ajouterLibre('beurre');
+    await courses.retirerRecette('afpa-soupe');
+    expect(await total('Oignons')).toBe('500 g + 2 pièces');
+    expect(article('Beurre')?.apports).toEqual([{}]);
+    expect(courses.recettes.map((r) => r.ficheId)).toEqual(['afpa-tarte']);
+    await courses.charger();
+    expect(courses.articles).toHaveLength(3);
+  });
+
+  it('articles libres, cases à cocher, rayons choisis à la main', async () => {
+    await courses.ajouterLibre('  papier   cuisson ');
+    await courses.ajouterLibre('Papier cuisson');
+    expect(courses.articles).toHaveLength(1);
+    const a = courses.articles[0];
+    expect(a.nom).toBe('Papier cuisson');
+    expect(a.rayon).toBe('autres');
+    await courses.basculer(a.id);
+    expect(courses.coches).toHaveLength(1);
+    // Rajouté alors qu'il était coché : il redevient à acheter
+    await courses.ajouterLibre('papier cuisson');
+    expect(courses.restants).toHaveLength(1);
+    await courses.changerRayon(a.id, 'epicerie-salee');
+    await courses.supprimer(a.id);
+    await courses.ajouterLibre('Papier cuisson');
+    expect(courses.articles[0].rayon).toBe('epicerie-salee');
+    await courses.basculer(courses.articles[0].id);
+    await courses.retirerCoches();
+    expect(await db.courses.count()).toBe(0);
+  });
+});
+
+describe('sauvegarde des données personnelles', () => {
+  it('nom du fichier', () => {
+    expect(nomFichierSauvegarde(new Date(2026, 8, 30))).toBe('garde-manger-sauvegarde-2026-09-30.json');
+  });
+
+  it('exporter puis restaurer sur un autre téléphone : tout revient', async () => {
+    const a = new BaseGardeManger('test-telephone-a');
+    const b = new BaseGardeManger('test-telephone-b');
+    await a.favoris.bulkPut([{ ficheId: 'afpa-a', modifieLe: 1 }, { ficheId: 'mw-b', modifieLe: 2 }]);
+    await a.notes.put({ ficheId: 'afpa-a', texte: 'Note', modifieLe: 1 });
+    await a.realisations.put({ id: 'r1', ficheId: 'afpa-a', date: '2026-09-30', note: 5, modifieLe: 1 });
+    await a.courses.put({ id: 'c1', nom: 'Beurre', cle: 'beurre', rayon: 'cremerie', apports: [{ ficheId: 'afpa-a', valeur: 30, unite: 'g' }], coche: false, ajouteLe: 1, modifieLe: 1 });
+    await a.recettesCourses.put({ ficheId: 'afpa-a', titre: 'A', coef: 1, modifieLe: 1 });
+    await a.reglages.put({ cle: 'rayons', valeur: { beurre: 'cremerie' }, modifieLe: 1 });
+    await a.fiches.put(ficheExemple('afpa-a', []));
+
+    const fichier = JSON.stringify(await exporter(a, 'test'));
+    expect(fichier).not.toContain('"fiches"'); // jamais les recettes
+    const s = lireSauvegarde(JSON.parse(fichier));
+    expect(compter(s)).toEqual({ favoris: 2, notes: 1, realisations: 1, courses: 1, recettesCourses: 1, reglages: 1 });
+    expect(await restaurer(s, b)).toEqual({ ajoutes: 7, misAJour: 0, inchanges: 0 });
+    expect(await b.courses.get('c1')).toEqual(await a.courses.get('c1'));
+    // Restaurer deux fois ne duplique rien
+    expect(await restaurer(s, b)).toEqual({ ajoutes: 0, misAJour: 0, inchanges: 7 });
+    a.close();
+    b.close();
+  });
+
+  it('fusion : rien n’est effacé, la version la plus récente l’emporte', async () => {
+    const base = new BaseGardeManger('test-fusion');
+    await base.notes.bulkPut([
+      { ficheId: 'ancienne', texte: 'du téléphone', modifieLe: 10 },
+      { ficheId: 'recente', texte: 'du téléphone', modifieLe: 30 },
+      { ficheId: 'locale', texte: 'seulement ici', modifieLe: 5 },
+    ]);
+    const s = lireSauvegarde({
+      format: 'garde-manger-sauvegarde',
+      version: 1,
+      exporteLe: '2026-09-30T10:00:00Z',
+      donnees: {
+        notes: [
+          { ficheId: 'ancienne', texte: 'de la sauvegarde', modifieLe: 20 },
+          { ficheId: 'recente', texte: 'de la sauvegarde', modifieLe: 20 },
+          { ficheId: 'nouvelle', texte: 'de la sauvegarde', modifieLe: 20 },
+        ],
+      },
+    });
+    expect(await restaurer(s, base)).toEqual({ ajoutes: 1, misAJour: 1, inchanges: 1 });
+    const notes = Object.fromEntries((await base.notes.toArray()).map((n) => [n.ficheId, n.texte]));
+    expect(notes).toEqual({
+      ancienne: 'de la sauvegarde',
+      recente: 'du téléphone',
+      locale: 'seulement ici',
+      nouvelle: 'de la sauvegarde',
+    });
+    base.close();
+  });
+
+  it('refuse les mauvais fichiers avec un message clair, écarte les éléments incomplets', () => {
+    expect(() => lireSauvegarde({ genere_le: 'x', fiches: [] })).toThrow(/archive des recettes/);
+    expect(() => lireSauvegarde({ bonjour: 1 })).toThrow(ErreurSauvegarde);
+    expect(() => lireSauvegarde(null)).toThrow(/pas une sauvegarde/);
+    expect(() => lireSauvegarde({ format: 'garde-manger-sauvegarde', version: 99, donnees: {} })).toThrow(/plus récente/);
+    const s = lireSauvegarde({
+      format: 'garde-manger-sauvegarde',
+      version: 1,
+      donnees: {
+        favoris: [{ ficheId: 'a' }, { ficheId: '' }, null, 'x'],
+        realisations: [{ id: 'r', ficheId: 'a' }],
+      },
+    });
+    expect(s.donnees.favoris).toEqual([{ ficheId: 'a', modifieLe: 0 }]);
+    expect(s.donnees.realisations).toEqual([]);
+    expect(s.donnees.courses).toEqual([]);
+  });
+});

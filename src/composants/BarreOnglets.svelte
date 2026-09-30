@@ -1,6 +1,7 @@
 <script lang="ts">
   import { House, Search, Refrigerator, ShoppingBasket } from '@lucide/svelte';
   import IconeBocal from './IconeBocal.svelte';
+  import { courses } from '../lib/courses.svelte';
   import { routeur, type Onglet } from '../lib/routeur.svelte';
 
   const onglets: { id: Onglet; libelle: string }[] = [
@@ -24,7 +25,13 @@
       {#if o.id === 'accueil'}<House size={25} strokeWidth={actif ? 2.3 : 1.8} />
       {:else if o.id === 'recherche'}<Search size={25} strokeWidth={actif ? 2.3 : 1.8} />
       {:else if o.id === 'frigo'}<Refrigerator size={25} strokeWidth={actif ? 2.3 : 1.8} />
-      {:else if o.id === 'courses'}<ShoppingBasket size={25} strokeWidth={actif ? 2.3 : 1.8} />
+      {:else if o.id === 'courses'}
+        <span class="icone-badge">
+          <ShoppingBasket size={25} strokeWidth={actif ? 2.3 : 1.8} />
+          {#if courses.restants.length}
+            <span class="badge" aria-label="{courses.restants.length} à acheter">{courses.restants.length > 99 ? '99+' : courses.restants.length}</span>
+          {/if}
+        </span>
       {:else}<IconeBocal size={25} strokeWidth={actif ? 2.3 : 1.8} />{/if}
       <span>{o.libelle}</span>
     </button>
@@ -64,5 +71,27 @@
 
   .onglet.actif {
     color: var(--accent);
+  }
+
+  .icone-badge {
+    position: relative;
+    display: flex;
+  }
+
+  .badge {
+    position: absolute;
+    top: -4px;
+    left: 17px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--accent);
+    color: var(--sur-accent);
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
   }
 </style>

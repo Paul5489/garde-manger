@@ -48,7 +48,8 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 61 tests, sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 112 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+                  # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
 npm run publier   # build (base /garde-manger/) + vérifs + envoi de dist/ sur gh-pages. Exige un dépôt propre (tout commité)
@@ -73,7 +74,7 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
 
 ## 5. Architecture
 
-- **Vite 8 + TypeScript + Svelte 5 (runes)** — appli la plus légère (bundle ~92 Ko gzip). **vite-plugin-pwa** (generateSW,
+- **Vite 8 + TypeScript + Svelte 5 (runes)** — appli légère (bundle ~122 Ko gzip). **vite-plugin-pwa** (generateSW,
   `registerType: 'prompt'`) : précache de tout le code, jamais de JSON. **Dexie 4** (IndexedDB), **MiniSearch 7**
   (recherche), **marked** (Markdown), **@lucide/svelte** (icônes).
 - **Routage par hash** (`#/recherche`, `#/fiche/<id>`, `#/fiche/<id>/p272`, `#/cuisine/<id>`, `#/reglages`) : marche hors ligne
@@ -82,6 +83,16 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   visités restent montés (on retrouve sa place) ; fiche / réglages / mode cuisine sont des pages empilées par-dessus.
 - **Import** dans un Web Worker : lecture → validation → allègement → résumés (`Resume`) + index MiniSearch sérialisé →
   écriture Dexie. Au démarrage on ne charge que le catalogue léger ; les fiches complètes à la demande ; l'index à la 1re recherche.
+- **Données perso** (Dexie **version(2)**) : `favoris`, `notes`, `realisations` (« cuisiné le… »), `courses`,
+  `recettesCourses`, `reglages` (rayons choisis à la main ; placard et synonymes à l'étape 4). Chaque
+  enregistrement a `modifieLe` (ms). Chargées en mémoire au démarrage (`perso.svelte.ts`, `courses.svelte.ts`,
+  `$state.raw` + mises à jour immuables : ne jamais écrire un proxy `$state` dans IndexedDB).
+  L'import des recettes passe par `remplacerRecettes()` (db.ts) qui ne touche qu'à `fiches` et `meta` (testé).
+- Sauvegarde : JSON `{ format: 'garde-manger-sauvegarde', version: 1, exporteLe, donnees: { <table>: [...] } }`,
+  restauration = **fusion** (ajout, ou remplacement si `modifieLe` plus récent ; jamais d'effacement).
+  Fichier préparé à l'ouverture des Réglages car iOS n'ouvre le menu Partager que juste après un toucher.
+- Petites préférences en localStorage (`stockage-local.ts`) : coefficient de portions par fiche, étape du mode
+  cuisine (12 h), taille du texte, date de la dernière sauvegarde, minuteurs.
 - Écran allumé : Wake Lock natif (https) ou repli vidéo muette `public/eveil.mp4` (généré avec ffmpeg).
 - Minuteurs : **heure de fin enregistrée** (localStorage) ; sonnerie par une **piste audio WAV fabriquée à la volée**
   (silence puis bips à chaque fin, jouée comme de la musique) pour sonner écran verrouillé et en silencieux,
@@ -100,14 +111,23 @@ src/lib/
   types.ts                        types Fiche (schéma de l'archive), Resume, InfosArchive
   archive.ts                      lireArchive (validation), alleger, resumer, univers, tempsTotal, documentDeRecherche
   import.worker.ts / importer.ts  import hors fil principal / lanceur
-  db.ts                           Dexie : base « garde-manger », v1 = tables fiches, meta (archive, catalogue, index)
+  db.ts                           Dexie : base « garde-manger », v1 = fiches, meta ; v2 = données perso ; remplacerRecettes, nouvelId
+  perso.svelte.ts                 favoris, notes, réalisations (« cuisiné le… ») en mémoire + Dexie
+  courses.svelte.ts               liste de courses : ajout d'une recette (remplace l'ajout précédent), articles libres,
+                                  cocher, rayon choisi à la main (mémorisé par clé), retirer une recette, vider
+  liste-courses.ts                nomPourCourses (sans « émincé », « pour… »), cleCourses (fusion), RAYONS + rayonDe
+                                  (règles regex, ~95 % classés), estToujoursLa (eau/sel/poivre : constante provisoire,
+                                  à remplacer par le placard de l'étape 4), quantiteTotale, propositionsDeLaFiche, texteListe
+  sauvegarde.ts                   exporter, lireSauvegarde (validation, messages clairs), restaurer (fusion)
+  partage.ts, annonce.svelte.ts   menu Partager (texte / fichier) avec repli ; petit message temporaire en bas
   etat.svelte.ts                  état global : statut, catalogue, parId, index (chargé à la demande), fiche(id)
   moteur.ts                       options MiniSearch (boosts, préfixe sur le dernier mot, flou, repli OR)
   recherche.svelte.ts             requête + filtres (univers, type, source, temps, catégorie, cuisine, type de plat) avec comptes
   texte.ts                        normaliser (accents, œ/æ), radical (pluriels), mots vides, casseLisible, insecables, collator
   format.ts                       nombre, date, heure, duree, dureeJours, pluriel (tout en français)
-  quantites.ts                    unités lisibles, mise à l'échelle, ligneIngredient (modes « colonnes » pro / « ligne » rédigée)
-  portions.svelte.ts              coefficient par fiche (en mémoire de session), portionsDeBase, pas
+  quantites.ts                    unités lisibles, mise à l'échelle, ligneIngredient (modes « colonnes » pro / « ligne » rédigée),
+                                  mesureIngredient (quantité chiffrée brute, pour les courses)
+  portions.svelte.ts              coefficient par fiche (gardé en localStorage), portionsDeBase, pas, texteQuantites
   durees.ts                       trouverDurees / decouperDurees (« 20 min », « 1 h 30 », « 45 à 60 min »…), chrono
   ingredients.ts                  nomSimplifie, motsCles, ingredientsDeLEtape — base de la normalisation (étape 4)
   minuteurs.svelte.ts             store des minuteurs (lancer, pause, reprendre, ajouter, arreter, supprimer)
@@ -122,8 +142,11 @@ src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFich
                                   Ingredients (toucher = rayer), TableauDenrees, TexteComplet (insère les tableaux des
                                   denrées à la place des repères), Markdown, TexteRenvois, TexteEtape (durées → minuteurs),
                                   ReglagePortions, CarteFermentation, BarreMinuteurs (pastille, liste, alarme), Importeur,
-                                  BandeauMiseAJour, AideInstallation (encadré « écran d'accueil » dans Safari iOS), IconeBocal
-src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Bientot (onglets à venir)
+                                  BandeauMiseAJour, AideInstallation (encadré « écran d'accueil » dans Safari iOS), IconeBocal,
+                                  Feuille (feuille du bas générique, sans champ de saisie : le clavier iOS la cacherait),
+                                  Etoiles, FormulaireRealisation, CarnetFiche, FeuilleCourses, SauvegardePerso, Annonce
+src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Courses,
+                                  Bientot (onglets à venir : Frigo, Bocaux)
 tests/                            archive-reelle.ts (accès à la vraie archive) + tests par module
 ```
 
@@ -150,6 +173,10 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
 - Publication **GitHub Pages** sur son compte (dépôt public, code seul) — accord explicite. Archive copiée dans
   iCloud Drive › Garde-manger — accord explicite (mais iCloud plein : import fait via Téléchargements).
 - Sonnerie écran verrouillé activée par défaut (met la musique en pause pendant un minuteur) ; désactivable dans la liste des minuteurs.
+- 30/09/2026 (étape 3, choix par défaut non discutés, à ajuster si Paul le souhaite) : appréciation en 1 à 5 étoiles ;
+  courses = un article par nom avec les quantités additionnées par unité (« 500 g + 2 pièces »), unités « entières »
+  (pièce, botte, boîte…) arrondies au-dessus ; eau/sel/poivre, alternatives et facultatifs proposés décochés ;
+  12 rayons dans l'ordre d'un magasin (dont « Produits asiatiques ») ; restauration d'une sauvegarde = fusion.
 
 ## 9. Fait
 
@@ -160,28 +187,33 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   une étape à la fois, balayage, ingrédients de l'étape, taille du texte, écran allumé, reprise à la même étape),
   minuteurs multiples depuis les durées des étapes, sonnerie écran verrouillé/silencieux, « +1 / +5 min / +reste de fourchette ».
 - **Mise en ligne + installation** : publiée, installée sur l'iPhone, recettes importées ; aide à l'installation dans Safari.
+- **Étape 3** (30/09/2026) : favoris (cœur sur la fiche, accueil « Mes favoris », filtre Recherche « Mes fiches »),
+  note perso (Mon carnet, enregistrement automatique, résumé en haut de fiche), « cuisiné le… » + étoiles (dernière
+  diapo du mode cuisine ou bouton sur la fiche, accueil « Cuisiné récemment »), liste de courses (onglet Courses,
+  feuille « Ajouter aux courses » avec les portions choisies, fusion, rayons, articles libres, panier, partage,
+  pastille sur l'onglet), sauvegarde/restauration JSON (Réglages › Mes données), portions et étape du mode cuisine
+  mémorisées. Testé dans le panneau navigateur (390 × 844, clair/sombre) ; **à faire tester sur l'iPhone**.
 
 ## 10. Reste à faire (ordre convenu, faire tester chaque étape sur l'iPhone)
 
 0. **Confirmer avec Paul** dans l'appli installée : écran qui reste allumé en mode cuisine ; minuteur qui sonne écran
    verrouillé + mode silencieux (piste audio). Non confirmé à ce jour ; si la piste ne joue pas en arrière-plan, pistes :
    raccourci iOS « Démarrer le minuteur » (`shortcuts://run-shortcut?name=…&input=text&text=<minutes>`) ou .ics avec alarme.
-1. **Étape 3** — favoris ; note perso par recette ; « cuisiné le… » + appréciation (bouton sur la dernière diapo du mode cuisine) ;
-   liste de courses (ajout des ingrédients avec les portions choisies, fusion des doublons de même unité, articles libres,
-   cases à cocher, rayons, partage texte via `navigator.share`) ; export/import d'une sauvegarde JSON des données perso
-   (Réglages) ; accueil : section « Mes favoris ». Ajouter les tables Dexie en **version(2)** (sans toucher à fiches/meta).
-   Penser à conserver le coefficient de portions (aujourd'hui en mémoire de session seulement).
+1. **Faire tester l'étape 3 sur l'iPhone** : menu Partager (liste de courses, fichier de sauvegarde → « Enregistrer
+   dans Fichiers » / AirDrop), restauration depuis Fichiers, champ date iOS, clavier sur le champ « Ajouter un article ».
 2. **Étape 4** — « Avec ce que j'ai » (onglet Frigo) : saisie avec suggestions, normalisation (étendre `ingredients.ts` :
    singulier, sans accents, précisions après la virgule, mots « haché, frais, émincé… »), **fichier de synonymes éditable**
    (échalote/échalotes, crème liquide/crème fleurette, oignon nouveau/cébette/jeunes oignons…), **placard** réglable
    (sel, poivre, eau, huile, sucre… toujours présents), classement par part d'ingrédients possédés + ce qui manque.
-   Gestion placard/synonymes dans Réglages. Tests sur la vraie archive.
+   Gestion placard/synonymes dans Réglages (table `reglages`, incluse dans la sauvegarde). Remplacer `estToujoursLa`
+   (liste-courses.ts) par le placard pour les cases décochées de « Ajouter aux courses ». Tests sur la vraie archive.
 3. **Étape 5** — « Mes bocaux » : bocal depuis une fiche Noma (pré-rempli par `fermentation`) ou libre (kimchi) ; nom, début,
    poids, % sel, température, durée min/max, étapes successives, statut (en cours/terminé/raté), journal daté + photo
    compressée ; accueil « Jour 4 sur 5 à 7 », barre de progression, « à goûter aujourd'hui », « prêt » ; bouton
    « Ajouter au Calendrier » (.ics avec VALARM : dégustations, fin prévue) ; modèles réutilisables. **Tests du calcul des jours**.
-4. **Étape 6** — finitions : compléter `GUIDE_IPHONE.md` (sauvegarde, mise à jour), relecture accessibilité/mode sombre,
-   vérifier hors ligne en mode avion, nettoyer (`fake-indexeddb` installé mais inutilisé ; supprimer ou s'en servir pour tester Dexie).
+4. **Étape 6** — finitions : relire `GUIDE_IPHONE.md` (§ 2 parle encore d'iCloud Drive alors que l'import se fait
+   par Téléchargements/AirDrop ; ajouter Frigo et Bocaux), relecture accessibilité/mode sombre, vérifier hors ligne
+   en mode avion. (`fake-indexeddb` sert désormais aux tests des données perso.)
 
 ## 11. Problèmes connus et limites
 
@@ -195,5 +227,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   mise à l'échelle des lignes rédigées (« 2 oignon »).
 - Repérage des ingrédients d'une étape par mots-clés simples (peut citer un ingrédient de même nom d'un autre groupe :
   le groupe est alors indiqué).
-- Coefficient de portions et étape en cours du mode cuisine : mémorisés seulement tant que l'appli est ouverte.
+- Restaurer une sauvegarde **ajoute** : un favori retiré depuis la sauvegarde revient (pas de trace des suppressions).
+- Menu Partager : en http (test par le Wi-Fi) le fichier de sauvegarde est téléchargé et la liste copiée
+  (pas de `navigator.share` hors https). Tester le partage dans l'appli installée.
+- Noms d'ingrédients pour les courses : nettoyage par règles simples (quelques restes bruités de l'archive,
+  ex. « Piment sec ou frais ou tabasco » ; alternatives « ciboule ou ciboulette » gardées telles quelles).
 - Captures du panneau navigateur parfois en retard d'une action : vérifier l'état par JavaScript.

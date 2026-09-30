@@ -1,6 +1,7 @@
 <script lang="ts">
   import BarreHaut from '../composants/BarreHaut.svelte';
   import Importeur from '../composants/Importeur.svelte';
+  import SauvegardePerso from '../composants/SauvegardePerso.svelte';
   import { NOMS_SOURCES } from '../lib/archive';
   import { etat } from '../lib/etat.svelte';
   import { date, heure, nombre } from '../lib/format';
@@ -52,14 +53,19 @@
       <Importeur libelle="Mettre à jour les recettes" />
     </div>
 
+    <h2 class="section-titre">Mes données</h2>
+    <div class="carte bloc">
+      <SauvegardePerso />
+    </div>
+
     <h2 class="section-titre">Stockage</h2>
     <div class="carte bloc">
       <p class="petit">
         {#if persistant}
           ✓ Les données de l'application sont protégées : l'iPhone ne les effacera pas pour faire de la place.
         {:else}
-          Les données sont enregistrées dans ce téléphone uniquement. Pense à faire des sauvegardes (bientôt
-          disponible).
+          Les données sont enregistrées dans ce téléphone uniquement. Pense à faire une sauvegarde de temps en
+          temps (ci-dessus).
         {/if}
       </p>
     </div>

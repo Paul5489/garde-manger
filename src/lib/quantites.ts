@@ -130,7 +130,10 @@ export function estFormatPro(source: SourceId | string): boolean {
 const NOMBRE_EN_TETE = /^(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+)?|[½¼¾⅓⅔])(?=[\s\p{L}(]|$)\s*/u;
 const MESURE_INTEGREE = /(\d+(?:[.,]\d+)?)(\s*)(kg|g|ml|cl|l|litres?|grammes?)(?![\p{L}])/gu;
 
-function reparerQuantitePro(item: Ingredient, source: string, coef: number): Pick<LigneIngredient, 'quantite' | 'pm'> {
+/** Quantité relue dans la ligne d'origine d'une fiche pro (quand l'extraction ne l'a pas chiffrée). */
+type QuantiteLue = { min: number; max: number } | { pm: 'PM' | 'QS' } | { pieces: number } | { brut: string };
+
+function lireQuantitePro(item: Ingredient, source: string): QuantiteLue | null {
   const t = item.texte_original ?? '';
   let brut: string | undefined;
   if (source === 'cuisine-de-reference') {
@@ -139,24 +142,34 @@ function reparerQuantitePro(item: Ingredient, source: string, coef: number): Pic
   } else if (t && item.nom && t.startsWith(item.nom)) {
     brut = t.slice(item.nom.length).trim();
   }
-  if (!brut) return { quantite: null };
-  if (/^pm$/i.test(brut)) return { quantite: 'PM', pm: true };
-  if (/^qs\b/i.test(brut)) return { quantite: 'QS', pm: true };
+  if (!brut) return null;
+  if (/^pm$/i.test(brut)) return { pm: 'PM' };
+  if (/^qs\b/i.test(brut)) return { pm: 'QS' };
   const plage = brut.match(/^([\d.,/]+)\s*à\s*([\d.,/]+)/);
   if (plage) {
     const a = lireNombre(plage[1]);
     const b = lireNombre(plage[2]);
-    if (a !== undefined && b !== undefined) return { quantite: formaterPlage(a * coef, b * coef, item.unite) };
+    if (a !== undefined && b !== undefined) return { min: a, max: b };
   }
   // AFPA « 4 Pm » : 4 pièces, poids non précisé.
   const avecPm = brut.match(/^([\d.,/]+)\s*pm$/i);
   if (avecPm) {
     const n = lireNombre(avecPm[1]);
-    if (n !== undefined) return { quantite: nombre(n * coef, 2) };
+    if (n !== undefined) return { pieces: n };
   }
   const n = lireNombre(brut.split(/\s+/)[0]);
-  if (n !== undefined) return { quantite: formaterMesure(n * coef, item.unite) };
-  return { quantite: brut };
+  if (n !== undefined) return { min: n, max: n };
+  return { brut };
+}
+
+function reparerQuantitePro(item: Ingredient, source: string, coef: number): Pick<LigneIngredient, 'quantite' | 'pm'> {
+  const q = lireQuantitePro(item, source);
+  if (!q) return { quantite: null };
+  if ('pm' in q) return { quantite: q.pm, pm: true };
+  if ('pieces' in q) return { quantite: nombre(q.pieces * coef, 2) };
+  if ('brut' in q) return { quantite: q.brut };
+  if (q.min === q.max) return { quantite: formaterMesure(q.min * coef, item.unite) };
+  return { quantite: formaterPlage(q.min * coef, q.max * coef, item.unite) };
 }
 
 function mettreAEchelleTexte(texte: string, coef: number): string {
@@ -215,4 +228,31 @@ export function ligneIngredient(item: Ingredient, source: SourceId | string, coe
 export function mentionneFacultatif(texte: string): boolean {
   const n = normaliser(texte);
   return n.includes('facultati') || n.includes('optionnel');
+}
+
+export interface Mesure {
+  /** Quantité dans l'unité de la fiche (valeur haute d'une fourchette). */
+  valeur?: number;
+  /** Unité normalisée (undefined : un nombre de pièces, ou pas de quantité). */
+  unite?: string;
+  /** Quantité « pour mémoire » (PM, QS) : à prévoir sans quantité précise. */
+  pm?: boolean;
+}
+
+/** Quantité chiffrée d'un ingrédient, sans coefficient (liste de courses). */
+export function mesureIngredient(item: Ingredient, source: SourceId | string): Mesure {
+  const unite = normaliserUnite(item.unite);
+  const valeur = item.quantite_max ?? item.quantite;
+  if (valeur !== undefined) return { valeur, unite };
+  if (estFormatPro(source)) {
+    if (item.pour_memoire) return { pm: true };
+    const q = lireQuantitePro(item, source);
+    if (!q || 'brut' in q) return {};
+    if ('pm' in q) return { pm: true };
+    if ('pieces' in q) return { valeur: q.pieces, unite: 'pièce' };
+    return { valeur: q.max, unite };
+  }
+  const m = (item.texte_original ?? '').trim().match(NOMBRE_EN_TETE);
+  const n = m ? lireNombre(m[1]) : undefined;
+  return n !== undefined ? { valeur: n } : {};
 }

@@ -5,9 +5,10 @@
   import { UNIVERS } from '../lib/archive';
   import { etat } from '../lib/etat.svelte';
   import { nombre } from '../lib/format';
+  import { perso } from '../lib/perso.svelte';
   import { recherche } from '../lib/recherche.svelte';
   import { routeur } from '../lib/routeur.svelte';
-  import type { Univers } from '../lib/types';
+  import type { Resume, Univers } from '../lib/types';
 
   const compte = $derived.by(() => {
     const c: Record<Univers, number> = { asiatique: 0, francaise: 0, techniques: 0, fermentation: 0 };
@@ -29,6 +30,14 @@
     while (choix.size < Math.min(4, recettes.length)) choix.add(Math.floor(alea() * recettes.length));
     return [...choix].map((i) => recettes[i]);
   });
+
+  const favoris = $derived(perso.idsFavoris.map((id) => etat.parId.get(id)).filter((r): r is Resume => !!r));
+  const recents = $derived(
+    perso.idsCuisines
+      .map((id) => etat.parId.get(id))
+      .filter((r): r is Resume => !!r)
+      .slice(0, 5),
+  );
 
   function ouvrir(u: Univers) {
     recherche.ouvrirUnivers(u);
@@ -63,6 +72,16 @@
       </button>
     {/each}
   </div>
+
+  {#if favoris.length}
+    <h2 class="section-titre">Mes favoris</h2>
+    <ListeFiches fiches={favoris} />
+  {/if}
+
+  {#if recents.length}
+    <h2 class="section-titre">Cuisiné récemment</h2>
+    <ListeFiches fiches={recents} />
+  {/if}
 
   {#if idees.length}
     <h2 class="section-titre">Idées du jour</h2>
