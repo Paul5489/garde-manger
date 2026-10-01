@@ -104,6 +104,8 @@
     overflow-x: auto;
     scrollbar-width: none;
     max-width: 100%;
+    padding: 3px 0;
+    margin: -3px 0;
   }
 
   .coefs .puce {

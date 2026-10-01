@@ -185,14 +185,6 @@ export function libelleAvancement(e: EtatEtape): string {
   return `Jour ${ecoule} sur ${etape.min === max ? nombre(max) : `${nombre(etape.min)} à ${nombre(max)}`}`;
 }
 
-export const LIBELLES_PHASES: Record<Phase, string> = {
-  'sans-duree': 'En cours',
-  attente: 'En cours',
-  'a-gouter': 'À goûter',
-  pret: 'Prêt',
-  depasse: 'Dépassé',
-};
-
 /** Goûté (une note au journal) aujourd'hui ? */
 export function gouteAujourdhui(b: Pick<Bocal, 'derniereNoteLe'>, maintenant: Date | number = Date.now()): boolean {
   return !!b.derniereNoteLe && joursEntre(b.derniereNoteLe, maintenant) === 0;

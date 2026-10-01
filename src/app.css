@@ -1,4 +1,5 @@
-/* Garde-manger — styles communs. Mode sombre automatique, zones sûres de l'iPhone. */
+/* Garde-manger — styles communs. Mode sombre automatique, zones sûres de l'iPhone.
+   Contrastes vérifiés (WCAG AA, 4,5:1 pour le texte) dans les deux thèmes. */
 
 :root {
   color-scheme: light dark;
@@ -7,15 +8,15 @@
   --surface-2: #efe8dc;
   --surface-3: #e5dccd;
   --texte: #221d18;
-  --texte-2: #6d6359;
-  --texte-3: #978b7f;
+  --texte-2: #5f564d;
+  --texte-3: #71685f;
   --trait: #e2d9cb;
-  --accent: #b5471f;
+  --accent: #ae441e;
   --accent-doux: #f6e0d5;
   --sur-accent: #ffffff;
-  --vert: #4f7a3a;
+  --vert: #4a7337;
   --vert-doux: #e2ecd8;
-  --ambre: #a86a00;
+  --ambre: #945d00;
   --ambre-doux: #f7e9cc;
   --rouge: #b3261e;
   --u-asiatique: #b23a2c;
@@ -42,7 +43,7 @@
     --surface-3: #36312c;
     --texte: #f2ece3;
     --texte-2: #b3a99d;
-    --texte-3: #8a8076;
+    --texte-3: #968d84;
     --trait: #37322c;
     --accent: #ec8456;
     --accent-doux: #3d251a;
@@ -301,6 +302,26 @@ h3 {
   font-size: 15px;
   white-space: nowrap;
   color: var(--texte);
+}
+
+/* Zone tactile agrandie (≈ 44 pt, recommandation Apple) sans changer l'apparence :
+   puces, étiquettes de minuteur dans le texte des étapes, petits liens d'action. */
+.puce,
+button.duree,
+button.retablir {
+  position: relative;
+}
+
+.puce::after,
+button.duree::after,
+button.retablir::after {
+  content: '';
+  position: absolute;
+  inset: -5px -2px;
+}
+
+button.duree::after {
+  inset: -9px -2px;
 }
 
 .puce.active {

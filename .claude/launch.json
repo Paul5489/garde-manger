@@ -4,8 +4,23 @@
     {
       "name": "garde-manger",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 5180
+    },
+    {
+      "name": "garde-manger-build",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--port",
+        "4180",
+        "--strictPort"
+      ],
+      "port": 4180
     }
   ]
 }

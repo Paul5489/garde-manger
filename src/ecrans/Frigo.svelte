@@ -237,8 +237,8 @@
     gap: 8px;
     overflow-x: auto;
     scrollbar-width: none;
-    margin: 16px -16px 0;
-    padding: 0 16px;
+    margin: 11px -16px -5px;
+    padding: 5px 16px;
   }
 
   .n {

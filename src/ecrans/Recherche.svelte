@@ -162,8 +162,10 @@
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    padding-top: 10px;
-    margin: 0 calc(-16px - var(--droite)) 0 calc(-16px - var(--gauche));
+    /* 5 px en haut et en bas : la zone tactile agrandie des puces n'est pas rognée. */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 5px calc(-16px - var(--droite)) -5px calc(-16px - var(--gauche));
     padding-left: calc(16px + var(--gauche));
     padding-right: calc(16px + var(--droite));
     scrollbar-width: none;

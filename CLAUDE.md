@@ -42,7 +42,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 | Compte GitHub | `Paul5489`, CLI `gh` déjà connecté sur le Mac |
 | Archive de recettes (Mac) | `../archive-recettes/donnees/archive_complete.json` (821 fiches, ~7 Mo) |
 | Copie pour l'iPhone | iCloud Drive › `Garde-manger/archive_complete.json` — **iCloud de Paul plein** : non synchronisé |
-| Guide utilisateur | `GUIDE_IPHONE.md` (à compléter à l'étape 6) |
+| Guide utilisateur | `GUIDE_IPHONE.md` (complet : installation, import par AirDrop, chaque onglet, sauvegarde, dépannage) |
 
 ## 3. Commandes
 
@@ -56,7 +56,9 @@ npm run publier   # build (base /garde-manger/) + vérifs + envoi de dist/ sur g
 npm run icones    # régénère les icônes PNG depuis public/icone.svg
 ```
 
-`.claude/launch.json` : configuration « garde-manger » (npm run dev, port 5180) pour le panneau navigateur.
+`.claude/launch.json` : « garde-manger » (npm run dev, port 5180) et « garde-manger-build » (vite preview du dossier
+`dist/`, port 4180, après `npm run build`) pour tester le service worker et le hors ligne dans le panneau navigateur
+(arrêter le serveur ferme le panneau : rouvrir ensuite `http://localhost:4180` par URL, la page doit venir du cache).
 
 ## 4. Tester sur l'iPhone
 
@@ -68,7 +70,9 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   ⚠ En http : **pas** de hors ligne, **pas** de Wake Lock (écran qui se verrouille), et ce stockage est distinct de l'appli installée.
 - **Envoyer l'archive sur l'iPhone sans iCloud** (serveur dev lancé) : Safari → `http://<IP>:5180/archive` télécharge
   le fichier dans Fichiers › Téléchargements ; ou AirDrop depuis le Finder. Import : Parcourir › Sur mon iPhone › Téléchargements.
-- Tests visuels côté Mac : panneau navigateur en 390 × 844 (clair/sombre). Si le panneau est masqué, les captures
+- Tests visuels côté Mac : panneau navigateur en 390 × 844 (clair/sombre). Contrastes : toutes les paires de couleurs
+  de `app.css` passent WCAG AA (4,5:1) dans les deux thèmes (vérifié le 01/10/2026) ; puces et étiquettes de minuteur
+  ont une zone tactile agrandie (`::after`) sans changer d'apparence. Si le panneau est masqué, les captures
   échouent : vérifier par `javascript_tool` / `get_page_text`. En dev, `globalThis.__minuteurs` permet de lancer
   un minuteur de 2 s pour tester la sonnerie (retiré du build).
 
@@ -210,6 +214,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
 - 30/09/2026 (étape 4, choix par défaut) : placard d'origine = eau, sel, poivre, huile, sucre ; résultats groupés
   « Tu as tout / Il manque 1 / 2 / 3 ou plus » puis par part possédée ; synonymes édités comme un texte
   (une ligne par groupe, virgules) ; « crème » générique couvre crème liquide et crème fraîche.
+- 01/10/2026 (étape 6) : version **1.0.0** ; couleurs du thème clair légèrement foncées pour l'accessibilité
+  (texte secondaire/tertiaire, vert, ambre, accent).
 - 30/09/2026 (étape 5, choix par défaut) : rappels du Calendrier à 18 h ; dégustation un peu avant la durée
   minimale ; pas de modèle de bocal fourni d'office (les fiches Noma servent de base, Paul crée les siens).
 
@@ -236,17 +242,21 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   fiche Noma (50 fiches testées) ou libre, étapes successives, sel à peser, journal daté avec photo compressée,
   modèles réutilisables, rappels .ics, section « Mes bocaux » de l'Accueil, bouton « Démarrer un bocal » sur les
   fiches de fermentation. Tests du calcul des jours (changement d'heure, fin d'année, heures). **À faire tester sur l'iPhone**.
+- **Étape 6** (01/10/2026) : guide iPhone réécrit (import par AirDrop, tour des onglets, dépannage), README,
+  contrastes WCAG AA, zones tactiles, audit des noms accessibles (aucun bouton sans nom), hors ligne vérifié sur le Mac
+  (service worker : 16 fichiers en cache dont les 2 workers et eveil.mp4 ; appli servie serveur arrêté), ménage du code.
 
-## 10. Reste à faire (ordre convenu, faire tester chaque étape sur l'iPhone)
+## 10. Reste à faire
 
-1. **Faire tester les étapes 3, 4 et 5 sur l'iPhone** : menu Partager (liste de courses, fichier de sauvegarde →
-   « Enregistrer dans Fichiers » / AirDrop), restauration depuis Fichiers, champ date iOS, clavier sur les champs
-   « Ajouter un article » et Frigo (suggestions), reconstruction de l'index des ingrédients au 1er passage sur Frigo,
-   **« Ajouter au Calendrier » (lien blob .ics) depuis l'appli installée** — si ça n'ouvre rien, garder « Envoyer le
-   fichier » (Fichiers › Ajouter tout) ou essayer une URL `data:text/calendar` ; photo du journal (appareil / photothèque).
-2. **Étape 6** — finitions : relire `GUIDE_IPHONE.md` (§ 2 parle encore d'iCloud Drive alors que l'import se fait
-   par Téléchargements/AirDrop), relecture accessibilité/mode sombre, vérifier hors ligne
-   en mode avion. (`fake-indexeddb` sert désormais aux tests des données perso.)
+Toutes les étapes du cahier des charges sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
+1. Étapes 3 à 5 : menu Partager (liste de courses, fichier de sauvegarde → « Enregistrer dans Fichiers » / AirDrop),
+   restauration depuis Fichiers, champ date iOS, clavier des champs « Ajouter un article » et Frigo (suggestions),
+   reconstruction de l'index des ingrédients au 1er passage sur Frigo, photo du journal (appareil / photothèque).
+2. **« Ajouter au Calendrier »** (lien blob .ics) depuis l'appli installée — si ça n'ouvre rien, garder « Envoyer le
+   fichier » (Fichiers › Ajouter tout) ou essayer une URL `data:text/calendar`.
+3. Le **mode avion** (guide § 12).
+Ensuite : corrections selon ses retours ; idées possibles si Paul le demande (pluriels après mise à l'échelle des
+lignes rédigées, rappels Calendrier mis à jour à chaque étape, partage d'une recette en texte).
 
 ## 11. Problèmes connus et limites
 
