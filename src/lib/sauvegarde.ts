@@ -1,6 +1,8 @@
 // Sauvegarde des données personnelles (favoris, notes, carnet, courses, réglages) dans un fichier JSON,
-// pour changer de téléphone sans rien perdre. Les recettes n'y figurent jamais (elles viennent de l'archive).
+// pour changer de téléphone sans rien perdre. Les recettes de l'archive n'y figurent jamais ; « Mes recettes » (ajoutées
+// à la main) oui : un fichier de sauvegarde sert aussi à en ajouter une.
 
+import { ficheValide } from './archive';
 import { db as baseParDefaut, TABLES_PERSO, type BaseGardeManger, type TablePerso } from './db';
 import { aujourdhui } from './format';
 
@@ -30,6 +32,7 @@ const CLES: Record<TablePerso, string> = {
   bocaux: 'id',
   journal: 'id',
   modelesBocaux: 'id',
+  mesRecettes: 'id',
 };
 
 /** Champs indispensables en plus de la clé. */
@@ -41,6 +44,7 @@ const CHAMPS: Partial<Record<TablePerso, [string, 'string' | 'object' | 'number'
   bocaux: [['nom', 'string'], ['debut', 'string'], ['etapes', 'object'], ['statut', 'string']],
   journal: [['bocalId', 'string'], ['date', 'string']],
   modelesBocaux: [['nom', 'string'], ['etapes', 'object']],
+  mesRecettes: [['titre', 'string'], ['type', 'string'], ['source', 'object']],
 };
 
 export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
@@ -53,6 +57,7 @@ export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
   bocaux: ['bocal', 'bocaux'],
   journal: ['note de bocal', 'notes de bocaux'],
   modelesBocaux: ['modèle de bocal', 'modèles de bocaux'],
+  mesRecettes: ['recette perso', 'recettes perso'],
 };
 
 export function nomFichierSauvegarde(d: Date = new Date()): string {
@@ -93,6 +98,7 @@ export function lireSauvegarde(json: unknown): Sauvegarde {
         if (!e || typeof e !== 'object') return false;
         const r = e as Enregistrement;
         if (typeof r[CLES[t]] !== 'string' || !r[CLES[t]]) return false;
+        if (t === 'mesRecettes' && !ficheValide(r)) return false;
         return (CHAMPS[t] ?? []).every(([champ, type]) => typeof r[champ] === type && r[champ] !== null);
       })
       .map((e) => ({ ...e, modifieLe: typeof e.modifieLe === 'number' ? e.modifieLe : 0 }));

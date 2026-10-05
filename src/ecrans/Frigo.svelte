@@ -15,9 +15,9 @@
   const PAS = 60;
   let limite = $state(PAS);
 
-  // L'index des ingrédients suit l'archive importée.
+  // L'index des ingrédients suit l'archive importée et Mes recettes.
   $effect(() => {
-    void frigo.chargerIndex(etat.archive?.importeLe);
+    void frigo.chargerIndex(etat.versionRecettes, etat.mesRecettes);
   });
 
   const proposes = $derived(saisie.trim() ? suggestions(frigo.vocabulaire, saisie, frigo.exclus) : []);

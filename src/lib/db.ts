@@ -71,6 +71,9 @@ export interface RecetteCourses {
   modifieLe: number;
 }
 
+/** Recette ajoutée par Paul (hors archive) : même format qu'une fiche, gardée et sauvegardée comme ses données. */
+export type MaRecette = Fiche & { modifieLe: number };
+
 /** Réglages personnels : rayons choisis à la main, frigo, placard, synonymes (null = liste d'origine). */
 export interface ReglagePerso {
   cle: string;
@@ -90,6 +93,7 @@ export class BaseGardeManger extends Dexie {
   bocaux!: EntityTable<Bocal, 'id'>;
   journal!: EntityTable<EntreeJournal, 'id'>;
   modelesBocaux!: EntityTable<ModeleBocal, 'id'>;
+  mesRecettes!: EntityTable<MaRecette, 'id'>;
 
   constructor(nom = 'garde-manger') {
     super(nom);
@@ -113,6 +117,10 @@ export class BaseGardeManger extends Dexie {
       journal: 'id, bocalId',
       modelesBocaux: 'id',
     });
+    this.version(4).stores({
+      // Mes recettes, ajoutées hors archive (un réimport ne les efface pas)
+      mesRecettes: 'id',
+    });
   }
 }
 
@@ -127,6 +135,7 @@ export const TABLES_PERSO = [
   'bocaux',
   'journal',
   'modelesBocaux',
+  'mesRecettes',
 ] as const;
 export type TablePerso = (typeof TABLES_PERSO)[number];
 

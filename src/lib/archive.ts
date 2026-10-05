@@ -56,23 +56,29 @@ export function lireArchive(donnees: unknown): ArchiveLue {
   const fiches: Fiche[] = [];
   let ignorees = 0;
   for (const brute of obj.fiches as unknown[]) {
-    const f = brute as Partial<Fiche> | null;
-    if (
-      !f ||
-      typeof f !== 'object' ||
-      typeof f.id !== 'string' ||
-      typeof f.titre !== 'string' ||
-      !TYPES.includes(f.type as TypeFiche) ||
-      !f.source ||
-      !SOURCES.includes(f.source.id as SourceId)
-    ) {
+    if (!ficheValide(brute)) {
       ignorees++;
       continue;
     }
-    fiches.push(alleger(f as Fiche));
+    fiches.push(alleger(brute));
   }
   if (!fiches.length) throw new ErreurArchive("Aucune fiche lisible dans ce fichier.");
   return { genereLe: typeof obj.genere_le === 'string' ? obj.genere_le : undefined, fiches, ignorees };
+}
+
+/** L'essentiel d'une fiche : identifiant, titre, type et source connus. */
+export function ficheValide(brute: unknown): brute is Fiche {
+  const f = brute as Partial<Fiche> | null;
+  return (
+    !!f &&
+    typeof f === 'object' &&
+    typeof f.id === 'string' &&
+    !!f.id &&
+    typeof f.titre === 'string' &&
+    TYPES.includes(f.type as TypeFiche) &&
+    !!f.source &&
+    SOURCES.includes(f.source.id as SourceId)
+  );
 }
 
 /** Retire ce que l'application n'affiche jamais (texte anglais d'origine, détails d'extraction). */

@@ -4,6 +4,7 @@
   import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
   import { db } from '../lib/db';
+  import { etat } from '../lib/etat.svelte';
   import { date, pluriel } from '../lib/format';
   import { frigo } from '../lib/frigo.svelte';
   import { enregistrerFichier } from '../lib/partage';
@@ -40,7 +41,7 @@
 
   function resume(s: Sauvegarde): string {
     const c = compter(s);
-    const parties = (['favoris', 'notes', 'realisations', 'courses', 'bocaux', 'modelesBocaux'] as const)
+    const parties = (['mesRecettes', 'favoris', 'notes', 'realisations', 'courses', 'bocaux', 'modelesBocaux'] as const)
       .filter((t) => c[t] > 0)
       .map((t) => pluriel(c[t], NOMS_TABLES[t][0], NOMS_TABLES[t][1]));
     return parties.length ? parties.join(', ') : 'aucune donnée pour l’instant';
@@ -80,7 +81,7 @@
       const quand = s.exporteLe ? ` du ${date(s.exporteLe)}` : '';
       if (!confirm(`Sauvegarde${quand} : ${resume(s)}.\n\nL'ajouter aux données de ce téléphone ? Rien ne sera effacé.`)) return;
       const bilan = await restaurer(s);
-      await Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger()]);
+      await Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger(), etat.demarrer()]);
       await preparer();
       message = `✓ Sauvegarde restaurée : ${pluriel(bilan.ajoutes, 'élément ajouté', 'éléments ajoutés')}${
         bilan.misAJour ? `, ${pluriel(bilan.misAJour, 'mis à jour', 'mis à jour')}` : ''
@@ -100,7 +101,7 @@
   </p>
   <p class="discret petit">
     Enregistre ce fichier dans Fichiers (ou envoie-le sur le Mac) : il te permettra de tout retrouver sur un autre
-    iPhone. Les recettes n'y sont pas, elles viennent de l'archive.
+    iPhone. Les recettes de l'archive n'y sont pas.
   </p>
   <button class="bouton plein" onclick={sauvegarder} disabled={!pret}>
     <FileDown size={20} /> Sauvegarder mes données

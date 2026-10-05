@@ -109,6 +109,12 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   écoulés (mise en bocal = « aujourd'hui », jour 0). Phases : attente → à goûter (dès min − 20 %, au moins 1 j avant)
   → prêt (min..max) → dépassé. `derniereNoteLe` = « goûté aujourd'hui ». Rappels : .ics (heure locale flottante,
   18 h, VALARM à l'heure) ouvert par un lien blob (Calendrier iOS) ou partagé en fichier.
+- **Recettes ajoutées hors archive** (Dexie **version(4)** : `mesRecettes`, fiches au format de l'archive + `modifieLe`,
+  source `notes-perso`) : fusionnées au catalogue, à la recherche et au Frigo par `etat.svelte.ts` (`mesRecettes`,
+  `versionRecettes`), jamais effacées par un réimport, incluses dans la sauvegarde. **Pas de section ni de bouton à
+  part** (choix de Paul, 05/10/2026 : « juste l'ajouter aux autres »). Pour ajouter une recette demandée par Paul :
+  écrire hors du dépôt un fichier de sauvegarde ne contenant que `donnees.mesRecettes: [fiche]` (id `perso-…`), le lui
+  envoyer, il le restaure (Réglages › Restaurer une sauvegarde). Jamais de texte de recette dans Git.
 - Sauvegarde : JSON `{ format: 'garde-manger-sauvegarde', version: 1, exporteLe, donnees: { <table>: [...] } }`,
   restauration = **fusion** (ajout, ou remplacement si `modifieLe` plus récent ; jamais d'effacement).
   Fichier préparé à l'ouverture des Réglages car iOS n'ouvre le menu Partager que juste après un toucher.
@@ -246,9 +252,14 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   contrastes WCAG AA, zones tactiles, audit des noms accessibles (aucun bouton sans nom), hors ligne vérifié sur le Mac
   (service worker : 16 fichiers en cache dont les 2 workers et eveil.mp4 ; appli servie serveur arrêté), ménage du code.
 
+- **05/10/2026** (v1.1.0) : recettes ajoutées hors archive (`mesRecettes`, voir § 5). Première : bissap à l'ananas
+  (2 bonbons à la menthe au lieu des feuilles de menthe), envoyée à Paul en fichier `bissap-ananas.json`.
+  Correction : espace manquante après « ou » dans les ingrédients en alternative.
+
 ## 10. Reste à faire
 
 Toutes les étapes du cahier des charges sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
+0. Restauration du fichier `bissap-ananas.json` (la recette doit apparaître dans la recherche).
 1. Étapes 3 à 5 : menu Partager (liste de courses, fichier de sauvegarde → « Enregistrer dans Fichiers » / AirDrop),
    restauration depuis Fichiers, champ date iOS, clavier des champs « Ajouter un article » et Frigo (suggestions),
    reconstruction de l'index des ingrédients au 1er passage sur Frigo, photo du journal (appareil / photothèque).

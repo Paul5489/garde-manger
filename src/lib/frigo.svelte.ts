@@ -3,6 +3,7 @@
 
 import {
   classer,
+  construireIndexIngredients,
   construireVocabulaire,
   preparer,
   VERSION_INDEX_INGREDIENTS,
@@ -12,6 +13,7 @@ import { db } from './db';
 import type { ReponseIndex } from './index-ingredients.worker';
 import { Dictionnaire, PLACARD_DEFAUT, predicatListe, SYNONYMES_DEFAUT } from './normalisation';
 import { collator, normaliser } from './texte';
+import type { Fiche } from './types';
 
 type CleReglage = 'frigo' | 'placard' | 'synonymes';
 
@@ -52,17 +54,23 @@ class Frigo {
   }
 
   /**
-   * Charge l'index des ingrédients de l'archive importée (repère : date d'import).
+   * Charge l'index des ingrédients de l'archive importée, complété par Mes recettes
+   * (repère : `etat.versionRecettes`, qui change à chaque import ou recette perso modifiée).
    * S'il manque ou date d'une version précédente, il est construit en arrière-plan.
    */
-  async chargerIndex(importeLe: string | undefined) {
-    if (!importeLe || this.#indexPour === importeLe) return;
-    this.#indexPour = importeLe;
+  async chargerIndex(version: string | undefined, mesRecettes: Fiche[] = []) {
+    if (!version || this.#indexPour === version) return;
+    this.#indexPour = version;
     this.statutIndex = 'preparation';
     try {
       const e = await db.meta.get('ingredients');
-      const index = e?.valeur as IndexIngredients | undefined;
-      this.index = index?.version === VERSION_INDEX_INGREDIENTS ? index : await construireEnArrierePlan();
+      const lu = e?.valeur as IndexIngredients | undefined;
+      const index = lu?.version === VERSION_INDEX_INGREDIENTS ? lu : await construireEnArrierePlan();
+      const ids = new Set(mesRecettes.map((f) => f.id));
+      this.index = {
+        ...index,
+        fiches: [...index.fiches.filter((f) => !ids.has(f.id)), ...construireIndexIngredients(mesRecettes).fiches],
+      };
       this.statutIndex = 'pret';
     } catch {
       this.#indexPour = null;

@@ -301,6 +301,7 @@ describe('sauvegarde des données personnelles', () => {
       bocaux: 0,
       journal: 0,
       modelesBocaux: 0,
+      mesRecettes: 0,
     });
     expect(await restaurer(s, b)).toEqual({ ajoutes: 7, misAJour: 0, inchanges: 0 });
     expect(await b.courses.get('c1')).toEqual(await a.courses.get('c1'));

@@ -30,11 +30,11 @@
           {#if l.mode === 'colonnes'}
             <span class="qte" class:pm={l.pm}>{l.quantite ?? ''}</span>
             <span class="nom">
-              {#if l.alternative}<em class="ou">ou </em>{/if}{insecables(l.texte)}{#if l.optionnel && !mentionneFacultatif(l.texte)}<span class="facultatif"> (facultatif)</span>{/if}
+              {#if l.alternative}<em class="ou">ou&nbsp;</em>{/if}{insecables(l.texte)}{#if l.optionnel && !mentionneFacultatif(l.texte)}<span class="facultatif"> (facultatif)</span>{/if}
             </span>
           {:else}
             <span class="phrase">
-              {#if l.alternative}<em class="ou">ou </em>{/if}{#if l.quantite}<strong>{l.quantite}</strong>&nbsp;{/if}{insecables(l.texte)}{#if l.optionnel && !mentionneFacultatif(l.texte)}<span class="facultatif"> (facultatif)</span>{/if}
+              {#if l.alternative}<em class="ou">ou&nbsp;</em>{/if}{#if l.quantite}<strong>{l.quantite}</strong>&nbsp;{/if}{insecables(l.texte)}{#if l.optionnel && !mentionneFacultatif(l.texte)}<span class="facultatif"> (facultatif)</span>{/if}
             </span>
           {/if}
         </button>
