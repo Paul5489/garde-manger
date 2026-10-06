@@ -4,9 +4,9 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { recettesDuMac } from './recettes-du-mac.mjs';
 
 const racine = resolve(import.meta.dirname, '..');
-const archive = resolve(racine, '../archive-recettes/donnees/archive_complete.json');
 
 const fichiers = execFileSync('git', ['ls-files', '--cached', '-z'], { cwd: racine, encoding: 'utf8' })
   .split('\0')
@@ -18,8 +18,8 @@ for (const f of fichiers) {
     problemes.push(`fichier de données suivi par Git : ${f}`);
 }
 
-if (existsSync(archive)) {
-  const { fiches } = JSON.parse(readFileSync(archive, 'utf8'));
+const { fiches, sources } = recettesDuMac(racine);
+if (sources.length) {
   // Empreintes de texte rédigé (les identifiants et titres courts peuvent figurer dans les tests).
   const empreintes = new Set();
   for (const fi of fiches) {
@@ -28,6 +28,7 @@ if (existsSync(archive)) {
       for (const i of g.items ?? []) if (i.texte_original?.length >= 30) empreintes.add(i.texte_original);
     if (fi.description?.length >= 40) empreintes.add(fi.description.slice(0, 60));
     for (const n of fi.notes ?? []) if (n.length >= 40) empreintes.add(n.slice(0, 60));
+    for (const s of fi.sections ?? []) if (s.texte?.length >= 40) empreintes.add(s.texte.slice(0, 60));
   }
   for (const f of fichiers) {
     if (!/\.(ts|js|mjs|svelte|json|md|html|css|txt)$/.test(f) || f === 'package-lock.json') continue;

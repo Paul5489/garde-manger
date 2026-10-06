@@ -125,6 +125,15 @@ describe('lignes d’ingrédients', () => {
     expect(eau.quantite).toBe('300 à 600');
     expect(eau.texte).toBe("g d'eau");
   });
+
+  it('fiche Koji Alchemy : même lecture que le Noma', () => {
+    const koji = ligneIngredient({ nom: 'koji', texte_original: 'Koji : 120 g (court) / 80 g (long)' }, 'koji-alchemy', 2);
+    expect(koji.quantite).toBeNull();
+    expect(koji.texte).toBe('Koji : 240 g (court) / 160 g (long)');
+    const riz = ligneIngredient({ nom: 'riz', quantite: 300, unite: 'g', texte_original: '300 g de riz' }, 'noma-koji', 0.5);
+    expect(riz.quantite).toBe('150');
+    expect(riz.mode).toBe('ligne');
+  });
 });
 
 describe.skipIf(!archiveDisponible)('toutes les lignes de la vraie archive', () => {

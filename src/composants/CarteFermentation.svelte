@@ -17,7 +17,7 @@
   const lignes = $derived(
     [
       ['Sel', f.sel_pct !== undefined ? `${nombre(f.sel_pct)} %` : f.sel_texte],
-      ['Température', f.temperature_c !== undefined ? `${nombre(f.temperature_c)} °C` : undefined],
+      ['Température', f.temperature_texte ?? (f.temperature_c !== undefined ? `${nombre(f.temperature_c)} °C` : undefined)],
       ['Humidité', f.humidite_pct ? `${f.humidite_pct.replace(/ à /, ' à ')} %` : undefined],
       ['Durée', f.etapes?.length ? undefined : dureeEtape(f)],
       ['Brix de départ', f.brix_depart !== undefined ? `${nombre(f.brix_depart)} °Bx` : undefined],

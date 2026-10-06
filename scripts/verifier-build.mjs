@@ -3,10 +3,10 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
+import { recettesDuMac } from './recettes-du-mac.mjs';
 
 const racine = resolve(import.meta.dirname, '..');
 const dist = join(racine, 'dist');
-const archive = resolve(racine, '../archive-recettes/donnees/archive_complete.json');
 
 const problemes = [];
 
@@ -41,10 +41,11 @@ for (const [f, contenu] of contenus)
   for (const mot of interdits)
     if (contenu.includes(mot)) problemes.push(`« ${mot} » trouvé dans ${relative(dist, f)}`);
 
-// Comparaison avec la vraie archive : aucun identifiant, titre ou texte d'étape ne doit apparaître.
+// Comparaison avec les recettes du Mac (archive + fichiers de mes-recettes) : aucun identifiant, titre ou texte
+// d'étape ne doit apparaître.
 let nbEmpreintes = 0;
-if (existsSync(archive)) {
-  const { fiches } = JSON.parse(readFileSync(archive, 'utf8'));
+const { fiches, sources } = recettesDuMac(racine);
+if (sources.includes('archive')) {
   const empreintes = new Set();
   for (const f of fiches) {
     if (f.id.length >= 10) empreintes.add(f.id);
@@ -53,6 +54,8 @@ if (existsSync(archive)) {
     for (const g of f.ingredients ?? [])
       for (const i of g.items ?? []) if (i.texte_original?.length >= 30) empreintes.add(i.texte_original);
     if (f.description?.length >= 40) empreintes.add(f.description.slice(0, 60));
+    for (const n of f.notes ?? []) if (n.length >= 40) empreintes.add(n.slice(0, 60));
+    for (const s of f.sections ?? []) if (s.texte?.length >= 40) empreintes.add(s.texte.slice(0, 60));
   }
   nbEmpreintes = empreintes.size;
   for (const [f, contenu] of contenus)

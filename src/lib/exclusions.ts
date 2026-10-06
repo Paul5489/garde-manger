@@ -14,12 +14,8 @@ const EXCLUES = new Set([
   '2e22bfa3', // cr-repertoire-des-fiches-techniques-de-fabrication (sommaire)
   '17ae89be', // cr-bibliographie
   'fda8caa0', // cr-categorie-hygiene-et-securite-des-aliments
-  '5ada74a4', // noma-chapitre-pages-de-garde
-  '777ea1d4', // noma-chapitre-introduction
-  '0c4016a1', // noma-chapitre-a-propos-de-ce-livre
-  'd5ffa3e2', // noma-chapitre-fournisseurs
-  '46e98bcb', // noma-chapitre-remerciements
-  '1721849a', // noma-chapitre-les-auteurs
+  // Les 6 pages hors cuisine du Noma (pages de garde, introduction, à propos, fournisseurs, remerciements,
+  // auteurs) sont écartées avec tout le Noma de l'archive : voir estAncienneFermentation.
 ]);
 
 /** Empreinte FNV-1a 32 bits d'un identifiant, en hexadécimal (8 caractères). */
@@ -38,3 +34,16 @@ export function estExclue(id: string): boolean {
 }
 
 export const NOMBRE_EXCLUES = EXCLUES.size;
+
+/**
+ * Fiches Noma de l'archive (70, ids « noma-… ») : remplacées à la demande de Paul (06/10/2026) par les fiches
+ * de fermentation Noma + Koji Alchemy résumées en français, ajoutées par fichier dans « mesRecettes » (ids « ferm-… »).
+ */
+export function estAncienneFermentation(id: string): boolean {
+  return id.startsWith('noma-');
+}
+
+/** Fiche de l'archive à ne pas montrer : page hors cuisine ou ancienne fiche Noma. */
+export function estRetiree(id: string): boolean {
+  return estAncienneFermentation(id) || estExclue(id);
+}

@@ -150,8 +150,19 @@ Réglages › **Recettes supprimées** › **Remettre**. Juste après une suppre
 
 ## 8. Mes bocaux (fermentations)
 
+**Les fiches de fermentation** (Noma + Koji Alchemy, 22 recettes résumées en français + une page « Les recettes
+importantes » avec la comparaison des deux livres et le sommaire). Elles remplacent les anciennes fiches Noma et
+ne sont **que dans ton téléphone** : il faut ajouter le fichier une fois.
+1. Sur le Mac, dans le Finder : dossier **Documents › Cuisine › mes-recettes**, clic droit sur
+   `garde-manger-fermentation.json` › **Partager** › **AirDrop** › ton iPhone (il arrive dans Fichiers ›
+   Téléchargements). Ou, Mac allumé avec `npm run dev`, dans Safari sur l'iPhone :
+   `http://192.168.1.12:5180/mes-recettes/garde-manger-fermentation.json`.
+2. Dans Garde-manger (mis à jour en 1.8.0) : onglet **Ajouter** › **Ajouter un fichier de recette (.json)** ›
+   Parcourir › Téléchargements › `garde-manger-fermentation.json`. Message : « 23 recettes ajoutées ».
+3. Accueil › **Fermentation** : commence par « Les recettes importantes — Noma et Koji Alchemy ».
+
 **Démarrer un bocal**
-- Depuis une recette Noma : sur la fiche, bouton **🫙 Démarrer un bocal** (sel, température, durées et étapes
+- Depuis une fiche de fermentation : bouton **🫙 Démarrer un bocal** (sel, température, durées et étapes
   sont pré-remplis). Vérifie la date, indique le poids : l'appli calcule le sel à peser.
 - Librement (ton kimchi) : onglet **Bocaux** › **Nouveau** › **Bocal libre**. Coche « Enregistrer aussi comme
   modèle » pour le refaire en un toucher la prochaine fois (Nouveau › Mes modèles).

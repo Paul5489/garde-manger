@@ -1,7 +1,7 @@
 // Lecture de l'archive : validation, allègement des fiches, résumés pour les listes.
 // Aucune donnée n'est incluse dans l'application : tout vient du fichier importé.
 
-import { estExclue } from './exclusions';
+import { estAncienneFermentation, estExclue } from './exclusions';
 import { casseLisible } from './texte';
 import type { Fiche, Resume, SourceId, TypeFiche, Univers } from './types';
 
@@ -9,7 +9,9 @@ export const NOMS_SOURCES: Record<SourceId, string> = {
   'marc-winer': 'Marc Winer',
   afpa: 'AFPA',
   'cuisine-de-reference': 'La Cuisine de référence',
-  noma: 'Noma — Fermentation',
+  noma: 'Noma',
+  'koji-alchemy': 'Koji Alchemy',
+  'noma-koji': 'Noma + Koji Alchemy',
   'notes-perso': 'Mes notes',
   perso: 'Mes recettes',
 };
@@ -18,7 +20,7 @@ export const UNIVERS: { id: Univers; titre: string; sousTitre: string; emoji: st
   { id: 'asiatique', titre: 'Cuisine asiatique', sousTitre: 'Marc Winer', emoji: '🥢' },
   { id: 'francaise', titre: 'Cuisine française', sousTitre: 'AFPA · Cuisine de référence', emoji: '🥖' },
   { id: 'techniques', titre: 'Techniques pro', sousTitre: 'Fonds, sauces, découpes…', emoji: '🔪' },
-  { id: 'fermentation', titre: 'Fermentation', sousTitre: 'Noma', emoji: '🫙' },
+  { id: 'fermentation', titre: 'Fermentation', sousTitre: 'Noma · Koji Alchemy', emoji: '🫙' },
   { id: 'perso', titre: 'Mes recettes', sousTitre: 'Ajoutées par moi', emoji: '📝' },
 ];
 
@@ -39,6 +41,8 @@ export interface ArchiveLue {
   fiches: Fiche[];
   ignorees: number;
   ecartees: number;
+  /** Anciennes fiches Noma de l'archive, remplacées par les fiches de fermentation (exclusions.ts). */
+  ancienneFermentation: number;
 }
 
 /** Vérifie que le JSON est bien l'archive complète et garde les fiches exploitables. */
@@ -60,9 +64,14 @@ export function lireArchive(donnees: unknown): ArchiveLue {
   const fiches: Fiche[] = [];
   let ignorees = 0;
   let ecartees = 0;
+  let ancienneFermentation = 0;
   for (const brute of obj.fiches as unknown[]) {
     if (!ficheValide(brute)) {
       ignorees++;
+      continue;
+    }
+    if (estAncienneFermentation(brute.id)) {
+      ancienneFermentation++;
       continue;
     }
     if (estExclue(brute.id)) {
@@ -72,7 +81,8 @@ export function lireArchive(donnees: unknown): ArchiveLue {
     fiches.push(alleger(brute));
   }
   if (!fiches.length) throw new ErreurArchive("Aucune fiche lisible dans ce fichier.");
-  return { genereLe: typeof obj.genere_le === 'string' ? obj.genere_le : undefined, fiches, ignorees, ecartees };
+  const genereLe = typeof obj.genere_le === 'string' ? obj.genere_le : undefined;
+  return { genereLe, fiches, ignorees, ecartees, ancienneFermentation };
 }
 
 /** L'essentiel d'une fiche : identifiant, titre, type et source connus. */
@@ -134,15 +144,21 @@ export function estMaRecette(f: Pick<Fiche, 'id' | 'source'>): boolean {
   return f.source.id === 'perso' || f.id.startsWith('perso-');
 }
 
+/** Livres de fermentation : Noma, Koji Alchemy, ou les deux (fiches ajoutées par fichier). */
+export function estSourceFermentation(s: SourceId | string): boolean {
+  return s === 'noma' || s === 'koji-alchemy' || s === 'noma-koji';
+}
+
 export function universDe(f: Fiche): Univers[] {
   if (estMaRecette(f)) return ['perso'];
   const u: Univers[] = [];
   const s = f.source.id;
   if (s === 'marc-winer') u.push('asiatique');
   if ((s === 'afpa' || s === 'cuisine-de-reference') && f.type === 'recette') u.push('francaise');
-  if (s === 'noma') u.push('fermentation');
+  const fermentation = estSourceFermentation(s);
+  if (fermentation) u.push('fermentation');
   if (s === 'perso') u.push('perso');
-  if (s !== 'noma' && s !== 'perso' && f.type !== 'recette') u.push('techniques');
+  if (!fermentation && s !== 'perso' && f.type !== 'recette') u.push('techniques');
   if (s === 'afpa' && f.classement?.categorie?.startsWith('Techniques de base')) u.push('techniques');
   return u;
 }
@@ -190,7 +206,7 @@ export interface DocRecherche {
 
 export function documentDeRecherche(f: Fiche): DocRecherche {
   const items = (f.ingredients ?? []).flatMap((g) => g.items ?? []);
-  const texteSource = f.source.id === 'marc-winer' || f.source.id === 'noma';
+  const texteSource = f.source.id === 'marc-winer' || estSourceFermentation(f.source.id);
   const ingredients = items.map((i) => (texteSource && i.texte_original ? i.texte_original : i.nom)).join(' · ');
   const c = f.classement ?? {};
   const classement = [

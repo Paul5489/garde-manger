@@ -2,6 +2,7 @@
 // Les livres n'ont pas de type de plat : on le déduit de leurs chapitres (« Les desserts », « Garnitures de
 // légumes »…), et pour les blogs et mes recettes, du type de plat indiqué.
 
+import { estSourceFermentation } from './archive';
 import { normaliser } from './texte';
 import type { Resume } from './types';
 
@@ -33,7 +34,7 @@ export const NOMS_RUBRIQUES = Object.fromEntries(RUBRIQUES.map((r) => [r.id, r.t
 const SAUCE_DE_BASE = /sauce|beurre blanc|mayonnaise|bechamel|hollandaise|bearnaise|vinaigrette|coulis/;
 
 export function rubriqueDe(r: Pick<Resume, 'type' | 'source' | 'categorie' | 'typesDePlat' | 'titre' | 'univers'>): Rubrique {
-  if (r.source === 'noma' || r.univers.includes('fermentation')) return 'fermentation';
+  if (estSourceFermentation(r.source) || r.univers.includes('fermentation')) return 'fermentation';
   const types = normaliser(r.typesDePlat.join(' | '));
   if (/fermentation/.test(types)) return 'fermentation';
   if (r.type !== 'recette') return 'techniques';

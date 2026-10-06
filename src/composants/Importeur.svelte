@@ -29,6 +29,8 @@
       await etat.demarrer();
       succes = `${pluriel(infos.nbFiches, 'fiche importée', 'fiches importées')}.`;
       if (infos.ignorees) succes += ` ${pluriel(infos.ignorees, 'fiche illisible ignorée', 'fiches illisibles ignorées')}.`;
+      if (infos.ancienneFermentation)
+        succes += ' Anciennes fiches Noma retirées (remplacées par tes fiches de fermentation).';
       if (infos.ecartees)
         succes += ` ${pluriel(infos.ecartees, 'page hors cuisine écartée', 'pages hors cuisine écartées')} (auteurs, hygiène, diplômes…).`;
     } catch (e) {

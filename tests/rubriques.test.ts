@@ -12,7 +12,8 @@ describe.skipIf(!archiveDisponible)('types de plat sur la vraie archive', () => 
     const compte = new Map<Rubrique, number>();
     for (const r of resumes) compte.set(rubriqueDe(r), (compte.get(rubriqueDe(r)) ?? 0) + 1);
     for (const { id } of RUBRIQUES) {
-      if (id === 'boissons') continue; // aucune boisson dans l'archive (seulement dans mes recettes)
+      // aucune boisson dans l'archive (seulement dans mes recettes) ; la fermentation vient d'un fichier à part
+      if (id === 'boissons' || id === 'fermentation') continue;
       expect(compte.get(id) ?? 0, id).toBeGreaterThan(5);
     }
     expect(compte.get('plats')! / resumes.length).toBeLessThan(0.45); // « Plats » n'est pas un fourre-tout
@@ -26,10 +27,18 @@ describe.skipIf(!archiveDisponible)('types de plat sur la vraie archive', () => 
     expect(de('afpa-pomme-darphin')).toBe('accompagnements');
     expect(de('afpa-oeufs-brouille-a-la-portugaise')).toBe('entrees');
     expect(de('afpa-steak-au-poivre')).toBe('plats');
-    expect(de('noma-vinaigre-de-poire')).toBe('fermentation');
-    expect(de('noma-chapitre-koji')).toBe('fermentation');
     expect(de('cr-les-legumes-les-haricots')).toBe('techniques');
     expect(de('afpa-sauce-bechamel-et-derives')).toBe('sauces');
+  });
+});
+
+describe('fiches de fermentation ajoutées par fichier', () => {
+  it('rangées en Fermentation, quel que soit le livre', () => {
+    for (const source of ['noma', 'koji-alchemy', 'noma-koji'] as const)
+      for (const type of ['recette', 'chapitre'] as const)
+        expect(rubriqueDe({ type, source, typesDePlat: ['Fermentation'], titre: 'Essai', univers: ['fermentation'] })).toBe(
+          'fermentation',
+        );
   });
 });
 

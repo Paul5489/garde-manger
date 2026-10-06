@@ -2,7 +2,15 @@
 // Les champs vides sont omis dans l'archive : tout est optionnel sauf l'essentiel.
 
 export type TypeFiche = 'recette' | 'technique' | 'chapitre' | 'annexe';
-export type SourceId = 'marc-winer' | 'afpa' | 'cuisine-de-reference' | 'noma' | 'notes-perso' | 'perso';
+export type SourceId =
+  | 'marc-winer'
+  | 'afpa'
+  | 'cuisine-de-reference'
+  | 'noma'
+  | 'koji-alchemy'
+  | 'noma-koji'
+  | 'notes-perso'
+  | 'perso';
 
 export interface Duree {
   texte: string;
@@ -64,6 +72,8 @@ export interface Fermentation {
   sel_pct?: number;
   sel_texte?: string;
   temperature_c?: number;
+  /** Température en toutes lettres (« 26 °C ou 32 °C », « Réfrigérateur ») : affichée à la place du nombre. */
+  temperature_texte?: string;
   humidite_pct?: string;
   duree_min_jours?: number;
   duree_max_jours?: number;
@@ -185,4 +195,6 @@ export interface InfosArchive {
   ignorees: number;
   /** Pages « hors cuisine » écartées (auteurs, hygiène, diplômes…), voir exclusions.ts. */
   ecartees?: number;
+  /** Anciennes fiches Noma retirées (remplacées par les fiches de fermentation ajoutées par fichier). */
+  ancienneFermentation?: number;
 }

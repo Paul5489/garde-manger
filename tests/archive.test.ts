@@ -29,11 +29,14 @@ describe('validation du fichier importé', () => {
 
 describe.skipIf(!archiveDisponible)('vraie archive (821 fiches)', () => {
   const brute = archiveDisponible ? archiveBrute() : { fiches: [], genere_le: '', nb_fiches: 0 };
-  const lue = archiveDisponible ? lireArchive(structuredClone(brute)) : { fiches: [], ignorees: 0, ecartees: 0 };
+  const lue = archiveDisponible
+    ? lireArchive(structuredClone(brute))
+    : { fiches: [], ignorees: 0, ecartees: 0, ancienneFermentation: 0 };
 
-  it('lit toutes les fiches sans erreur (moins les pages hors cuisine écartées)', () => {
-    expect(lue.fiches.length + lue.ecartees).toBe(brute.nb_fiches);
-    expect(lue.ecartees).toBe(13);
+  it('lit toutes les fiches sans erreur (moins les pages hors cuisine et les anciennes fiches Noma)', () => {
+    expect(lue.fiches.length + lue.ecartees + lue.ancienneFermentation).toBe(brute.nb_fiches);
+    expect(lue.ecartees).toBe(7);
+    expect(lue.ancienneFermentation).toBe(70);
     expect(lue.ignorees).toBe(0);
   });
 
@@ -50,15 +53,12 @@ describe.skipIf(!archiveDisponible)('vraie archive (821 fiches)', () => {
     const resumes = lue.fiches.map(resumer);
     const compte = (u: string) => resumes.filter((r) => r.univers.includes(u as never)).length;
     expect(compte('asiatique')).toBe(188);
-    expect(compte('fermentation')).toBe(70 - 6); // 6 chapitres Noma hors cuisine écartés
+    expect(compte('fermentation')).toBe(0); // le Noma de l'archive est remplacé par les fiches ajoutées par fichier
     expect(compte('francaise')).toBe(194 + 186);
     expect(compte('techniques')).toBeGreaterThan(180);
     expect(resumes.every((r) => r.univers.length > 0)).toBe(true);
     const sauceChien = lue.fiches.find((f) => f.id === 'mw-sauce-chien')!;
     expect(tempsTotal(sauceChien)).toBe(10);
-    const prunes = resumes.find((r) => r.id === 'noma-prunes-lacto-fermentees')!;
-    expect(prunes.fermentationJours).toEqual([5, 7]);
-    expect(prunes.minutes).toBeUndefined();
   });
 
   it('tous les renvois de pages mènent à une fiche technique (sauf vers les pages écartées)', () => {
@@ -101,7 +101,7 @@ describe.skipIf(!archiveDisponible)('vraie archive (821 fiches)', () => {
     });
 
     it('trouve pendant la frappe (début de mot)', () => {
-      expect(titres('kombu', 10).some((t) => t.includes('kombucha'))).toBe(true);
+      expect(titres('blanq', 10).some((t) => t.includes('blanquette'))).toBe(true);
     });
 
     it('cherche aussi dans les ingrédients et les techniques', () => {
@@ -132,7 +132,7 @@ describe('liens vers les pages du livre', async () => {
 });
 
 describe.skipIf(!archiveDisponible)('pages « hors cuisine » écartées (demande du 06/10/2026)', async () => {
-  const { estExclue, NOMBRE_EXCLUES } = await import('../src/lib/exclusions');
+  const { estAncienneFermentation, estExclue, estRetiree, NOMBRE_EXCLUES } = await import('../src/lib/exclusions');
   const { lireArchive: lire } = await import('../src/lib/archive');
   const brute = archiveDisponible ? archiveBrute() : { fiches: [] as { id: string; type: string; titre: string }[] };
 
@@ -141,19 +141,27 @@ describe.skipIf(!archiveDisponible)('pages « hors cuisine » écartées (demand
     expect(exclues).toHaveLength(NOMBRE_EXCLUES);
     expect(exclues.every((f) => f.type !== 'recette')).toBe(true);
     const titres = exclues.map((f) => f.titre.toLowerCase()).join(' | ');
-    for (const mot of ['auteur', 'remerciements', 'hygiène', 'bep et cap', 'bibliographie', 'fournisseurs'])
+    for (const mot of ['auteur', 'remerciements', 'hygiène', 'bep et cap', 'bibliographie'])
       expect(titres).toContain(mot);
   });
 
-  it('les techniques, explications de produits et chapitres de fermentation restent', () => {
-    const gardees = brute.fiches.filter((f) => !estExclue(f.id)).map((f) => f.titre.toLowerCase());
-    for (const t of ['les haricots', 'vocabulaire professionnel', 'équipement', 'les bases', 'koji', 'sauce béchamel'])
+  it('les techniques et explications de produits restent', () => {
+    const gardees = brute.fiches.filter((f) => !estRetiree(f.id)).map((f) => f.titre.toLowerCase());
+    for (const t of ['les haricots', 'vocabulaire professionnel', 'sauce béchamel'])
       expect(gardees).toContain(t);
+  });
+
+  it('tout le Noma de l’archive est retiré (remplacé par les fiches de fermentation), et lui seul', () => {
+    const noma = brute.fiches.filter((f) => (f as { source?: { id: string } }).source?.id === 'noma');
+    expect(noma).toHaveLength(70);
+    expect(noma.every((f) => estAncienneFermentation(f.id))).toBe(true);
+    expect(brute.fiches.filter((f) => estAncienneFermentation(f.id))).toHaveLength(70);
   });
 
   it('l’import les écarte et le dit', () => {
     const r = lire(structuredClone(brute));
     expect(r.ecartees).toBe(NOMBRE_EXCLUES);
-    expect(r.fiches.length).toBe(brute.fiches.length - NOMBRE_EXCLUES);
+    expect(r.ancienneFermentation).toBe(70);
+    expect(r.fiches.length).toBe(brute.fiches.length - NOMBRE_EXCLUES - 70);
   });
 });

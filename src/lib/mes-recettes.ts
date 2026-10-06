@@ -114,7 +114,7 @@ function valeur(t: string): number | undefined {
   return lireNombre(t.replace(/\s+/g, ''));
 }
 
-/** « 50 g de fleurs d'hibiscus séchées » → quantité 50, unité g, nom « fleurs d'hibiscus séchées ». */
+/** « 50 g de sucre de canne blond » → quantité 50, unité g, nom « sucre de canne blond ». */
 export function lireLigneIngredient(ligne: string): Ingredient {
   const texte = ligne.replace(/\s+/g, ' ').trim();
   const item: Ingredient = { nom: texte, texte_original: texte };

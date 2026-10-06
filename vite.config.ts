@@ -7,6 +7,8 @@ import { resolve } from 'node:path';
 
 /** Chemin de l'archive sur le Mac (jamais copiée dans le projet ni dans le build). */
 const ARCHIVE_MAC = resolve(import.meta.dirname, '../archive-recettes/donnees/archive_complete.json');
+/** Fichiers de recettes préparés sur le Mac (fermentation, bissap…), hors du projet. */
+const MES_RECETTES_MAC = resolve(import.meta.dirname, '../mes-recettes');
 
 /**
  * Développement uniquement (`apply: 'serve'`) : sert l'archive du Mac pour tester
@@ -40,6 +42,17 @@ function archiveDuMac(): Plugin {
         res.setHeader('Content-Disposition', 'attachment; filename="archive_complete.json"');
         res.setHeader('Cache-Control', 'no-store');
         createReadStream(ARCHIVE_MAC).pipe(res);
+      });
+      // http://<IP du Mac>:5180/mes-recettes/<fichier>.json : un fichier de recettes à ajouter
+      // (Ajouter › « Ajouter un fichier de recette »). Seulement des .json de ce dossier.
+      server.middlewares.use('/mes-recettes', (req, res, suite) => {
+        const nom = decodeURIComponent((req.url ?? '').replace(/^\//, '').split('?')[0]);
+        const chemin = resolve(MES_RECETTES_MAC, nom);
+        if (!/^[\w.-]+\.json$/.test(nom) || !existsSync(chemin)) return suite();
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename="${nom}"`);
+        res.setHeader('Cache-Control', 'no-store');
+        createReadStream(chemin).pipe(res);
       });
     },
   };

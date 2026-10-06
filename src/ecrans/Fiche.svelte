@@ -164,8 +164,13 @@
     routeur.retour();
   }
 
-  /** Copie modifiée d'une fiche de l'archive (elle remplace l'original tant qu'elle existe). */
-  const modifiee = $derived(!!fiche && !estMaRecette(fiche) && !!mesRecettes.trouver(fiche.id));
+  /**
+   * Copie modifiée d'une fiche de l'archive (elle remplace l'original tant qu'elle existe). Les fiches ajoutées
+   * par fichier sans original dans l'archive (fermentation) n'ont pas de « Revenir à l'original ».
+   */
+  const modifiee = $derived(
+    !!fiche && !estMaRecette(fiche) && !!mesRecettes.trouver(fiche.id) && etat.aUnOriginal(fiche.id),
+  );
 
   async function revenirOriginal(f: Fiche) {
     if (!confirm(`Revenir à la version d'origine de « ${f.titre} » ? Tes modifications seront effacées.`)) return;

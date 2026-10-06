@@ -42,7 +42,7 @@
     });
   /** Fiche de départ : tout ce qui n'est pas retouché est gardé tel quel. */
   const base = $derived<Fiche | undefined>(existante ?? enAttente?.base);
-  const deLArchive = $derived(!!existante && !estMaRecette(existante));
+  const deLArchive = $derived(!!existante && !estMaRecette(existante) && etat.aUnOriginal(existante.id));
   let enCours = $state(false);
   let erreur = $state<string | null>(null);
 
@@ -98,7 +98,7 @@
       <form onsubmit={enregistrer}>
         <label class="champ-libelle">
           <span>Titre</span>
-          <input class="champ" bind:value={b.titre} required placeholder="Bissap à l'ananas" autocomplete="off" />
+          <input class="champ" bind:value={b.titre} required placeholder="Tarte aux poireaux" autocomplete="off" />
         </label>
         <label class="champ-libelle">
           <span>Présentation <span class="discret">(facultatif)</span></span>

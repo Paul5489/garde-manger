@@ -1,13 +1,15 @@
 <script lang="ts">
-  // Recettes de l'archive supprimées par Paul : on peut les remettre.
+  // Recettes de l'archive (ou fiches ajoutées par fichier) supprimées par Paul : on peut les remettre.
   import { Undo2 } from '@lucide/svelte';
   import { etat } from '../lib/etat.svelte';
   import { masquees } from '../lib/masquees.svelte';
+  import { mesRecettes } from '../lib/mes-recettes.svelte';
   import { collator } from '../lib/texte';
 
-  const liste = $derived(
-    etat.catalogueArchive.filter((r) => masquees.est(r.id)).sort((a, b) => collator.compare(a.titre, b.titre)),
-  );
+  const liste = $derived.by(() => {
+    const parId = new Map([...etat.catalogueArchive, ...mesRecettes.resumes].map((r) => [r.id, r]));
+    return [...parId.values()].filter((r) => masquees.est(r.id)).sort((a, b) => collator.compare(a.titre, b.titre));
+  });
 </script>
 
 {#if liste.length}

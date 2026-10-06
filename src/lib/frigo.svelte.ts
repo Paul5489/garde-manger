@@ -10,6 +10,7 @@ import {
   type IndexIngredients,
 } from './classement-frigo';
 import { db } from './db';
+import { estRetiree } from './exclusions';
 import { masquees } from './masquees.svelte';
 import { mesRecettes } from './mes-recettes.svelte';
 import type { ReponseIndex } from './index-ingredients.worker';
@@ -49,7 +50,7 @@ class Frigo {
     const caches = masquees.ids;
     return {
       ...this.index,
-      fiches: [...this.index.fiches.filter((f) => !ids.has(f.id)), ...perso].filter((f) => !caches.has(f.id)),
+      fiches: [...this.index.fiches.filter((f) => !ids.has(f.id) && !estRetiree(f.id)), ...perso].filter((f) => !caches.has(f.id)),
     };
   });
   preparees = $derived(this.#indexComplet ? preparer(this.#indexComplet, this.dico) : []);

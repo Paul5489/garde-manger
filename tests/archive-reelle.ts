@@ -7,6 +7,10 @@ export const CHEMIN_ARCHIVE = resolve(__dirname, '../../archive-recettes/donnees
 export const CHEMIN_INDEX = resolve(__dirname, '../../archive-recettes/index.json');
 export const archiveDisponible = existsSync(CHEMIN_ARCHIVE);
 
+/** Fiches de fermentation Noma + Koji Alchemy préparées sur le Mac (hors du projet). */
+export const CHEMIN_FERMENTATION = resolve(__dirname, '../../mes-recettes/garde-manger-fermentation.json');
+export const fermentationDisponible = existsSync(CHEMIN_FERMENTATION);
+
 let cache: { genere_le: string; nb_fiches: number; fiches: Fiche[] } | null = null;
 
 export function archiveBrute() {

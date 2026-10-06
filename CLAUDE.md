@@ -20,7 +20,8 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
   séparée dans l'appli (ex. `reparerQuantitePro` dans `src/lib/quantites.ts`).
 - Garde-fous automatiques, **ne jamais les contourner** :
   - `scripts/verifier-build.mjs` (lancé par `npm run build`) : refuse le build s'il contient un id, titre, texte d'étape,
-    ligne d'ingrédient ou description de l'archive, un `.json`, ou une trace du mode dev.
+    ligne d'ingrédient, description, remarque ou section de l'archive **ou des fichiers `../mes-recettes/*.json`**
+    (fermentation, bissap : `scripts/recettes-du-mac.mjs`), un `.json`, ou une trace du mode dev.
   - `scripts/verifier-depot.mjs` (hook `pre-commit` via `git config core.hooksPath .githooks`, déjà configuré) :
     refuse tout commit contenant du texte de recette ou un fichier de données. Les **tests** peuvent citer des ids
     et titres courts, mais **pas** de lignes d'ingrédients / textes d'étapes réels : écrire des exemples inventés.
@@ -51,7 +52,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 197 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 208 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -159,6 +160,19 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   a écrit. Écartées après revue : foie de veau à l'ancienne (≠ à l'anglaise), gratin dauphinois, travers laqués,
   raie meunière, canard braisé à l'orange, tendrons, fricassée à l'estragon, entrecôte Choron, moules poulette, et
   les paires où moins de 3 étapes trouvaient leur équivalent.
+- **Fermentation = Noma + Koji Alchemy** (demande de Paul du 06/10/2026) : les **70 fiches Noma de l'archive sont
+  retirées** (`estAncienneFermentation` : ids `noma-…`, à l'import, au démarrage, dans le Frigo ; le compte s'affiche
+  à l'import) et remplacées par **22 recettes + 1 page « Les recettes importantes »** (comparaison des deux livres
+  en tableaux, par où commencer, sommaire avec liens `#/fiche/…`), résumées en français par Claude chat. Ce document
+  est gardé hors du dépôt : `../mes-recettes/fermentation-noma-koji-alchemy.md` ; le script
+  `../mes-recettes/fermentation-vers-garde-manger.py` (repères de fermentation par recette, lignes d'ingrédients
+  retouchées) produit `../mes-recettes/garde-manger-fermentation.json` (format sauvegarde, `mesRecettes` seul,
+  ids `ferm-…`), ajouté par Ajouter › « Ajouter un fichier de recette ». Sources `noma`, `koji-alchemy`, `noma-koji`
+  (`estSourceFermentation`) : univers et type de plat Fermentation, lignes d'ingrédients lues comme le Noma.
+  Ces fiches sont dans `mesRecettes` sans être « mes recettes » (`estMaRecette` faux) ; `etat.aUnOriginal(id)` évite
+  « Revenir à l'original » (qui les effacerait) ; supprimées = masquées, récupérables. Carte Fermentation :
+  `temperature_texte`. Markdown : liens internes `#/…` gardés, tableaux qui défilent de côté.
+  Serveur de dev : `http://<IP>:5180/mes-recettes/<fichier>.json` télécharge un fichier de ce dossier.
 - **Bocaux** (Dexie **version(3)** : `bocaux`, `journal` (photos en data URL JPEG ~1280 px, chargé bocal par bocal),
   `modelesBocaux`). Un bocal a toujours ≥ 1 étape (`min`/`max` en jours ou heures, facultatifs) ; début de la 1re =
   `debut` du bocal, des suivantes = `debut` posé à « Étape suivante » (sinon estimé). Jour N = jours de calendrier
@@ -180,7 +194,7 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
 ```
 index.html, vite.config.ts        page, config (plugin dev « archive du Mac » : /__archive-dev/… et /archive, apply:'serve')
 public/                           icônes (icone.svg = source), eveil.mp4
-scripts/                          verifier-build.mjs, verifier-depot.mjs, publier.mjs
+scripts/                          verifier-build.mjs, verifier-depot.mjs (+ recettes-du-mac.mjs : textes à ne jamais publier), publier.mjs
 .githooks/pre-commit              lance verifier-depot.mjs
 src/App.svelte                    coquille : onglets gardés en mémoire, pages empilées, liens #/… interceptés
 src/app.css                       couleurs (clair/sombre auto), zones sûres, boutons, listes, puces, Markdown
@@ -241,13 +255,13 @@ src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFich
 src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Courses,
                                   Frigo, Bocaux (onglet), Bocal (page d'un bocal), EditionBocal (nouveau / modifier),
                                   EditionRecette (#/recette/nouvelle, #/recette/<id>/modifier : coller → ranger → formulaire)
-tests/                            archive-reelle.ts (accès à la vraie archive) + tests par module
+tests/                            archive-reelle.ts (accès à la vraie archive et au fichier de fermentation) + tests par module
 ```
 
 ## 7. Particularités des données (résumé, détails dans ../archive-recettes/README.md)
 
 - 821 fiches : Marc Winer 188 (`mw-`), AFPA 194 (`afpa-`), Cuisine de référence 186 recettes + 180 techniques/annexes
-  (`cr-`), Noma 54 recettes + 16 chapitres (`noma-`), notes perso 3. Champs vides omis → accès tolérants partout.
+  (`cr-`), Noma 54 recettes + 16 chapitres (`noma-`, retirés de l'appli depuis la 1.8.0), notes perso 3. Champs vides omis → accès tolérants partout.
 - Quantités : AFPA/CR en kg/l (« 0,040 kg » → « 40 g »), MW en g/ml/cuillères, Noma g/kg. Sans `quantite` :
   `quantite_min/max`, `pour_memoire` (PM), sinon on relit `texte_original` (CR « nom — unité — 0,800 », AFPA « … 4 Pm »).
   Unités bizarres gérées : `p`, `piéce`, `1` (= l), `bt 4/4`. MW/Noma : la ligne d'origine fait foi (affichée telle quelle,
@@ -292,8 +306,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   analysés par Claude) et ne tient pas à une rubrique « Mes recettes » : onglet **Ajouter** à la place de la carte
   de l'Accueil (filtre d'univers « Mes recettes » gardé). Puis « sans payer » : façon gratuite par l'app Claude ;
   enfin « enlève l'option payante » : plus de clé API ni d'appel direct (06/10/2026).
-- 06/10/2026 : livre *Koji Alchemy* **pas encore intégré** : en attente d'un exemplaire acheté par Paul (ebook sans DRM),
-  ou ajout recette par recette via Mes recettes. Ne pas utiliser le fichier epub actuellement dans Téléchargements.
+- 06/10/2026 : livre *Koji Alchemy* : l'epub (Anna's Archive) **n'est pas utilisé** — ne pas y toucher. Paul a fourni
+  à la place un résumé en français de 22 recettes Noma + Koji Alchemy fait par Claude chat, qu'il a demandé de mettre
+  à la place des anciennes fiches Noma (v1.8.0, fiches seulement dans son téléphone).
 - 06/10/2026 : recette du **bissap à l'ananas** (bonbons à la menthe à la place de la menthe fraîche) préparée en fichier
   `~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json` (hors dépôt), à ajouter via Mes recettes.
 
@@ -330,6 +345,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.8.0** (06/10/2026) : fermentation remplacée : anciennes fiches Noma retirées, 22 recettes Noma + Koji Alchemy
+  + page de comparaison ajoutées par fichier (`garde-manger-fermentation.json`, à importer sur l'iPhone).
 - **1.7.0** (06/10/2026) : les fiches AFPA sans explications reçoivent la méthode détaillée de La Cuisine de
   référence (98 recettes), en gardant les quantités AFPA ; plan AFPA d'origine consultable.
 - **1.6.0** (06/10/2026) : modifier n'importe quelle recette (copie qui remplace l'original, « Revenir à l'original ») ;
@@ -347,6 +364,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
 ## 10. Reste à faire
 
 Toutes les étapes du cahier des charges sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
+00. **Ajouter `garde-manger-fermentation.json`** (v1.8.0 : Ajouter › « Ajouter un fichier de recette ») : sans lui,
+   plus aucune fiche de fermentation dans l'appli (le Noma de l'archive est retiré).
 0. Ajout du bissap (`~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json`, id `perso-bissap-ananas`,
    source `notes-perso` pour marcher aussi avec la v1.1.0) et de l'écran « Nouvelle recette » (coller une recette).
 1. Étapes 3 à 5 : menu Partager (liste de courses, fichier de sauvegarde → « Enregistrer dans Fichiers » / AirDrop),

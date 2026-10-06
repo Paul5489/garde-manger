@@ -1,6 +1,7 @@
 // Affichage des quantités d'ingrédients : unités lisibles (0,040 kg → « 40 g », 0,25 l → « 25 cl »),
 // mise à l'échelle par un coefficient, PM laissés tels quels.
 
+import { estSourceFermentation } from './archive';
 import { nombre } from './format';
 import { majuscule, normaliser } from './texte';
 import type { Ingredient, SourceId } from './types';
@@ -214,8 +215,8 @@ export function ligneIngredient(item: Ingredient, source: SourceId | string, coe
   } else if (item.quantite_min !== undefined && item.quantite_max !== undefined) {
     quantite = null;
   }
-  // Noma : les masses et volumes cités dans la ligne suivent aussi le coefficient (pas les %).
-  if (coef !== 1 && source === 'noma') reste = mettreAEchelleTexte(reste, coef);
+  // Fermentation : les masses et volumes cités dans la ligne suivent aussi le coefficient (pas les %).
+  if (coef !== 1 && estSourceFermentation(source)) reste = mettreAEchelleTexte(reste, coef);
   const plage = reste.match(/^à\s+(\d+(?:[.,]\d+)?)\s*/);
   if (quantite && plage && item.quantite_max !== undefined) {
     quantite = `${quantite} à ${nombre(item.quantite_max * coef, 2)}`;

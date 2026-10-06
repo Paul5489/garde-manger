@@ -421,6 +421,31 @@ button.duree::after {
   margin: 0.25em 0;
 }
 
+/* Tableaux (comparaisons) : défilent de côté s'ils sont trop larges pour l'écran. */
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.markdown th,
+.markdown td {
+  padding: 6px 8px;
+  border: 0.5px solid var(--trait);
+  text-align: left;
+  vertical-align: top;
+  min-width: 7.5em;
+}
+
+.markdown th {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
 .markdown .page {
   display: block;
   margin: 1.2em 0 0.4em;

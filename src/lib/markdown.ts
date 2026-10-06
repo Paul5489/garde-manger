@@ -19,7 +19,9 @@ const marked = new Marked({
       return sortie;
     },
     link(token: Tokens.Link): string {
-      return this.parser.parseInline(token.tokens); // pas de liens sortants depuis les textes de livres
+      const texte = this.parser.parseInline(token.tokens);
+      // Liens internes de l'appli (« #/fiche/… ») seulement : pas de liens sortants depuis les textes de livres.
+      return /^#\/[\w/.-]+$/.test(token.href) ? `<a href="${echapper(token.href)}">${texte}</a>` : texte;
     },
     image(): string {
       return '';

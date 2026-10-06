@@ -4,7 +4,7 @@
 import type MiniSearch from 'minisearch';
 import type { DocRecherche } from './archive';
 import { db } from './db';
-import { empreinte, estExclue } from './exclusions';
+import { empreinte, estRetiree } from './exclusions';
 import { masquees } from './masquees.svelte';
 import { mesRecettes } from './mes-recettes.svelte';
 import { completerAvecLeLivre, paireDuLivre } from './methode-livre';
@@ -29,6 +29,7 @@ class EtatApp {
     );
   });
   parId = $derived(new Map(this.catalogue.map((r) => [r.id, r])));
+  #idsArchive = $derived(new Set(this.catalogueArchive.map((r) => r.id)));
   index = $state.raw<MiniSearch<DocRecherche> | null>(null);
   #chargementIndex: Promise<MiniSearch<DocRecherche> | null> | null = null;
 
@@ -42,7 +43,7 @@ class EtatApp {
       }
       this.archive = archive.valeur as InfosArchive;
       // Les pages écartées disparaissent tout de suite, même si l'archive a été importée avant le tri.
-      this.catalogueArchive = (catalogue.valeur as Resume[]).filter((r) => !estExclue(r.id));
+      this.catalogueArchive = (catalogue.valeur as Resume[]).filter((r) => !estRetiree(r.id));
       this.index = null;
       this.#chargementIndex = null;
       this.statut = 'pret';
@@ -61,6 +62,11 @@ class EtatApp {
       return this.index;
     });
     return this.#chargementIndex;
+  }
+
+  /** La fiche existe dans l'archive importée (une copie modifiée peut alors revenir à l'original). */
+  aUnOriginal(id: string): boolean {
+    return this.#idsArchive.has(id);
   }
 
   async fiche(id: string): Promise<Fiche | undefined> {
