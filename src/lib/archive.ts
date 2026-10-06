@@ -126,7 +126,16 @@ export function categorieDe(f: Fiche): string | undefined {
   return undefined;
 }
 
+/**
+ * Recette ajoutée par Paul : source « perso », ou identifiant « perso-… » (recettes ajoutées le 05/10/2026
+ * par fichier de sauvegarde, avec la source « notes-perso »).
+ */
+export function estMaRecette(f: Pick<Fiche, 'id' | 'source'>): boolean {
+  return f.source.id === 'perso' || f.id.startsWith('perso-');
+}
+
 export function universDe(f: Fiche): Univers[] {
+  if (estMaRecette(f)) return ['perso'];
   const u: Univers[] = [];
   const s = f.source.id;
   if (s === 'marc-winer') u.push('asiatique');

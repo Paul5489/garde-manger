@@ -71,3 +71,13 @@ describe('recherche : mes recettes passent devant l’archive', () => {
     expect(chercher([perso, archive], 'sirop gingenbre')[0]).toBe(fiche.id); // faute de frappe
   });
 });
+
+describe('recettes ajoutées le 05/10/2026 (source « notes-perso », id « perso-… »)', async () => {
+  const { estMaRecette } = await import('../src/lib/archive');
+  it('sont reconnues comme mes recettes', () => {
+    const ancienne = { ...fiche, id: 'perso-tisane', source: { id: 'notes-perso' as const, nom: 'Mes recettes' } };
+    expect(estMaRecette(ancienne)).toBe(true);
+    expect(resumer(ancienne).univers).toEqual(['perso']);
+    expect(estMaRecette({ id: 'notes-court-mouillement', source: { id: 'notes-perso', nom: 'Mes notes' } })).toBe(false);
+  });
+});

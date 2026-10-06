@@ -19,7 +19,7 @@
   import ReglagePortions from '../composants/ReglagePortions.svelte';
   import TexteComplet from '../composants/TexteComplet.svelte';
   import TexteEtape from '../composants/TexteEtape.svelte';
-  import { NOMS_SOURCES, NOMS_TYPES, categorieDe } from '../lib/archive';
+  import { NOMS_SOURCES, NOMS_TYPES, categorieDe, estMaRecette } from '../lib/archive';
   import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
   import { etat } from '../lib/etat.svelte';
@@ -183,7 +183,7 @@
           <Heart size={24} fill={favori ? 'currentColor' : 'none'} />
         </button>
       {/if}
-      {#if fiche?.source.id === 'perso'}
+      {#if fiche && estMaRecette(fiche)}
         <a class="bouton-icone" href={lienEditionRecette(fiche.id)} aria-label="Modifier ma recette"><Pencil size={22} /></a>
       {/if}
       {#if fiche?.etapes?.length}
@@ -405,7 +405,7 @@
 
       <CarnetFiche fiche={f} />
 
-      {#if f.source.id === 'perso'}
+      {#if estMaRecette(f)}
         <section class="ma-recette">
           <p class="discret petit">
             {['Ma recette', f.creeLe ? `ajoutée le ${date(f.creeLe)}` : '', f.modifieLe && f.creeLe && f.modifieLe - f.creeLe > 60_000 ? `modifiée le ${date(f.modifieLe)}` : '']

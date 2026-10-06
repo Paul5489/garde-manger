@@ -15,8 +15,11 @@ class EtatApp {
   archive = $state<InfosArchive | null>(null);
   /** Fiches de l'archive importée (sans les pages « hors cuisine »). */
   catalogueArchive = $state.raw<Resume[]>([]);
-  /** Archive + mes recettes. */
-  catalogue = $derived([...this.catalogueArchive, ...mesRecettes.resumes]);
+  /** Archive + mes recettes (une recette perso de même identifiant qu'une fiche de l'archive la remplace). */
+  catalogue = $derived.by(() => {
+    const perso = new Set(mesRecettes.liste.map((f) => f.id));
+    return [...this.catalogueArchive.filter((r) => !perso.has(r.id)), ...mesRecettes.resumes];
+  });
   parId = $derived(new Map(this.catalogue.map((r) => [r.id, r])));
   index = $state.raw<MiniSearch<DocRecherche> | null>(null);
   #chargementIndex: Promise<MiniSearch<DocRecherche> | null> | null = null;
@@ -53,8 +56,7 @@ class EtatApp {
   }
 
   async fiche(id: string): Promise<Fiche | undefined> {
-    if (id.startsWith('perso-')) return mesRecettes.trouver(id) ?? db.mesRecettes.get(id);
-    return db.fiches.get(id);
+    return mesRecettes.trouver(id) ?? (await db.mesRecettes.get(id)) ?? db.fiches.get(id);
   }
 }
 
