@@ -14,6 +14,7 @@
   } from '@lucide/svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
   import { ajout } from '../lib/ajout.svelte';
+  import { estMaRecette } from '../lib/archive';
   import { annonce } from '../lib/annonce.svelte';
   import { etat } from '../lib/etat.svelte';
   import { pluriel } from '../lib/format';
@@ -45,6 +46,7 @@
 
   const recentes = $derived(
     mesRecettes.liste
+      .filter(estMaRecette)
       .slice(0, 5)
       .map((f) => etat.parId.get(f.id))
       .filter((r): r is Resume => !!r),

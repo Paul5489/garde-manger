@@ -6,7 +6,7 @@ Tes recettes ne sont jamais sur Internet : elles sont copiées une seule fois da
 `archive_complete.json` du Mac. Tout le reste (favoris, courses, bocaux…) reste aussi dans le téléphone.
 
 **Sommaire** : 1. Installer · 2. Importer les recettes · 3. Les onglets · 4. Fiche, mode cuisine et minuteurs ·
-5. Favoris, notes et carnet · 5 bis. Ajouter une recette · 5 ter. Supprimer · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
+5. Favoris, notes et carnet · 5 bis. Ajouter une recette · 5 ter. Modifier · 5 quater. Supprimer · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
 10. Mettre à jour les recettes · 11. Mettre à jour l'application · 12. Hors ligne · 13. En cas de problème
 
 ---
@@ -43,8 +43,10 @@ l'application installée et Safari ne partagent pas leurs données.
 
 ## 3. Les onglets
 
-- **Accueil** : les grands univers (asiatique, française, techniques, fermentation), tes bocaux en cours,
-  tes favoris, ce que tu as cuisiné récemment et des idées du jour. ⚙️ en haut à droite : les Réglages.
+- **Accueil** : **Aujourd'hui** (bocaux à goûter ou prêts, courses à faire), **Que veux-tu cuisiner ?** (Entrées,
+  Plats, Desserts, Soupes, Accompagnements, Sauces, Boissons, Fermentation, Techniques pro — toutes sources
+  mélangées), tes **favoris** et ce que tu as **cuisiné récemment** (bandeaux qui défilent), puis **Par origine**
+  (cuisine asiatique, française, mes recettes). ⚙️ en haut à droite : les Réglages.
 - **Recherche** : tape un titre, un ingrédient ou une technique (« creme » trouve « crème », les fautes légères
   passent). **Filtres** : source, catégorie, temps, type de plat, et **Mes fiches** (favoris, déjà cuisinées).
 - **Frigo** : les recettes possibles avec ce que tu as (partie 7).
@@ -98,7 +100,16 @@ tes modifications.
 Tes recettes se mêlent aux autres (recherche, Frigo, courses, favoris) ; Recherche › Filtres › Univers
 « Mes recettes » les montre seules. Pour en changer une : le **crayon** en haut de la fiche.
 
-## 5 ter. Supprimer une recette
+## 5 ter. Modifier une recette
+
+Toutes les recettes se modifient, même celles des livres et des sites : le **crayon** en haut de la fiche, ou
+**Modifier** en bas. Change ce que tu veux (titre, portions, temps, ingrédients — une ligne chacun —, étapes — une
+ligne chacune ; une ligne qui commence par « - » est un détail de l'étape au-dessus —, remarques), puis
+**Enregistrer les modifications**. Ta version remplace l'originale partout (recherche, Frigo, courses) et reste après
+une mise à jour des recettes. En bas de la fiche : « Modifiée par toi le … » et **Revenir à l'original** pour effacer
+tes changements.
+
+## 5 quater. Supprimer une recette
 
 En bas de chaque fiche : **Supprimer**. Une recette ajoutée par toi est effacée. Une recette des livres et sites
 disparaît de l'appli (recherche, Frigo, listes), même après une mise à jour des recettes ; tu peux la remettre :

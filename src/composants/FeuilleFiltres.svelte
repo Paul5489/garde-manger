@@ -7,7 +7,7 @@
 
   let { ouvert = $bindable(false) }: { ouvert: boolean } = $props();
 
-  const sections: CleFiltre[] = ['perso', 'univers', 'types', 'sources', 'temps', 'categories', 'cuisines', 'typesDePlat'];
+  const sections: CleFiltre[] = ['perso', 'rubriques', 'univers', 'types', 'sources', 'temps', 'categories', 'cuisines'];
 </script>
 
 {#if ouvert}

@@ -51,7 +51,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 179 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 187 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -128,6 +128,18 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   `lireReponseClaude` trouve le bloc JSON et tolère champs manquants ou mal typés. Module léger commun :
   `lecture-recette.ts` (CONSIGNES, RecetteLue, versFiche, unités).
   Une réponse JSON collée par erreur dans la zone « Texte copié » est reconnue par « Ranger sans Claude ».
+- **Modifier n'importe quelle recette** (06/10/2026) : crayon / « Modifier » sur toutes les fiches de type recette.
+  Une recette de l'archive modifiée = copie **de même id** dans `mesRecettes` (source, classement, texte du livre…
+  gardés) qui la remplace partout (`etat.catalogue`, recherche « mes recettes d'abord », Frigo), même après réimport ;
+  « Revenir à l'original » supprime la copie. `construireFiche(b, existante)` part d'une copie de la fiche et ne
+  change que les champs retouchés (détection par comparaison avec `ficheVersBrouillon`) ; lignes d'ingrédients
+  lisibles pour les fiches pro (« 40 g beurre », « Sel fin (PM) »), étapes avec détails en lignes « - … », durée et
+  renvois gardés pour les étapes au texte inchangé ; toute ligne finissant par « : » ouvre un groupe. Testé : toutes
+  les recettes de l'archive passent le formulaire sans changement, quantités identiques à > 97 % après retouche.
+- **Accueil « par type de plat »** (choix de Paul, 06/10/2026, parmi 3 maquettes) : Aujourd'hui (bocaux à goûter /
+  prêts / en cours, courses à acheter), « Que veux-tu cuisiner ? » (`rubriques.ts` : type de plat déduit des chapitres
+  des livres et du type de plat des blogs / mes recettes ; aussi filtre « Type de plat » de la Recherche, qui remplace
+  l'ancien), favoris et cuisiné récemment en bandeaux (`Bandeau.svelte`), « Par origine ». Plus d'« Idées du jour ».
 - **Supprimer une recette** : recette perso = effacée ; fiche de l'archive = **masquée** (`masquees.svelte.ts`,
   réglage `fichesSupprimees`, donc sauvegardé et gardé au réimport), filtrée du catalogue et du Frigo,
   récupérable dans Réglages › Recettes supprimées ; « Annuler » dans l'annonce.
@@ -306,6 +318,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.6.0** (06/10/2026) : modifier n'importe quelle recette (copie qui remplace l'original, « Revenir à l'original ») ;
+  nouvel accueil par type de plat.
 - **1.5.0** (06/10/2026) : option payante retirée (bouton « Analyser avec Claude », Réglages › Claude, kit Anthropic,
   prise de photo dans Garde-manger) ; seule reste la façon gratuite par l'app Claude (+ rangement local).
 - **1.4.0** (06/10/2026) : façon gratuite avec l'app Claude (copier la demande → coller la réponse) mise en premier ;

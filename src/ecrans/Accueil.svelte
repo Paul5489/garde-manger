@@ -1,48 +1,60 @@
 <script lang="ts">
-  import { Search, Settings } from '@lucide/svelte';
+  // Accueil « par type de plat » (choix de Paul, 06/10/2026) : ce qui m'attend aujourd'hui,
+  // « Que veux-tu cuisiner ? » (toutes sources mélangées), mes favoris et ce que j'ai cuisiné récemment.
+  import { ChevronRight, Search, Settings } from '@lucide/svelte';
   import AideInstallation from '../composants/AideInstallation.svelte';
-  import CarteBocal from '../composants/CarteBocal.svelte';
-  import ListeFiches from '../composants/ListeFiches.svelte';
+  import Bandeau from '../composants/Bandeau.svelte';
   import { UNIVERS } from '../lib/archive';
+  import { etatEtape, libelleAvancement } from '../lib/bocaux';
   import { bocaux } from '../lib/bocaux.svelte';
+  import { courses } from '../lib/courses.svelte';
   import { etat } from '../lib/etat.svelte';
-  import { nombre } from '../lib/format';
+  import { nombre, pluriel } from '../lib/format';
   import { perso } from '../lib/perso.svelte';
   import { recherche } from '../lib/recherche.svelte';
-  import { routeur } from '../lib/routeur.svelte';
+  import { lienBocal, routeur } from '../lib/routeur.svelte';
+  import { rubriqueDe, RUBRIQUES, type Rubrique } from '../lib/rubriques';
   import type { Resume, Univers } from '../lib/types';
 
-  const compte = $derived.by(() => {
-    const c: Record<Univers, number> = { asiatique: 0, francaise: 0, techniques: 0, fermentation: 0, perso: 0 };
-    for (const r of etat.catalogue) for (const u of r.univers) c[u]++;
+  // Nombre de fiches par type de plat et par origine.
+  const parRubrique = $derived.by(() => {
+    const c = new Map<Rubrique, number>();
+    for (const r of etat.catalogue) c.set(rubriqueDe(r), (c.get(rubriqueDe(r)) ?? 0) + 1);
     return c;
   });
-
-  // Idées du jour : 4 recettes tirées au sort, les mêmes toute la journée.
-  const idees = $derived.by(() => {
-    const recettes = etat.catalogue.filter((r) => r.type === 'recette');
-    if (!recettes.length) return [];
-    const jour = new Date();
-    let graine = jour.getFullYear() * 10000 + (jour.getMonth() + 1) * 100 + jour.getDate();
-    const alea = () => {
-      graine = (graine * 1103515245 + 12345) % 2147483648;
-      return graine / 2147483648;
-    };
-    const choix = new Set<number>();
-    while (choix.size < Math.min(4, recettes.length)) choix.add(Math.floor(alea() * recettes.length));
-    return [...choix].map((i) => recettes[i]);
+  const parUnivers = $derived.by(() => {
+    const c = new Map<Univers, number>();
+    for (const r of etat.catalogue) for (const u of r.univers) c.set(u, (c.get(u) ?? 0) + 1);
+    return c;
   });
+  const tuiles = $derived(RUBRIQUES.filter((r) => r.id === 'techniques' || (parRubrique.get(r.id) ?? 0) > 0));
 
   const favoris = $derived(perso.idsFavoris.map((id) => etat.parId.get(id)).filter((r): r is Resume => !!r));
   const recents = $derived(
     perso.idsCuisines
       .map((id) => etat.parId.get(id))
       .filter((r): r is Resume => !!r)
-      .slice(0, 5),
+      .slice(0, 10),
   );
 
-  function ouvrir(u: Univers) {
+  // « Aujourd'hui » : bocaux à goûter ou prêts, bocaux en cours, courses à faire.
+  const aGouter = $derived(bocaux.parRubrique['a-gouter']);
+  const prets = $derived(bocaux.parRubrique.prets);
+  const enCours = $derived(bocaux.parRubrique['en-cours']);
+  const rienAujourdhui = $derived(!aGouter.length && !prets.length && !enCours.length && !courses.restants.length);
+
+  function ouvrirRubrique(r: Rubrique) {
+    recherche.ouvrirRubrique(r);
+    routeur.ouvrirOnglet('recherche');
+  }
+
+  function ouvrirUnivers(u: Univers) {
     recherche.ouvrirUnivers(u);
+    routeur.ouvrirOnglet('recherche');
+  }
+
+  function toutVoirFavoris() {
+    recherche.ouvrirFavoris();
     routeur.ouvrirOnglet('recherche');
   }
 
@@ -66,47 +78,85 @@
     Rechercher une recette, un ingrédient…
   </button>
 
-  <div class="univers">
-    {#each UNIVERS.filter((u) => u.id !== 'perso') as u (u.id)}
-      <button class="tuile" style:--couleur="var(--u-{u.id})" onclick={() => ouvrir(u.id)}>
-        <span class="emoji" aria-hidden="true">{u.emoji}</span>
-        <span class="titre-tuile">{u.titre}</span>
-        <span class="sous-titre">{u.sousTitre}</span>
-        <span class="nombre">{nombre(compte[u.id], 0)} fiches</span>
+  {#if !rienAujourdhui}
+    <h2 class="section-titre">Aujourd'hui</h2>
+    <ul class="liste aujourdhui">
+      {#each aGouter as b (b.id)}
+        <li>
+          <a href={lienBocal(b.id)}>
+            <span class="pictogramme" aria-hidden="true">🥄</span>
+            <span class="texte">À goûter : <strong>{b.nom}</strong>
+              <span class="discret">· {libelleAvancement(etatEtape(b, bocaux.maintenant))}</span></span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/each}
+      {#each prets as b (b.id)}
+        <li>
+          <a href={lienBocal(b.id)}>
+            <span class="pictogramme" aria-hidden="true">✅</span>
+            <span class="texte">Prêt : <strong>{b.nom}</strong></span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/each}
+      {#if enCours.length && !aGouter.length && !prets.length}
+        <li>
+          <a href="#/bocaux">
+            <span class="pictogramme" aria-hidden="true">🫙</span>
+            <span class="texte">{pluriel(enCours.length, 'bocal en cours', 'bocaux en cours')}</span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/if}
+      {#if courses.restants.length}
+        <li>
+          <a href="#/courses">
+            <span class="pictogramme" aria-hidden="true">🛒</span>
+            <span class="texte">Courses : <strong>{pluriel(courses.restants.length, 'article', 'articles')}</strong> à acheter</span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/if}
+    </ul>
+  {/if}
+
+  <h2 class="section-titre">Que veux-tu cuisiner ?</h2>
+  <div class="rubriques">
+    {#each tuiles as t (t.id)}
+      <button class="tuile" class:large={t.id === 'techniques'} onclick={() => ouvrirRubrique(t.id)}>
+        <span class="emoji" aria-hidden="true">{t.emoji}</span>
+        <span class="texte-tuile">
+          <span class="nom-tuile">{t.titre}</span>
+          <span class="nombre">{pluriel(parRubrique.get(t.id) ?? 0, 'fiche')}</span>
+        </span>
       </button>
     {/each}
   </div>
 
-  {#if bocaux.parRubrique['a-gouter'].length || bocaux.parRubrique.prets.length || bocaux.parRubrique['en-cours'].length}
-    {@const r = bocaux.parRubrique}
-    <h2 class="section-titre">Mes bocaux</h2>
-    {#if r['a-gouter'].length}
-      <p class="rappel ambre">🥄 À goûter aujourd'hui : <strong>{r['a-gouter'].map((b) => b.nom).join(', ')}</strong></p>
-    {/if}
-    {#if r.prets.length}
-      <p class="rappel vert">✓ Prêt : <strong>{r.prets.map((b) => b.nom).join(', ')}</strong></p>
-    {/if}
-    <div class="bocaux">
-      {#each [...r['a-gouter'], ...r.prets, ...r['en-cours']] as b (b.id)}
-        <CarteBocal bocal={b} maintenant={bocaux.maintenant} />
-      {/each}
-    </div>
-  {/if}
-
   {#if favoris.length}
-    <h2 class="section-titre">Mes favoris</h2>
-    <ListeFiches fiches={favoris} />
+    <div class="entete-section">
+      <h2 class="section-titre">Mes favoris</h2>
+      <button class="tout-voir" onclick={toutVoirFavoris}>Tout voir <ChevronRight size={16} /></button>
+    </div>
+    <Bandeau fiches={favoris} />
   {/if}
 
   {#if recents.length}
     <h2 class="section-titre">Cuisiné récemment</h2>
-    <ListeFiches fiches={recents} />
+    <Bandeau fiches={recents} />
   {/if}
 
-  {#if idees.length}
-    <h2 class="section-titre">Idées du jour</h2>
-    <ListeFiches fiches={idees} />
-  {/if}
+  <h2 class="section-titre">Par origine</h2>
+  <div class="origines">
+    {#each UNIVERS.filter((u) => u.id !== 'techniques' && u.id !== 'fermentation' && (parUnivers.get(u.id) ?? 0) > 0) as u (u.id)}
+      <button class="puce" onclick={() => ouvrirUnivers(u.id)}>
+        <span aria-hidden="true">{u.emoji}</span>
+        {u.titre}
+        <span class="discret">{nombre(parUnivers.get(u.id) ?? 0, 0)}</span>
+      </button>
+    {/each}
+  </div>
 </div>
 
 <style>
@@ -126,88 +176,126 @@
     text-align: left;
   }
 
-  .rappel {
-    margin: 0 0 8px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-size: 15px;
-  }
-
-  .rappel.ambre {
-    background: var(--ambre-doux);
-    color: var(--ambre);
-  }
-
-  .rappel.vert {
-    background: var(--vert-doux);
-    color: var(--vert);
-  }
-
-  .bocaux {
+  .aujourdhui a {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 8px 12px 8px 14px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .aujourdhui a:active {
+    background: var(--surface-2);
+  }
+
+  .pictogramme {
+    font-size: 20px;
+    width: 26px;
+    text-align: center;
+  }
+
+  .aujourdhui .texte {
+    flex: 1;
+    min-width: 0;
+    font-size: 15.5px;
+  }
+
+  .aujourdhui :global(.chevron) {
+    flex: none;
+    color: var(--texte-3);
+  }
+
+  .rubriques {
+    display: grid;
+    /* minmax(0, 1fr) : les colonnes ne s'élargissent jamais au-delà de l'écran */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
-  .univers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 16px;
-  }
-
   .tuile {
-    position: relative;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    min-height: 132px;
-    padding: 14px;
+    align-items: center;
+    gap: 10px;
+    min-height: 60px;
+    padding: 10px 12px;
     border: none;
     border-radius: var(--rayon);
-    background: var(--couleur);
-    color: #fff;
-    text-align: left;
+    background: var(--surface);
     box-shadow: var(--ombre);
-    overflow: hidden;
+    text-align: left;
+    color: var(--texte);
   }
 
   .tuile:active {
-    filter: brightness(0.92);
+    background: var(--surface-2);
   }
 
-  @media (prefers-color-scheme: dark) {
-    .tuile {
-      background: color-mix(in srgb, var(--couleur) 30%, var(--surface));
-      color: var(--texte);
-    }
+  .tuile.large {
+    grid-column: 1 / -1;
   }
 
   .emoji {
-    font-size: 30px;
-    line-height: 1;
-    margin-bottom: 8px;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    background: var(--accent-doux);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
   }
 
-  .titre-tuile {
-    font-family: var(--police-titre);
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 1.15;
+  .texte-tuile {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
   }
 
-  .sous-titre {
-    font-size: 12.5px;
-    opacity: 0.85;
-    line-height: 1.25;
+  .nom-tuile {
+    font-weight: 600;
+    font-size: 15.5px;
+    line-height: 1.2;
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 
   .nombre {
-    margin-top: auto;
-    padding-top: 8px;
-    font-size: 13px;
+    font-size: 12.5px;
+    color: var(--texte-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entete-section {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .tout-voir {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px;
+    border: none;
+    background: none;
+    color: var(--accent);
+    font-size: 15px;
     font-weight: 600;
-    opacity: 0.9;
+    padding: 0 0 0 8px;
+  }
+
+  .origines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+
+  .origines .puce {
+    min-height: 40px;
   }
 </style>

@@ -3,7 +3,7 @@
 // puis présenté dans un formulaire pour vérifier et corriger avant d'enregistrer.
 
 import { trouverDurees } from './durees';
-import { lireNombre } from './quantites';
+import { estFormatPro, ligneIngredient, lireNombre, mentionneFacultatif } from './quantites';
 import { majuscule, normaliser } from './texte';
 import type { Duree, Etape, Fiche, GroupeIngredients, Ingredient } from './types';
 
@@ -67,8 +67,8 @@ const MOTS_NOMBRES: Record<string, number> = {
 
 /** Unités reconnues (formes écrites → unité de la fiche). L'ordre compte : les plus longues d'abord. */
 const UNITES: [RegExp, string, number?][] = [
-  [/^cuill[eè]res?\s+(?:à|a)\s+soupe|^c\.?\s*(?:à|a)\s*s\.?|^c\.?\s*s\.?(?=\s)|^càs/i, 'cuillère à soupe'],
-  [/^cuill[eè]res?\s+(?:à|a)\s+caf[ée]|^c\.?\s*(?:à|a)\s*c\.?|^c\.?\s*c\.?(?=\s)|^càc/i, 'cuillère à café'],
+  [/^cuill[eè]res?\s+(?:à|a)\s+soupe|^c\.?\s*(?:à|a)\s*soupe|^c\.?\s*(?:à|a)\s*s\.?|^c\.?\s*s\.?(?=\s)|^càs/i, 'cuillère à soupe'],
+  [/^cuill[eè]res?\s+(?:à|a)\s+caf[ée]|^c\.?\s*(?:à|a)\s*caf[ée]|^c\.?\s*(?:à|a)\s*c\.?|^c\.?\s*c\.?(?=\s)|^càc/i, 'cuillère à café'],
   [/^kilogrammes?|^kgs?/i, 'kg'],
   [/^grammes?|^gr?\.?(?=\s|$|['’])/i, 'g'],
   [/^millilitres?|^ml/i, 'ml'],
@@ -119,6 +119,7 @@ export function lireLigneIngredient(ligne: string): Ingredient {
   const texte = ligne.replace(/\s+/g, ' ').trim();
   const item: Ingredient = { nom: texte, texte_original: texte };
   if (/facultati|optionnel/i.test(texte)) item.optionnel = true;
+  const pourMemoire = /\(\s*pm\s*\)|\bpm$|pour m[ée]moire/i.test(texte);
   const m = texte.match(DEBUT);
   let reste = texte;
   if (m) {
@@ -153,7 +154,8 @@ export function lireLigneIngredient(ligne: string): Ingredient {
     .replace(/\s*\([^)]*\)/g, '')
     .replace(/\s+/g, ' ')
     .trim();
-  item.nom = nom || texte;
+  item.nom = nom.replace(/\s+pm$/i, '') || texte;
+  if (pourMemoire && item.quantite === undefined) item.pour_memoire = true;
   return item;
 }
 
@@ -293,94 +295,25 @@ function lignes(t: string): string[] {
     .filter(Boolean);
 }
 
-/** Champs que le formulaire ne montre pas : gardés tels quels lors d'une modification (ou d'une lecture par Claude). */
-const CHAMPS_CONSERVES = [
-  'fermentation',
-  'materiel',
-  'variantes',
-  'utilisations',
-  'techniques_mises_en_oeuvre',
-  'tableau_brix_alcool',
-  'ingredients_supplementaires',
-] as const;
-
-/**
- * Construit la fiche à enregistrer à partir du formulaire. Avec une fiche de base (modification, ou recette
- * lue par Claude), les ingrédients et les étapes non retouchés sont repris tels quels (rien n'est perdu).
- */
-export function construireFiche(b: Brouillon, existante?: Fiche): Fiche {
-  const maintenant = Date.now();
-  const depart = existante ? ficheVersBrouillon(existante) : null;
-  const titre = b.titre.trim() || 'Recette sans titre';
-  const groupes: GroupeIngredients[] = [];
-  let courant: GroupeIngredients = { items: [] };
-  for (const l of lignes(b.ingredients)) {
-    if (/:$/.test(l) && l.length <= 60) {
-      if (courant.items!.length || courant.groupe) groupes.push(courant);
-      courant = { groupe: majuscule(l.replace(/\s*:$/, '').replace(/^pour (le |la |les |l['’])?/i, '')), items: [] };
-      continue;
-    }
-    const alternative = /^ou\s+/i.test(l);
-    const item = lireLigneIngredient(l.replace(/^ou\s+/i, ''));
-    if (alternative && courant.items!.length) item.alternative_du_precedent = true;
-    courant.items!.push(item);
-  }
-  if (courant.items!.length || courant.groupe) groupes.push(courant);
-
-  const etapes: Etape[] = lignes(b.etapes).map((l, i) => {
-    const e: Etape = { numero: i + 1, texte: l };
-    const m = l.match(/^([^:]{3,45})\s*:\s+(.{20,})$/);
-    if (m && !/\d$/.test(m[1])) {
-      e.phase = majuscule(m[1].trim());
-      e.texte = majuscule(m[2].trim());
-    }
-    return e;
-  });
-
-  const temps: Record<string, Duree> = {};
-  for (const [cle, val] of [
-    ['preparation', b.preparation],
-    ['cuisson', b.cuisson],
-    ['repos', b.repos],
-  ] as const) {
-    const d = duree(val);
-    if (d) temps[cle] = d;
-  }
-
-  const f: Fiche = {
-    id: existante?.id ?? nouvelIdRecette(titre),
-    type: 'recette',
-    titre,
-    langue: 'fr',
-    source: { id: 'perso', nom: 'Mes recettes' },
-    classement: {},
-    creeLe: existante?.creeLe ?? maintenant,
-    modifieLe: maintenant,
-  };
-  const c = f.classement!;
-  if (b.categorie.trim()) c.categorie = majuscule(b.categorie.trim());
-  if (b.typeDePlat.trim()) c.type_de_plat = [majuscule(b.typeDePlat.trim())];
-  if (b.cuisine.trim()) c.cuisine = b.cuisine.split(',').map((x) => majuscule(x.trim())).filter(Boolean);
-  if (b.description.trim()) f.description = b.description.trim();
-  const n = lireNombre(b.portions.trim());
-  if (n && n > 0) {
-    const unite = b.unitePortions.trim() || 'personnes';
-    f.portions = { nombre: n, unite, texte: `${b.portions.trim()} ${unite}` };
-  }
-  if (b.rendement.trim()) f.rendement = b.rendement.trim();
-  if (Object.keys(temps).length) f.temps = temps;
-  if (depart && existante?.ingredients && b.ingredients === depart.ingredients) f.ingredients = existante.ingredients;
-  else if (groupes.length) f.ingredients = groupes;
-  if (depart && existante?.etapes && b.etapes === depart.etapes) f.etapes = existante.etapes;
-  else if (etapes.length) f.etapes = etapes;
-  for (const champ of CHAMPS_CONSERVES) if (existante?.[champ] !== undefined) (f as unknown as Record<string, unknown>)[champ] = existante[champ];
-  const notes = lignes(b.notes);
-  if (notes.length) f.notes = notes;
-  if (b.texteSource?.trim()) f.texte_source = b.texteSource.trim();
-  return f;
+/** Phase d'étape utile (les en-têtes de colonne du livre, « DURÉE MOYENNE… », n'en sont pas). */
+function phaseUtile(p?: string): string | null {
+  const t = p?.trim();
+  return t && !/^DUR[ÉE]E/i.test(t) ? t : null;
 }
 
-/** Remet une fiche perso dans le formulaire (pour la modifier). */
+/** Ligne d'ingrédient lisible et modifiable (« 40 g beurre », « Sel fin (PM) », ligne d'origine pour les blogs). */
+function ligneEditable(item: Ingredient, source: string): string {
+  let ligne: string;
+  if (estFormatPro(source)) {
+    const l = ligneIngredient(item, source);
+    const nom = (item.nom ?? '').replace(/\s*:\s*$/, '').trim();
+    ligne = l.pm ? `${nom} (PM)` : l.quantite ? `${l.quantite} ${nom}` : nom;
+  } else ligne = (item.texte_original ?? item.nom ?? '').replace(/\s*:\s*$/, '').trim();
+  if (item.optionnel && !mentionneFacultatif(ligne)) ligne += ' (facultatif)';
+  return `${item.alternative_du_precedent ? 'ou ' : ''}${ligne.replace(/\s+/g, ' ')}`;
+}
+
+/** Remet une fiche (perso ou de l'archive) dans le formulaire, pour la modifier. */
 export function ficheVersBrouillon(f: Fiche): Brouillon {
   const b = brouillonVide();
   b.titre = f.titre;
@@ -395,13 +328,155 @@ export function ficheVersBrouillon(f: Fiche): Brouillon {
   b.cuisson = f.temps?.cuisson?.texte ?? '';
   b.repos = f.temps?.repos?.texte ?? '';
   b.ingredients = (f.ingredients ?? [])
-    .flatMap((g) => [
-      ...(g.groupe ? [`${g.groupe} :`] : []),
-      ...(g.items ?? []).map((i) => `${i.alternative_du_precedent ? 'ou ' : ''}${i.texte_original ?? i.nom}`),
-    ])
+    .flatMap((g) => [...(g.groupe?.trim() ? [`${g.groupe.trim()} :`] : []), ...(g.items ?? []).map((i) => ligneEditable(i, f.source.id))])
     .join('\n');
-  b.etapes = (f.etapes ?? []).map((e) => (e.phase ? `${e.phase} : ${e.texte}` : e.texte)).join('\n');
+  b.etapes = (f.etapes ?? [])
+    .flatMap((e) => {
+      const phase = phaseUtile(e.phase);
+      return [phase ? `${phase} : ${e.texte}` : e.texte, ...(e.details ?? []).map((d) => `- ${d}`)];
+    })
+    .join('\n');
   b.notes = (f.notes ?? []).join('\n');
   b.texteSource = f.texte_source;
   return b;
+}
+
+function lireIngredients(texte: string): GroupeIngredients[] {
+  const groupes: GroupeIngredients[] = [];
+  let courant: GroupeIngredients = { items: [] };
+  for (const l of lignes(texte)) {
+    if (/:$/.test(l)) {
+      if (courant.items!.length || courant.groupe) groupes.push(courant);
+      courant = { groupe: majuscule(l.replace(/\s*:$/, '').replace(/^pour (le |la |les |l['’])?/i, '')), items: [] };
+      continue;
+    }
+    const alternative = /^ou\s+/i.test(l);
+    const item = lireLigneIngredient(l.replace(/^ou\s+/i, ''));
+    if (alternative && courant.items!.length) item.alternative_du_precedent = true;
+    courant.items!.push(item);
+  }
+  if (courant.items!.length || courant.groupe) groupes.push(courant);
+  return groupes;
+}
+
+/**
+ * Étapes : une par ligne ; « Titre : texte » donne un titre ; une ligne commençant par « - » est un détail de
+ * l'étape précédente. Durée et renvois de pages d'une étape dont le texte n'a pas changé sont gardés.
+ */
+function lireEtapes(texte: string, anciennes: Etape[] = []): Etape[] {
+  const parTexte = new Map(anciennes.map((e) => [normaliser(e.texte).trim(), e]));
+  const etapes: Etape[] = [];
+  for (const l of lignes(texte)) {
+    const detail = l.match(/^[-–•]\s*(.+)$/);
+    if (detail && etapes.length) {
+      (etapes[etapes.length - 1].details ??= []).push(detail[1].trim());
+      continue;
+    }
+    const e: Etape = { numero: etapes.length + 1, texte: l };
+    const m = l.match(/^([^:]{3,45})\s*:\s+(.{20,})$/);
+    if (m && !/\d$/.test(m[1])) {
+      e.phase = majuscule(m[1].trim());
+      e.texte = majuscule(m[2].trim());
+    }
+    const ancienne = parTexte.get(normaliser(e.texte).trim());
+    if (ancienne?.duree) e.duree = ancienne.duree;
+    if (ancienne?.renvois_pages) e.renvois_pages = ancienne.renvois_pages;
+    etapes.push(e);
+  }
+  return etapes;
+}
+
+/**
+ * Construit la fiche à enregistrer à partir du formulaire. Avec une fiche de base (modification d'une recette
+ * perso ou de l'archive, recette lue par Claude), tout ce que le formulaire ne montre pas est gardé (source,
+ * classement, fermentation, matériel, texte du livre…) et seuls les champs retouchés changent : les ingrédients
+ * et les étapes non retouchés sont repris tels quels.
+ */
+export function construireFiche(b: Brouillon, existante?: Fiche): Fiche {
+  const maintenant = Date.now();
+  const depart = existante ? ficheVersBrouillon(existante) : brouillonVide();
+  const change = (champ: keyof Brouillon) => !existante || (b[champ] ?? '') !== (depart[champ] ?? '');
+  const titre = b.titre.trim() || 'Recette sans titre';
+
+  const f: Fiche = existante
+    ? (JSON.parse(JSON.stringify(existante)) as Fiche)
+    : {
+        id: nouvelIdRecette(titre),
+        type: 'recette',
+        titre,
+        langue: 'fr',
+        source: { id: 'perso', nom: 'Mes recettes' },
+        creeLe: maintenant,
+      };
+  f.titre = titre;
+  f.modifieLe = maintenant;
+  if (!existante?.source || existante.source.id === 'perso') f.creeLe ??= maintenant;
+
+  const c = (f.classement = { ...(f.classement ?? {}) });
+  if (change('categorie')) {
+    if (b.categorie.trim()) c.categorie = majuscule(b.categorie.trim());
+    else delete c.categorie;
+  }
+  if (change('typeDePlat')) {
+    if (b.typeDePlat.trim()) c.type_de_plat = [majuscule(b.typeDePlat.trim())];
+    else delete c.type_de_plat;
+  }
+  if (change('cuisine')) {
+    const liste = b.cuisine.split(',').map((x) => majuscule(x.trim())).filter(Boolean);
+    if (liste.length) c.cuisine = liste;
+    else delete c.cuisine;
+  }
+  if (!Object.keys(c).length) delete f.classement;
+
+  if (change('description')) {
+    if (b.description.trim()) f.description = b.description.trim();
+    else delete f.description;
+  }
+  if (change('portions') || change('unitePortions')) {
+    const n = lireNombre(b.portions.trim());
+    if (n && n > 0) {
+      const unite = b.unitePortions.trim() || 'personnes';
+      f.portions = { nombre: n, unite, texte: `${b.portions.trim()} ${unite}` };
+    } else delete f.portions;
+  }
+  if (change('rendement')) {
+    if (b.rendement.trim()) f.rendement = b.rendement.trim();
+    else delete f.rendement;
+  }
+
+  const temps: Record<string, Duree> = { ...(f.temps ?? {}) };
+  let tempsChange = false;
+  for (const [cle, champ] of [
+    ['preparation', 'preparation'],
+    ['cuisson', 'cuisson'],
+    ['repos', 'repos'],
+  ] as const) {
+    if (!change(champ)) continue;
+    tempsChange = true;
+    const d = duree(b[champ]);
+    if (d) temps[cle] = d;
+    else delete temps[cle];
+  }
+  // Le temps total imprimé ne correspond plus si on change la préparation ou la cuisson.
+  if (tempsChange && existante) delete temps.total;
+  if (Object.keys(temps).length) f.temps = temps;
+  else delete f.temps;
+
+  if (change('ingredients')) {
+    const groupes = lireIngredients(b.ingredients);
+    if (groupes.length) f.ingredients = groupes;
+    else delete f.ingredients;
+  }
+  if (change('etapes')) {
+    const etapes = lireEtapes(b.etapes, existante?.etapes);
+    if (etapes.length) f.etapes = etapes;
+    else delete f.etapes;
+  }
+  if (change('notes')) {
+    const notes = lignes(b.notes);
+    if (notes.length) f.notes = notes;
+    else delete f.notes;
+  }
+  if (b.texteSource?.trim()) f.texte_source = b.texteSource.trim();
+  return f;
 }

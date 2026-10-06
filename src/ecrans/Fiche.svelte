@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import { tick } from 'svelte';
-  import { ChefHat, Clock, ExternalLink, Heart, Pencil, ShoppingBasket, Timer, Trash2, Users } from '@lucide/svelte';
+  import { ChefHat, Clock, ExternalLink, Heart, Pencil, ShoppingBasket, Timer, Trash2, Undo2, Users } from '@lucide/svelte';
   import BarreHaut from '../composants/BarreHaut.svelte';
   import CarnetFiche from '../composants/CarnetFiche.svelte';
   import CarteBocal from '../composants/CarteBocal.svelte';
@@ -163,6 +163,16 @@
     routeur.retour();
   }
 
+  /** Copie modifiée d'une fiche de l'archive (elle remplace l'original tant qu'elle existe). */
+  const modifiee = $derived(!!fiche && !estMaRecette(fiche) && !!mesRecettes.trouver(fiche.id));
+
+  async function revenirOriginal(f: Fiche) {
+    if (!confirm(`Revenir à la version d'origine de « ${f.titre} » ? Tes modifications seront effacées.`)) return;
+    await mesRecettes.supprimer(f.id);
+    fiche = (await etat.fiche(f.id)) ?? null;
+    annonce.afficher("Recette d'origine rétablie.");
+  }
+
   /** Fiche de l'archive : masquée partout (récupérable dans Réglages › Recettes supprimées). */
   async function supprimerFicheArchive(f: Fiche) {
     if (!confirm(`Supprimer « ${f.titre} » ?\n\nElle disparaîtra de l'appli. Tu pourras la récupérer dans Réglages › Recettes supprimées.`))
@@ -193,8 +203,8 @@
           <Heart size={24} fill={favori ? 'currentColor' : 'none'} />
         </button>
       {/if}
-      {#if fiche && estMaRecette(fiche)}
-        <a class="bouton-icone" href={lienEditionRecette(fiche.id)} aria-label="Modifier ma recette"><Pencil size={22} /></a>
+      {#if fiche?.type === 'recette'}
+        <a class="bouton-icone" href={lienEditionRecette(fiche.id)} aria-label="Modifier la recette"><Pencil size={22} /></a>
       {/if}
       {#if fiche?.etapes?.length}
         <a class="bouton-icone" href={lienCuisine(fiche.id)} aria-label="Mode cuisine"><ChefHat size={24} /></a>
@@ -436,9 +446,22 @@
       {/if}
 
       {#if !estMaRecette(f)}
-        <button class="bouton secondaire plein supprimer supprimer-archive" onclick={() => supprimerFicheArchive(f)}>
-          <Trash2 size={18} /> Supprimer cette {f.type === 'recette' ? 'recette' : 'fiche'}
-        </button>
+        <section class="actions-archive">
+          {#if modifiee}
+            <p class="discret petit">✏️ {f.modifieLe ? `Modifiée par toi le ${date(f.modifieLe)}.` : 'Modifiée par toi.'}</p>
+          {/if}
+          <div class="actions-perso">
+            {#if f.type === 'recette'}
+              <a class="bouton secondaire" href={lienEditionRecette(f.id)}><Pencil size={18} /> Modifier</a>
+            {/if}
+            <button class="bouton secondaire supprimer" onclick={() => supprimerFicheArchive(f)}><Trash2 size={18} /> Supprimer</button>
+          </div>
+          {#if modifiee}
+            <button class="bouton secondaire plein" onclick={() => revenirOriginal(f)}>
+              <Undo2 size={18} /> Revenir à l'original
+            </button>
+          {/if}
+        </section>
       {/if}
 
       <footer class="pied">
@@ -747,8 +770,15 @@
     color: var(--rouge);
   }
 
-  .supprimer-archive {
+  .actions-archive {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-top: 28px;
+  }
+
+  .actions-archive p {
+    margin: 0;
   }
 
   .texte-source {

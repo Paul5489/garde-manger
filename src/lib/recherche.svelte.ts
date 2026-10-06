@@ -3,6 +3,7 @@
 import { NOMS_SOURCES, NOMS_TYPES, UNIVERS } from './archive';
 import { etat } from './etat.svelte';
 import { mesRecettes } from './mes-recettes.svelte';
+import { NOMS_RUBRIQUES, rubriqueDe, RUBRIQUES, type Rubrique } from './rubriques';
 import { chercher } from './moteur';
 import { perso } from './perso.svelte';
 import { collator } from './texte';
@@ -19,7 +20,8 @@ export interface Filtres {
   types: TypeFiltre[];
   categories: string[];
   cuisines: string[];
-  typesDePlat: string[];
+  /** Type de plat unifié (« Que veux-tu cuisiner ? »), voir rubriques.ts. */
+  rubriques: Rubrique[];
   temps: TempsFiltre[];
 }
 
@@ -32,7 +34,7 @@ export const filtresVides = (): Filtres => ({
   types: [],
   categories: [],
   cuisines: [],
-  typesDePlat: [],
+  rubriques: [],
   temps: [],
 });
 
@@ -56,7 +58,7 @@ export const NOMS_FILTRES: Record<CleFiltre, string> = {
   temps: 'Temps total',
   categories: 'Catégorie',
   cuisines: 'Cuisine',
-  typesDePlat: 'Type de plat',
+  rubriques: 'Type de plat',
 };
 
 function typeFiltre(r: Resume): TypeFiltre {
@@ -81,8 +83,8 @@ function valeurs(r: Resume, cle: CleFiltre): string[] {
       return r.categorie ? [r.categorie] : [];
     case 'cuisines':
       return r.cuisines;
-    case 'typesDePlat':
-      return r.typesDePlat;
+    case 'rubriques':
+      return [rubriqueDe(r)];
     case 'perso':
       return [...(perso.estFavori(r.id) ? ['favoris'] : []), ...(perso.aCuisine(r.id) ? ['cuisinees'] : [])];
     case 'temps':
@@ -107,6 +109,7 @@ export function libelleValeur(cle: CleFiltre, v: string): string {
   if (cle === 'types') return NOMS_TYPES[v as TypeFiltre] ?? v;
   if (cle === 'temps') return NOMS_TEMPS[v as TempsFiltre] ?? v;
   if (cle === 'perso') return NOMS_PERSO[v as PersoFiltre] ?? v;
+  if (cle === 'rubriques') return NOMS_RUBRIQUES[v as Rubrique] ?? v;
   return v;
 }
 
@@ -157,6 +160,7 @@ class EtatRecherche {
       types: ['recette', 'technique', 'chapitre'],
       temps: Object.keys(NOMS_TEMPS),
       perso: Object.keys(NOMS_PERSO),
+      rubriques: RUBRIQUES.map((r) => r.id),
     };
     const ordre = ordreFixe[cle];
     return [...compte.entries()]
@@ -180,6 +184,18 @@ class EtatRecherche {
   ouvrirUnivers(u: Univers) {
     this.requete = '';
     this.filtres = { ...filtresVides(), univers: [u] };
+  }
+
+  /** Depuis l'accueil : « Que veux-tu cuisiner ? ». */
+  ouvrirRubrique(r: Rubrique) {
+    this.requete = '';
+    this.filtres = { ...filtresVides(), rubriques: [r] };
+  }
+
+  /** Depuis l'accueil : « Mes favoris › Tout voir ». */
+  ouvrirFavoris() {
+    this.requete = '';
+    this.filtres = { ...filtresVides(), perso: ['favoris'] };
   }
 }
 

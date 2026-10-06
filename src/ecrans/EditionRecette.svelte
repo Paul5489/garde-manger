@@ -11,6 +11,7 @@
     TYPES_DE_PLAT,
     type Brouillon,
   } from '../lib/mes-recettes';
+  import { estMaRecette, NOMS_SOURCES } from '../lib/archive';
   import { mesRecettes } from '../lib/mes-recettes.svelte';
   import { etat } from '../lib/etat.svelte';
   import { lienFiche, routeur } from '../lib/routeur.svelte';
@@ -20,17 +21,28 @@
   let { id }: { id?: string } = $props();
 
   // L'écran est recréé pour chaque recette (bloc {#key} dans App) : la valeur initiale d'id suffit.
-  // svelte-ignore state_referenced_locally
-  const existante: Fiche | undefined = id ? mesRecettes.trouver(id) : undefined;
   // Recette préparée dans l'onglet Ajouter (lue par Claude ou rangée sans Claude), prise une seule fois.
   // svelte-ignore state_referenced_locally
   const enAttente = id ? null : ajout.prendre();
-  // svelte-ignore state_referenced_locally
-  const introuvable = !!id && !existante;
 
-  let b = $state<Brouillon>(existante ? ficheVersBrouillon(existante) : (enAttente?.brouillon ?? brouillonVide()));
-  /** Fiche de départ : les ingrédients et étapes non retouchés sont repris tels quels. */
-  const base: Fiche | undefined = existante ?? enAttente?.base;
+  /** Recette modifiée : à moi, ou de l'archive (une copie modifiée la remplacera, l'original reste disponible). */
+  let existante = $state.raw<Fiche | undefined>(undefined);
+  // svelte-ignore state_referenced_locally
+  let chargee = $state(!id);
+  let introuvable = $state(false);
+  let b = $state<Brouillon>(enAttente?.brouillon ?? brouillonVide());
+  // svelte-ignore state_referenced_locally
+  if (id)
+    etat.fiche(id).then((f) => {
+      if (f) {
+        existante = f;
+        b = ficheVersBrouillon(f);
+      } else introuvable = true;
+      chargee = true;
+    });
+  /** Fiche de départ : tout ce qui n'est pas retouché est gardé tel quel. */
+  const base = $derived<Fiche | undefined>(existante ?? enAttente?.base);
+  const deLArchive = $derived(!!existante && !estMaRecette(existante));
   let enCours = $state(false);
   let erreur = $state<string | null>(null);
 
@@ -63,10 +75,18 @@
 <div class="ecran calque">
   <BarreHaut titre={titreEcran} avecTrait />
   <div class="contenu">
-    {#if introuvable}
+    {#if !chargee}
+      <p class="vide">Chargement…</p>
+    {:else if introuvable}
       <p class="vide">Cette recette n'existe plus.</p>
     {:else}
       <h1 class="titre-serif">{titreEcran}</h1>
+      {#if deLArchive && existante}
+        <p class="aide carte">
+          Tu modifies une recette de « {NOMS_SOURCES[existante.source.id] ?? existante.source.nom} ». Ta version la remplacera
+          partout ; l'original reste disponible (bouton « Revenir à l'original » en bas de la fiche).
+        </p>
+      {/if}
       {#if enAttente?.info}
         <div class="aide carte">
           <p>{enAttente.info}</p>
