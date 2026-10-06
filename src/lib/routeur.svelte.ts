@@ -1,7 +1,7 @@
 // Navigation par l'adresse (#/…) : fonctionne hors ligne et sur GitHub Pages sans réglage serveur.
 
-export type Onglet = 'accueil' | 'recherche' | 'frigo' | 'courses' | 'bocaux';
-export const ONGLETS: Onglet[] = ['accueil', 'recherche', 'frigo', 'courses', 'bocaux'];
+export type Onglet = 'accueil' | 'recherche' | 'ajouter' | 'frigo' | 'courses' | 'bocaux';
+export const ONGLETS: Onglet[] = ['accueil', 'recherche', 'ajouter', 'frigo', 'courses', 'bocaux'];
 
 export type Route =
   | { nom: Onglet }

@@ -1,0 +1,391 @@
+<script lang="ts">
+  // Onglet « Ajouter » : coller le texte d'une recette ou la prendre en photo ; Claude la lit et la met
+  // au format des autres fiches (ou rangement sans Claude, hors ligne, pour un texte bien présenté).
+  import { Camera, ClipboardPaste, FileDown, ImagePlus, KeyRound, PenLine, Sparkles, WandSparkles, X } from '@lucide/svelte';
+  import ListeFiches from '../composants/ListeFiches.svelte';
+  import { ajout } from '../lib/ajout.svelte';
+  import { annonce } from '../lib/annonce.svelte';
+  import { cleClaude } from '../lib/cle-claude.svelte';
+  import { etat } from '../lib/etat.svelte';
+  import { nombre, pluriel } from '../lib/format';
+  import { analyserTexte, ficheVersBrouillon } from '../lib/mes-recettes';
+  import { mesRecettes } from '../lib/mes-recettes.svelte';
+  import { compresserPhoto } from '../lib/photo';
+  import { lienEditionRecette, lienFiche, routeur } from '../lib/routeur.svelte';
+  import { lireSauvegarde, restaurer, TABLES_VIDES } from '../lib/sauvegarde';
+  import type { Resume } from '../lib/types';
+
+  const MAX_PHOTOS = 4;
+
+  let mode = $state<'texte' | 'photo'>('texte');
+  let texte = $state('');
+  let photos = $state<string[]>([]);
+  let consignes = $state('');
+  let enCours = $state(false);
+  let erreur = $state<string | null>(null);
+  let champPhoto = $state<HTMLInputElement>();
+  let champAppareil = $state<HTMLInputElement>();
+  let champFichier = $state<HTMLInputElement>();
+
+  const aAnalyser = $derived(mode === 'texte' ? texte.trim().length > 0 : photos.length > 0);
+  const recentes = $derived(
+    mesRecettes.liste
+      .slice(0, 5)
+      .map((f) => etat.parId.get(f.id))
+      .filter((r): r is Resume => !!r),
+  );
+
+  async function photosChoisies(e: Event) {
+    const input = e.currentTarget as HTMLInputElement;
+    const fichiers = [...(input.files ?? [])];
+    input.value = '';
+    erreur = null;
+    try {
+      for (const f of fichiers.slice(0, MAX_PHOTOS - photos.length)) {
+        // Assez grand pour que le texte reste lisible par Claude, assez léger pour l'envoi.
+        photos = [...photos, await compresserPhoto(f, 1600, 0.82)];
+      }
+      if (fichiers.length > MAX_PHOTOS) annonce.afficher(`${MAX_PHOTOS} photos au maximum par recette.`);
+    } catch (err) {
+      erreur = err instanceof Error ? err.message : String(err);
+    }
+  }
+
+  async function analyserAvecClaude() {
+    if (!aAnalyser || enCours || !cleClaude.presente) return;
+    if (!navigator.onLine) {
+      erreur = "Pas de connexion Internet : Claude en a besoin pour lire la recette. Réessaie une fois connecté.";
+      return;
+    }
+    enCours = true;
+    erreur = null;
+    try {
+      const { analyserRecette } = await import('../lib/claude');
+      const r = await analyserRecette({
+        cle: cleClaude.valeur,
+        texte: mode === 'texte' ? texte : undefined,
+        photos: mode === 'photo' ? photos : undefined,
+        consignes,
+      });
+      const cout = r.coutDollars !== null ? ` (coût ≈ ${nombre(r.coutDollars, 2)} $)` : '';
+      ajout.enAttente = {
+        brouillon: ficheVersBrouillon(r.fiche),
+        base: r.fiche,
+        info: `✓ Recette lue par Claude${cout}. Vérifie-la, corrige si besoin, puis enregistre.`,
+        modifications: r.modifications,
+      };
+      vider();
+      routeur.aller(lienEditionRecette());
+    } catch (err) {
+      erreur = err instanceof Error ? err.message : String(err);
+    } finally {
+      enCours = false;
+    }
+  }
+
+  /** Sans Claude : rangement automatique dans le téléphone (texte bien présenté, consignes non appliquées). */
+  function rangerSansClaude() {
+    if (!texte.trim()) return;
+    ajout.enAttente = {
+      brouillon: analyserTexte(texte),
+      info: '✓ Recette rangée sans Claude. Vérifie chaque partie (et applique toi-même tes modifications), puis enregistre.',
+    };
+    vider();
+    routeur.aller(lienEditionRecette());
+  }
+
+  function vider() {
+    texte = '';
+    photos = [];
+    consignes = '';
+  }
+
+  /** Fichier de recette préparé sur le Mac (même format qu'une sauvegarde) : ajouté sans rien effacer. */
+  async function fichierChoisi(e: Event) {
+    const input = e.currentTarget as HTMLInputElement;
+    const fichier = input.files?.[0];
+    input.value = '';
+    if (!fichier) return;
+    erreur = null;
+    try {
+      const s = lireSauvegarde(JSON.parse(await fichier.text()));
+      const recettes = s.donnees.mesRecettes;
+      if (!recettes.length) throw new Error('Ce fichier ne contient aucune recette à ajouter.');
+      await restaurer({ ...s, donnees: { ...TABLES_VIDES(), mesRecettes: recettes } });
+      await mesRecettes.charger();
+      const premiere = recettes[0] as { id: string; titre: string };
+      annonce.afficher(
+        recettes.length === 1 ? `« ${premiere.titre} » ajoutée.` : `${pluriel(recettes.length, 'recette ajoutée', 'recettes ajoutées')}.`,
+      );
+      if (recettes.length === 1) routeur.aller(lienFiche(premiere.id));
+    } catch (err) {
+      erreur =
+        err instanceof SyntaxError
+          ? 'Ce fichier est illisible. Choisis un fichier de recette Garde-manger (.json).'
+          : err instanceof Error
+            ? err.message
+            : String(err);
+    }
+  }
+</script>
+
+<input bind:this={champPhoto} type="file" accept="image/*" multiple onchange={photosChoisies} hidden />
+<input bind:this={champAppareil} type="file" accept="image/*" capture="environment" onchange={photosChoisies} hidden />
+<input bind:this={champFichier} type="file" onchange={fichierChoisi} hidden />
+
+<div class="grand-titre"><h1>Ajouter</h1></div>
+
+<div class="contenu">
+  <div class="choix" role="tablist" aria-label="Source de la recette">
+    <button role="tab" aria-selected={mode === 'texte'} class:actif={mode === 'texte'} onclick={() => (mode = 'texte')}>
+      <ClipboardPaste size={18} /> Texte copié
+    </button>
+    <button role="tab" aria-selected={mode === 'photo'} class:actif={mode === 'photo'} onclick={() => (mode = 'photo')}>
+      <Camera size={18} /> Photo
+    </button>
+  </div>
+
+  <div class="carte bloc">
+    {#if mode === 'texte'}
+      <label class="champ-libelle">
+        <span>Colle ici le texte de la recette <span class="discret">(site, message, livre…)</span></span>
+        <textarea class="champ grand" bind:value={texte} rows="10" placeholder="Touche longuement ici, puis « Coller »"></textarea>
+      </label>
+    {:else}
+      <p class="discret petit aide-photo">
+        Photographie la page (bien à plat, toute la recette lisible). Une recette sur deux pages : ajoute les deux photos.
+      </p>
+      {#if photos.length}
+        <div class="vignettes">
+          {#each photos as p, i (p)}
+            <div class="vignette">
+              <img src={p} alt="Photo {i + 1} de la recette" />
+              <button class="retirer" onclick={() => (photos = photos.filter((_, j) => j !== i))} aria-label="Retirer la photo {i + 1}">
+                <X size={16} />
+              </button>
+            </div>
+          {/each}
+        </div>
+      {/if}
+      {#if photos.length < MAX_PHOTOS}
+        <div class="boutons-photo">
+          <button class="bouton secondaire" onclick={() => champAppareil?.click()}><Camera size={20} /> Prendre une photo</button>
+          <button class="bouton secondaire" onclick={() => champPhoto?.click()}><ImagePlus size={20} /> Choisir dans Photos</button>
+        </div>
+      {/if}
+    {/if}
+
+    <label class="champ-libelle consignes">
+      <span>Modifications à faire <span class="discret">(facultatif)</span></span>
+      <input
+        class="champ"
+        bind:value={consignes}
+        placeholder="Ex. : remplace la menthe par 2 bonbons à la menthe"
+        autocomplete="off"
+      />
+    </label>
+
+    {#if enCours}
+      <div class="attente" role="status">
+        <div class="barre"><div class="remplissage"></div></div>
+        <p class="discret petit">Claude lit la recette… (15 à 60 secondes)</p>
+      </div>
+    {:else if cleClaude.presente}
+      <button class="bouton plein" onclick={analyserAvecClaude} disabled={!aAnalyser}>
+        <Sparkles size={20} /> Analyser avec Claude
+      </button>
+    {:else}
+      <a class="cle-manquante" href="#/reglages/claude">
+        <KeyRound size={20} />
+        <span><strong>Pour que Claude lise tes recettes</strong>, ajoute ta clé dans Réglages › Claude.</span>
+      </a>
+    {/if}
+    {#if mode === 'texte' && !enCours}
+      <button class="bouton secondaire plein" onclick={rangerSansClaude} disabled={!texte.trim()}>
+        <WandSparkles size={20} /> Ranger sans Claude (hors ligne, gratuit)
+      </button>
+    {/if}
+    {#if erreur}<p class="message-erreur" role="alert">{erreur}</p>{/if}
+  </div>
+
+  <h2 class="section-titre">Autres façons</h2>
+  <div class="autres">
+    <a class="bouton secondaire plein" href={lienEditionRecette()}><PenLine size={20} /> Écrire une recette à la main</a>
+    <button class="bouton secondaire plein" onclick={() => champFichier?.click()}>
+      <FileDown size={20} /> Ajouter un fichier de recette (.json)
+    </button>
+  </div>
+
+  {#if recentes.length}
+    <h2 class="section-titre">Mes dernières recettes ajoutées</h2>
+    <ListeFiches fiches={recentes} masquerSource />
+  {/if}
+</div>
+
+<style>
+  .choix {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    margin: 4px 0 12px;
+    border-radius: 12px;
+    background: var(--surface-2);
+  }
+
+  .choix button {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    border: none;
+    border-radius: 9px;
+    background: none;
+    color: var(--texte-2);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .choix button.actif {
+    background: var(--surface);
+    color: var(--texte);
+    box-shadow: var(--ombre);
+  }
+
+  .bloc {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .champ-libelle {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .champ-libelle > span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texte-2);
+  }
+
+  .champ-libelle > span .discret {
+    font-weight: 400;
+  }
+
+  textarea.champ {
+    resize: vertical;
+    line-height: 1.4;
+    font-size: 16px;
+    min-height: 11em;
+  }
+
+  .aide-photo {
+    margin: 0;
+  }
+
+  .vignettes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .vignette {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+
+  .vignette img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .retirer {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 14px;
+    background: rgb(0 0 0 / 0.6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .boutons-photo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .boutons-photo .bouton {
+    font-size: 15px;
+    padding: 0 10px;
+  }
+
+  .cle-manquante {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--ambre-doux);
+    color: var(--ambre);
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  .attente p {
+    margin: 8px 0 0;
+    text-align: center;
+  }
+
+  .barre {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+
+  .remplissage {
+    width: 40%;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+    animation: aller-retour 1.4s ease-in-out infinite alternate;
+  }
+
+  @keyframes aller-retour {
+    from {
+      transform: translateX(-10%);
+    }
+    to {
+      transform: translateX(160%);
+    }
+  }
+
+  .message-erreur {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--accent-doux);
+    color: var(--rouge);
+    font-size: 15px;
+  }
+
+  .autres {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+</style>

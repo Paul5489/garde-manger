@@ -57,7 +57,7 @@ export const TYPES_DE_PLAT = [
   'Condiment',
   'Fermentation',
   'Pâtisserie',
-];
+] as const;
 
 // ───── Lecture d'une ligne d'ingrédient ─────
 
@@ -293,9 +293,24 @@ function lignes(t: string): string[] {
     .filter(Boolean);
 }
 
-/** Construit la fiche à enregistrer à partir du formulaire. */
+/** Champs que le formulaire ne montre pas : gardés tels quels lors d'une modification (ou d'une lecture par Claude). */
+const CHAMPS_CONSERVES = [
+  'fermentation',
+  'materiel',
+  'variantes',
+  'utilisations',
+  'techniques_mises_en_oeuvre',
+  'tableau_brix_alcool',
+  'ingredients_supplementaires',
+] as const;
+
+/**
+ * Construit la fiche à enregistrer à partir du formulaire. Avec une fiche de base (modification, ou recette
+ * lue par Claude), les ingrédients et les étapes non retouchés sont repris tels quels (rien n'est perdu).
+ */
 export function construireFiche(b: Brouillon, existante?: Fiche): Fiche {
   const maintenant = Date.now();
+  const depart = existante ? ficheVersBrouillon(existante) : null;
   const titre = b.titre.trim() || 'Recette sans titre';
   const groupes: GroupeIngredients[] = [];
   let courant: GroupeIngredients = { items: [] };
@@ -354,8 +369,11 @@ export function construireFiche(b: Brouillon, existante?: Fiche): Fiche {
   }
   if (b.rendement.trim()) f.rendement = b.rendement.trim();
   if (Object.keys(temps).length) f.temps = temps;
-  if (groupes.length) f.ingredients = groupes;
-  if (etapes.length) f.etapes = etapes;
+  if (depart && existante?.ingredients && b.ingredients === depart.ingredients) f.ingredients = existante.ingredients;
+  else if (groupes.length) f.ingredients = groupes;
+  if (depart && existante?.etapes && b.etapes === depart.etapes) f.etapes = existante.etapes;
+  else if (etapes.length) f.etapes = etapes;
+  for (const champ of CHAMPS_CONSERVES) if (existante?.[champ] !== undefined) (f as unknown as Record<string, unknown>)[champ] = existante[champ];
   const notes = lignes(b.notes);
   if (notes.length) f.notes = notes;
   if (b.texteSource?.trim()) f.texte_source = b.texteSource.trim();

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { House, Search, Refrigerator, ShoppingBasket } from '@lucide/svelte';
+  import { CirclePlus, House, Search, Refrigerator, ShoppingBasket } from '@lucide/svelte';
   import IconeBocal from './IconeBocal.svelte';
   import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
@@ -8,6 +8,7 @@
   const onglets: { id: Onglet; libelle: string }[] = [
     { id: 'accueil', libelle: 'Accueil' },
     { id: 'recherche', libelle: 'Recherche' },
+    { id: 'ajouter', libelle: 'Ajouter' },
     { id: 'frigo', libelle: 'Frigo' },
     { id: 'courses', libelle: 'Courses' },
     { id: 'bocaux', libelle: 'Bocaux' },
@@ -25,6 +26,7 @@
     >
       {#if o.id === 'accueil'}<House size={25} strokeWidth={actif ? 2.3 : 1.8} />
       {:else if o.id === 'recherche'}<Search size={25} strokeWidth={actif ? 2.3 : 1.8} />
+      {:else if o.id === 'ajouter'}<CirclePlus size={25} strokeWidth={actif ? 2.3 : 1.8} />
       {:else if o.id === 'frigo'}<Refrigerator size={25} strokeWidth={actif ? 2.3 : 1.8} />
       {:else if o.id === 'courses'}
         <span class="icone-badge">

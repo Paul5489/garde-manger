@@ -6,7 +6,7 @@ Tes recettes ne sont jamais sur Internet : elles sont copiées une seule fois da
 `archive_complete.json` du Mac. Tout le reste (favoris, courses, bocaux…) reste aussi dans le téléphone.
 
 **Sommaire** : 1. Installer · 2. Importer les recettes · 3. Les onglets · 4. Fiche, mode cuisine et minuteurs ·
-5. Favoris, notes et carnet · 5 bis. Mes recettes · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
+5. Favoris, notes et carnet · 5 bis. Ajouter une recette · 5 ter. Supprimer · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
 10. Mettre à jour les recettes · 11. Mettre à jour l'application · 12. Hors ligne · 13. En cas de problème
 
 ---
@@ -75,23 +75,35 @@ l'application installée et Safari ne partagent pas leurs données.
 - **Cuisiné le…** : à la fin du mode cuisine (« Bon appétit ! »), donne des étoiles et touche
   **Noter dans mon carnet**. Ou, sur la fiche : **J'ai cuisiné cette recette**.
 
-## 5 bis. Mes recettes (ajouter une recette trouvée sur Internet)
+## 5 bis. Ajouter une recette (onglet Ajouter)
 
-1. Sur Internet (Safari…), sélectionne tout le texte de la recette et touche **Copier**.
-2. Dans Garde-manger, **Accueil** › carte **Mes recettes** › **Ajouter**.
-3. Touche longuement la grande zone de texte › **Coller**, puis **Ranger la recette**.
-4. L'appli range seule le titre, les portions, les ingrédients et les étapes. **Vérifie** chaque champ
-   (tu peux tout corriger : une ligne par ingrédient, une ligne par étape), choisis le type de plat
-   (Boisson, Dessert…), puis **Enregistrer la recette**.
+**Par Claude (texte copié ou photo)** — il faut d'abord une clé Claude (une seule fois, voir plus bas).
+1. Onglet **Ajouter** (le ⊕ en bas).
+2. **Texte copié** : colle le texte d'une recette (touche longuement la zone › Coller).
+   **Photo** : **Prendre une photo** de la page du livre (ou **Choisir dans Photos**) ; jusqu'à 4 photos.
+3. Facultatif : **Modifications à faire** (« remplace la menthe par 2 bonbons à la menthe », « pour 6 personnes »).
+4. **Analyser avec Claude** : 15 à 60 secondes, il faut Internet. Claude traduit en français si besoin, convertit
+   les mesures américaines, range ingrédients et étapes, et applique tes modifications.
+5. Vérifie le formulaire, corrige si besoin, puis **Enregistrer la recette**.
 
-Ta recette s'utilise comme les autres : portions, mode cuisine, minuteurs, courses, favoris, Frigo, recherche
-(elle passe en tête des résultats). Pour la changer : le **crayon** en haut de la fiche, ou **Modifier** en bas ;
-**Supprimer** est à côté. Le texte collé d'origine est gardé en bas de la fiche.
+Coût : environ 5 à 15 centimes par recette, payés sur ton compte Anthropic (affiché après chaque analyse).
 
-- **Recette préparée sur le Mac** (fichier `garde-manger-recette-….json` reçu par AirDrop) : Mes recettes ›
-  **Ajouter** › **Ajouter un fichier de recette** › Parcourir › Sur mon iPhone › Téléchargements.
-- Mes recettes font partie de la **sauvegarde** (partie 9) et ne sont jamais effacées par une mise à jour
-  des recettes.
+**Sans Claude** (texte bien présenté, hors ligne, gratuit) : **Ranger sans Claude** au lieu d'« Analyser ».
+**À la main** : **Écrire une recette à la main**. **Fichier préparé sur le Mac** (`.json` reçu par AirDrop) :
+**Ajouter un fichier de recette**.
+
+Tes recettes se mêlent aux autres (recherche, Frigo, courses, favoris) ; Recherche › Filtres › Univers
+« Mes recettes » les montre seules. Pour en changer une : le **crayon** en haut de la fiche.
+
+**Obtenir la clé Claude (une fois)** : Réglages › **Claude (lecture des recettes)** — les étapes y sont écrites :
+compte sur console.anthropic.com, un peu de crédit (Billing), **API keys › Create key › Copy**, puis colle la clé
+dans Garde-manger et touche **Enregistrer** (elle est vérifiée). La clé reste dans le téléphone.
+
+## 5 ter. Supprimer une recette
+
+En bas de chaque fiche : **Supprimer**. Une recette ajoutée par toi est effacée. Une recette des livres et sites
+disparaît de l'appli (recherche, Frigo, listes), même après une mise à jour des recettes ; tu peux la remettre :
+Réglages › **Recettes supprimées** › **Remettre**. Juste après une suppression, **Annuler** apparaît en bas.
 
 ## 6. Liste de courses
 

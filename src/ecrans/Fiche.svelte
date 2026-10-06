@@ -30,6 +30,7 @@
   import { portions, portionsDeBase } from '../lib/portions.svelte';
   import { fichesDeLaPage } from '../lib/renvois';
   import { annonce } from '../lib/annonce.svelte';
+  import { masquees } from '../lib/masquees.svelte';
   import { mesRecettes } from '../lib/mes-recettes.svelte';
   import { lienCuisine, lienEditionRecette, lienFiche, lienNouveauBocal, routeur } from '../lib/routeur.svelte';
   import { casseLisible, insecables, majuscule } from '../lib/texte';
@@ -156,9 +157,18 @@
   }
 
   async function supprimerMaRecette(f: Fiche) {
-    if (!confirm(`Supprimer « ${f.titre} » de Mes recettes ?`)) return;
+    if (!confirm(`Supprimer définitivement « ${f.titre} » ?`)) return;
     await mesRecettes.supprimer(f.id);
     annonce.afficher('Recette supprimée.');
+    routeur.retour();
+  }
+
+  /** Fiche de l'archive : masquée partout (récupérable dans Réglages › Recettes supprimées). */
+  async function supprimerFicheArchive(f: Fiche) {
+    if (!confirm(`Supprimer « ${f.titre} » ?\n\nElle disparaîtra de l'appli. Tu pourras la récupérer dans Réglages › Recettes supprimées.`))
+      return;
+    await masquees.masquer(f.id);
+    annonce.afficher('Recette supprimée.', { libelle: 'Annuler', faire: () => void masquees.remettre(f.id) }, 6000);
     routeur.retour();
   }
 
@@ -423,6 +433,12 @@
             </details>
           {/if}
         </section>
+      {/if}
+
+      {#if !estMaRecette(f)}
+        <button class="bouton secondaire plein supprimer supprimer-archive" onclick={() => supprimerFicheArchive(f)}>
+          <Trash2 size={18} /> Supprimer cette {f.type === 'recette' ? 'recette' : 'fiche'}
+        </button>
       {/if}
 
       <footer class="pied">
@@ -729,6 +745,10 @@
 
   .supprimer {
     color: var(--rouge);
+  }
+
+  .supprimer-archive {
+    margin-top: 28px;
   }
 
   .texte-source {

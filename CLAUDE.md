@@ -51,7 +51,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 172 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 179 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -114,6 +114,18 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   catalogue (`etat.catalogue` = `catalogueArchive` + mes recettes), à la recherche (petit index MiniSearch dédié,
   **résultats placés avant ceux de l'archive** : les scores de deux index de tailles différentes ne se comparent pas),
   au Frigo (index d'ingrédients calculé à la volée) et à la sauvegarde. Jamais touchées par un réimport.
+- **Onglet Ajouter** (6e onglet, 06/10/2026) : texte collé ou photos (≤ 4, réduites à 1600 px) + consignes de
+  modification → **Claude** (`src/lib/claude.ts`, chargé à la demande : SDK `@anthropic-ai/sdk` + zod, ~80 Ko gzip).
+  Appel direct depuis le téléphone avec la clé API de Paul (`cle-claude.svelte.ts`, localStorage, jamais dans la
+  sauvegarde) : `client.beta.messages.parse`, modèle `claude-opus-5-5`, effort `medium`, sortie structurée
+  (`betaZodOutputFormat`, unités et type de plat en texte libre puis normalisés), `fallbacks: "default"`
+  (beta `server-side-fallback-2026-07-01`), erreurs traduites (clé, crédit, réseau, surcharge), coût affiché
+  (4 $ / 20 $ par million de jetons). Ou « Ranger sans Claude » (analyse locale). Le résultat passe par
+  `ajout.svelte.ts` puis le formulaire `EditionRecette` (vérifier → enregistrer) ; `construireFiche` reprend tels
+  quels les ingrédients/étapes non retouchés et garde fermentation, matériel… Tests : réponses API simulées (`fetch`).
+- **Supprimer une recette** : recette perso = effacée ; fiche de l'archive = **masquée** (`masquees.svelte.ts`,
+  réglage `fichesSupprimees`, donc sauvegardé et gardé au réimport), filtrée du catalogue et du Frigo,
+  récupérable dans Réglages › Recettes supprimées ; « Annuler » dans l'annonce.
 - **Pages « hors cuisine » écartées** (`exclusions.ts`, demande de Paul du 06/10/2026) : 13 fiches (préfaces,
   remerciements, auteurs, Généralités = hygiène/sécurité/tenue, hygiène des aliments, documents BEP/CAP, référentiel
   et répertoire du livre, bibliographie, pages de garde, introduction et « à propos » Noma, fournisseurs). Repérées par
@@ -247,8 +259,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   listes, à la recherche, au Frigo). 06/10/2026 : il demande un endroit pour **saisir** ses recettes (coller un texte
   d'Internet) → carte « Mes recettes » + bouton « Ajouter » sur l'Accueil (pas de 6e onglet : barre pleine), recettes
   toujours mêlées aux autres, plus un univers « Mes recettes » dans les filtres. Analyse locale du texte collé (hors ligne,
-  gratuit, sans compte). **Pas de Claude IA dans l'appli** (choix de Paul du 06/10/2026 : le rangement automatique
-  suffit ; pour un cas compliqué, il donne la recette dans une conversation et Claude prépare un fichier).
+  gratuit, sans compte). Puis, le même jour, Paul a demandé **Claude IA dans l'appli** (copier-coller ou photo
+  analysés par Claude) et ne tient pas à une rubrique « Mes recettes » : onglet **Ajouter** à la place de la carte
+  de l'Accueil (filtre d'univers « Mes recettes » gardé). Il doit créer lui-même sa clé API (compte payant).
 - 06/10/2026 : livre *Koji Alchemy* **pas encore intégré** : en attente d'un exemplaire acheté par Paul (ebook sans DRM),
   ou ajout recette par recette via Mes recettes. Ne pas utiliser le fichier epub actuellement dans Téléchargements.
 - 06/10/2026 : recette du **bissap à l'ananas** (bonbons à la menthe à la place de la menthe fraîche) préparée en fichier
@@ -287,6 +300,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.3.0** (06/10/2026) : onglet Ajouter (Claude : texte ou photo, ou rangement local), suppression de n'importe
+  quelle recette (archive masquée, récupérable), carte « Mes recettes » de l'Accueil retirée.
 - **1.2.1** (06/10/2026) : la recherche signale les fiches trouvées mais cachées par un filtre (« 1 fiche trouvée, mais
   cachée par les filtres choisis » + bouton), et le champ de recherche de l'Accueil repart sans filtre. Cause probable de
   « je ne trouve pas le bissap » : un filtre d'univers resté actif après avoir touché une tuile de l'Accueil.

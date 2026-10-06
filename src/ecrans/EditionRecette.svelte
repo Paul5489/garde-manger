@@ -1,10 +1,10 @@
 <script lang="ts">
-  // Mes recettes : nouvelle recette (texte collé analysé, ou saisie à la main) ou modification.
-  import { ClipboardPaste, FileDown, PenLine, Sparkles } from '@lucide/svelte';
+  // Formulaire d'une recette perso : nouvelle (préparée dans l'onglet Ajouter, ou écrite à la main)
+  // ou modification. Vérifier, corriger, enregistrer.
   import BarreHaut from '../composants/BarreHaut.svelte';
+  import { ajout } from '../lib/ajout.svelte';
   import { annonce } from '../lib/annonce.svelte';
   import {
-    analyserTexte,
     brouillonVide,
     construireFiche,
     ficheVersBrouillon,
@@ -13,28 +13,26 @@
   } from '../lib/mes-recettes';
   import { mesRecettes } from '../lib/mes-recettes.svelte';
   import { etat } from '../lib/etat.svelte';
-  import { pluriel } from '../lib/format';
   import { lienFiche, routeur } from '../lib/routeur.svelte';
-  import { lireSauvegarde, restaurer, TABLES_VIDES } from '../lib/sauvegarde';
   import { collator } from '../lib/texte';
+  import type { Fiche } from '../lib/types';
 
   let { id }: { id?: string } = $props();
 
   // L'écran est recréé pour chaque recette (bloc {#key} dans App) : la valeur initiale d'id suffit.
   // svelte-ignore state_referenced_locally
-  let etape = $state<'coller' | 'formulaire' | 'introuvable'>(id ? 'formulaire' : 'coller');
-  let texte = $state('');
-  let b = $state<Brouillon>(brouillonVide());
+  const existante: Fiche | undefined = id ? mesRecettes.trouver(id) : undefined;
+  // Recette préparée dans l'onglet Ajouter (lue par Claude ou rangée sans Claude), prise une seule fois.
+  // svelte-ignore state_referenced_locally
+  const enAttente = id ? null : ajout.prendre();
+  // svelte-ignore state_referenced_locally
+  const introuvable = !!id && !existante;
+
+  let b = $state<Brouillon>(existante ? ficheVersBrouillon(existante) : (enAttente?.brouillon ?? brouillonVide()));
+  /** Fiche de départ : les ingrédients et étapes non retouchés sont repris tels quels. */
+  const base: Fiche | undefined = existante ?? enAttente?.base;
   let enCours = $state(false);
   let erreur = $state<string | null>(null);
-  let champFichier = $state<HTMLInputElement>();
-
-  $effect(() => {
-    if (!id) return;
-    const f = mesRecettes.trouver(id);
-    if (f) b = ficheVersBrouillon(f);
-    else etape = 'introuvable';
-  });
 
   // Listes proposées pendant la frappe (catégories et cuisines déjà utilisées).
   const categories = $derived(
@@ -42,27 +40,14 @@
   );
   const cuisines = $derived([...new Set(etat.catalogue.flatMap((r) => r.cuisines))].sort(collator.compare));
 
-  function analyser() {
-    if (!texte.trim()) return;
-    b = analyserTexte(texte);
-    etape = 'formulaire';
-    requestAnimationFrame(() => document.querySelector('.calque')?.scrollTo({ top: 0 }));
-  }
-
-  function aLaMain() {
-    b = brouillonVide();
-    etape = 'formulaire';
-  }
-
   async function enregistrer(e: SubmitEvent) {
     e.preventDefault();
     if (!b.titre.trim() || enCours) return;
     enCours = true;
     try {
-      const existante = id ? mesRecettes.trouver(id) : undefined;
-      const fiche = construireFiche($state.snapshot(b), existante);
+      const fiche = construireFiche($state.snapshot(b), base);
       await mesRecettes.enregistrer(fiche);
-      annonce.afficher(existante ? 'Recette modifiée.' : 'Recette ajoutée à « Mes recettes ».');
+      annonce.afficher(existante ? 'Recette modifiée.' : 'Recette ajoutée.');
       routeur.remplacerPage(lienFiche(fiche.id));
     } catch (err) {
       erreur = err instanceof Error ? err.message : String(err);
@@ -71,77 +56,24 @@
     }
   }
 
-  /** Fichier de recette préparé sur le Mac (même format qu'une sauvegarde) : ajouté sans rien effacer. */
-  async function fichierChoisi(e: Event) {
-    const input = e.currentTarget as HTMLInputElement;
-    const fichier = input.files?.[0];
-    input.value = '';
-    if (!fichier) return;
-    erreur = null;
-    try {
-      const s = lireSauvegarde(JSON.parse(await fichier.text()));
-      const recettes = s.donnees.mesRecettes;
-      if (!recettes.length) throw new Error("Ce fichier ne contient aucune recette à ajouter.");
-      await restaurer({ ...s, donnees: { ...TABLES_VIDES(), mesRecettes: recettes } });
-      await mesRecettes.charger();
-      const premiere = recettes[0] as { id: string; titre: string };
-      annonce.afficher(
-        recettes.length === 1 ? `« ${premiere.titre} » ajoutée.` : `${pluriel(recettes.length, 'recette ajoutée', 'recettes ajoutées')}.`,
-      );
-      if (recettes.length === 1) routeur.remplacerPage(lienFiche(premiere.id));
-      else routeur.retour();
-    } catch (err) {
-      erreur =
-        err instanceof SyntaxError
-          ? "Ce fichier est illisible. Choisis un fichier de recette Garde-manger (.json)."
-          : err instanceof Error
-            ? err.message
-            : String(err);
-    }
-  }
-
-  const titreEcran = $derived(id ? 'Modifier la recette' : 'Nouvelle recette');
+  // svelte-ignore state_referenced_locally
+  const titreEcran = id ? 'Modifier la recette' : 'Nouvelle recette';
 </script>
-
-<input bind:this={champFichier} type="file" onchange={fichierChoisi} hidden />
 
 <div class="ecran calque">
   <BarreHaut titre={titreEcran} avecTrait />
   <div class="contenu">
-    {#if etape === 'introuvable'}
+    {#if introuvable}
       <p class="vide">Cette recette n'existe plus.</p>
-    {:else if etape === 'coller'}
-      <h1 class="titre-serif">Nouvelle recette</h1>
-      <p class="discret">
-        Colle le texte d'une recette (copié sur un site, un message…). L'appli range elle-même le titre, les
-        ingrédients et les étapes ; tu vérifies ensuite avant d'enregistrer.
-      </p>
-      <label class="champ-libelle">
-        <span>Texte de la recette</span>
-        <textarea
-          class="champ grand"
-          bind:value={texte}
-          rows="12"
-          placeholder={'Titre\n\nIngrédients\n200 g de farine\n2 œufs…\n\nPréparation\nMélanger…'}
-        ></textarea>
-      </label>
-      <button class="bouton plein" onclick={analyser} disabled={!texte.trim()}>
-        <Sparkles size={20} /> Ranger la recette
-      </button>
-      <div class="autres">
-        <button class="bouton secondaire plein" onclick={aLaMain}><PenLine size={20} /> Remplir à la main</button>
-        <button class="bouton secondaire plein" onclick={() => champFichier?.click()}>
-          <FileDown size={20} /> Ajouter un fichier de recette
-        </button>
-      </div>
-      <p class="discret petit">
-        <ClipboardPaste size={14} /> Pour coller : touche longuement la zone de texte, puis « Coller ».
-      </p>
-      {#if erreur}<p class="message-erreur" role="alert">{erreur}</p>{/if}
     {:else}
       <h1 class="titre-serif">{titreEcran}</h1>
-      {#if !id && b.texteSource}
-        <p class="aide carte">✓ Recette rangée automatiquement. Vérifie chaque partie, corrige si besoin, puis enregistre.</p>
+      {#if enAttente?.info}
+        <div class="aide carte">
+          <p>{enAttente.info}</p>
+          {#if enAttente.modifications?.length}
+            <ul>{#each enAttente.modifications as m, i (i)}<li>{m}</li>{/each}</ul>
+          {/if}
+        </div>
       {/if}
       <form onsubmit={enregistrer}>
         <label class="champ-libelle">
@@ -288,11 +220,14 @@
     min-width: 0;
   }
 
-  .autres {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 10px 0 14px;
+  .aide p,
+  .aide ul {
+    margin: 0;
+  }
+
+  .aide ul {
+    margin-top: 6px;
+    padding-left: 1.2em;
   }
 
   .aide {
@@ -312,7 +247,4 @@
     font-size: 15px;
   }
 
-  p :global(svg) {
-    vertical-align: -2px;
-  }
 </style>

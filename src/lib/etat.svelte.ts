@@ -5,6 +5,7 @@ import type MiniSearch from 'minisearch';
 import type { DocRecherche } from './archive';
 import { db } from './db';
 import { estExclue } from './exclusions';
+import { masquees } from './masquees.svelte';
 import { mesRecettes } from './mes-recettes.svelte';
 import { chargerIndex } from './moteur';
 import type { Fiche, InfosArchive, Resume } from './types';
@@ -15,10 +16,16 @@ class EtatApp {
   archive = $state<InfosArchive | null>(null);
   /** Fiches de l'archive importée (sans les pages « hors cuisine »). */
   catalogueArchive = $state.raw<Resume[]>([]);
-  /** Archive + mes recettes (une recette perso de même identifiant qu'une fiche de l'archive la remplace). */
+  /**
+   * Archive + mes recettes (une recette perso de même identifiant qu'une fiche de l'archive la remplace),
+   * sans les recettes supprimées par Paul.
+   */
   catalogue = $derived.by(() => {
     const perso = new Set(mesRecettes.liste.map((f) => f.id));
-    return [...this.catalogueArchive.filter((r) => !perso.has(r.id)), ...mesRecettes.resumes];
+    const caches = masquees.ids;
+    return [...this.catalogueArchive.filter((r) => !perso.has(r.id)), ...mesRecettes.resumes].filter(
+      (r) => !caches.has(r.id),
+    );
   });
   parId = $derived(new Map(this.catalogue.map((r) => [r.id, r])));
   index = $state.raw<MiniSearch<DocRecherche> | null>(null);

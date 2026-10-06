@@ -94,3 +94,34 @@ describe('mes recettes', () => {
     expect(etat.parId.has('perso-tisane-test')).toBe(true);
   });
 });
+
+describe('supprimer une recette de l’archive', async () => {
+  const { masquees } = await import('../src/lib/masquees.svelte');
+
+  beforeEach(async () => {
+    await Promise.all(db.tables.map((t) => t.clear()));
+    await importer([soupe]);
+    await Promise.all([etat.demarrer(), mesRecettes.charger(), masquees.charger()]);
+  });
+
+  it('disparaît partout, revient avec « Remettre », et tient après un réimport', async () => {
+    expect(etat.parId.has('afpa-soupe')).toBe(true);
+    await masquees.masquer('afpa-soupe');
+    expect(etat.parId.has('afpa-soupe')).toBe(false);
+    await frigo.chargerIndex(etat.archive?.importeLe);
+    await frigo.vider();
+    await frigo.ajouter('Poireaux');
+    expect(frigo.resultats.map((r) => r.id)).not.toContain('afpa-soupe');
+
+    // Réimport de l'archive : la fiche reste supprimée
+    await importer([soupe]);
+    await Promise.all([etat.demarrer(), masquees.charger()]);
+    expect(etat.parId.has('afpa-soupe')).toBe(false);
+    // … et le choix fait partie de la sauvegarde
+    const s = await exporter(db);
+    expect(s.donnees.reglages.find((r) => r.cle === 'fichesSupprimees')?.valeur).toEqual(['afpa-soupe']);
+
+    await masquees.remettre('afpa-soupe');
+    expect(etat.parId.has('afpa-soupe')).toBe(true);
+  });
+});

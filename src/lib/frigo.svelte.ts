@@ -10,6 +10,7 @@ import {
   type IndexIngredients,
 } from './classement-frigo';
 import { db } from './db';
+import { masquees } from './masquees.svelte';
 import { mesRecettes } from './mes-recettes.svelte';
 import type { ReponseIndex } from './index-ingredients.worker';
 import { Dictionnaire, PLACARD_DEFAUT, predicatListe, SYNONYMES_DEFAUT } from './normalisation';
@@ -45,7 +46,11 @@ class Frigo {
     if (!this.index) return null;
     const perso = construireIndexIngredients(mesRecettes.liste).fiches;
     const ids = new Set(mesRecettes.liste.map((f) => f.id));
-    return { ...this.index, fiches: [...this.index.fiches.filter((f) => !ids.has(f.id)), ...perso] };
+    const caches = masquees.ids;
+    return {
+      ...this.index,
+      fiches: [...this.index.fiches.filter((f) => !ids.has(f.id)), ...perso].filter((f) => !caches.has(f.id)),
+    };
   });
   preparees = $derived(this.#indexComplet ? preparer(this.#indexComplet, this.dico) : []);
   vocabulaire = $derived(construireVocabulaire(this.preparees, this.dico, this.synonymes));

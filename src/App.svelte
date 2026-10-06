@@ -4,6 +4,7 @@
   import BarreMinuteurs from './composants/BarreMinuteurs.svelte';
   import BarreOnglets from './composants/BarreOnglets.svelte';
   import Accueil from './ecrans/Accueil.svelte';
+  import Ajouter from './ecrans/Ajouter.svelte';
   import Bienvenue from './ecrans/Bienvenue.svelte';
   import Bocal from './ecrans/Bocal.svelte';
   import Bocaux from './ecrans/Bocaux.svelte';
@@ -19,13 +20,14 @@
   import { courses } from './lib/courses.svelte';
   import { etat } from './lib/etat.svelte';
   import { frigo } from './lib/frigo.svelte';
+  import { masquees } from './lib/masquees.svelte';
   import { mesRecettes } from './lib/mes-recettes.svelte';
   import { perso } from './lib/perso.svelte';
   import { ONGLETS, routeur, type Onglet } from './lib/routeur.svelte';
 
   etat.demarrer();
   // Données personnelles (favoris, notes, courses) : indépendantes des recettes importées.
-  Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger(), mesRecettes.charger()]).catch((e) =>
+  Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger(), mesRecettes.charger(), masquees.charger()]).catch((e) =>
     console.error(e),
   );
 
@@ -68,6 +70,7 @@
       <main class="ecran" class:cache={routeur.onglet !== o || pageEmpilee} inert={routeur.onglet !== o || pageEmpilee}>
         {#if o === 'accueil'}<Accueil />
         {:else if o === 'recherche'}<Recherche />
+        {:else if o === 'ajouter'}<Ajouter />
         {:else if o === 'frigo'}<Frigo />
         {:else if o === 'courses'}<Courses />
         {:else}<Bocaux />{/if}
