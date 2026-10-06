@@ -51,7 +51,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 179 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 183 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -123,6 +123,13 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   (4 $ / 20 $ par million de jetons). Ou « Ranger sans Claude » (analyse locale). Le résultat passe par
   `ajout.svelte.ts` puis le formulaire `EditionRecette` (vérifier → enregistrer) ; `construireFiche` reprend tels
   quels les ingrédients/étapes non retouchés et garde fermentation, matériel… Tests : réponses API simulées (`fetch`).
+- **Façon gratuite (app Claude de l'iPhone)**, demandée par Paul le 06/10/2026 (« sans payer ») : l'onglet Ajouter
+  copie une demande toute prête (`demandePourAppClaude` : mêmes consignes que l'API + modèle de réponse JSON +
+  consignes de Paul + texte de la recette), Paul la colle dans l'app Claude (photo jointe là-bas si besoin), copie
+  la réponse et la recolle (« Coller la réponse de Claude » : `navigator.clipboard.readText`, sinon zone de saisie) ;
+  `lireReponseClaude` trouve le bloc JSON et tolère champs manquants ou mal typés. Module léger commun :
+  `lecture-recette.ts` (CONSIGNES, RecetteLue, versFiche, unités) ; `claude.ts` (API payante) l'importe.
+  Une réponse JSON collée par erreur dans la zone « Texte copié » est reconnue par « Ranger sans Claude ».
 - **Supprimer une recette** : recette perso = effacée ; fiche de l'archive = **masquée** (`masquees.svelte.ts`,
   réglage `fichesSupprimees`, donc sauvegardé et gardé au réimport), filtrée du catalogue et du Frigo,
   récupérable dans Réglages › Recettes supprimées ; « Annuler » dans l'annonce.
@@ -300,6 +307,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.4.0** (06/10/2026) : façon gratuite avec l'app Claude (copier la demande → coller la réponse) mise en premier ;
+  l'appel direct par clé API devient l'option « en un toucher, payante ».
 - **1.3.0** (06/10/2026) : onglet Ajouter (Claude : texte ou photo, ou rangement local), suppression de n'importe
   quelle recette (archive masquée, récupérable), carte « Mes recettes » de l'Accueil retirée.
 - **1.2.1** (06/10/2026) : la recherche signale les fiches trouvées mais cachées par un filtre (« 1 fiche trouvée, mais

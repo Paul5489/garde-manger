@@ -1,13 +1,32 @@
 <script lang="ts">
   // Onglet « Ajouter » : coller le texte d'une recette ou la prendre en photo ; Claude la lit et la met
   // au format des autres fiches (ou rangement sans Claude, hors ligne, pour un texte bien présenté).
-  import { Camera, ClipboardPaste, FileDown, ImagePlus, KeyRound, PenLine, Sparkles, WandSparkles, X } from '@lucide/svelte';
+  import {
+    Camera,
+    ClipboardCheck,
+    ClipboardPaste,
+    Copy,
+    ExternalLink,
+    FileDown,
+    ImagePlus,
+    PenLine,
+    Sparkles,
+    WandSparkles,
+    X,
+  } from '@lucide/svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
   import { ajout } from '../lib/ajout.svelte';
   import { annonce } from '../lib/annonce.svelte';
   import { cleClaude } from '../lib/cle-claude.svelte';
   import { etat } from '../lib/etat.svelte';
   import { nombre, pluriel } from '../lib/format';
+  import {
+    demandePourAppClaude,
+    ErreurLecture,
+    lireReponseClaude,
+    ressembleReponseClaude,
+    versFiche,
+  } from '../lib/lecture-recette';
   import { analyserTexte, ficheVersBrouillon } from '../lib/mes-recettes';
   import { mesRecettes } from '../lib/mes-recettes.svelte';
   import { compresserPhoto } from '../lib/photo';
@@ -27,6 +46,13 @@
   let champAppareil = $state<HTMLInputElement>();
   let champFichier = $state<HTMLInputElement>();
 
+  // Façon gratuite (app Claude) : demande copiée, puis réponse recollée.
+  let demandeCopiee = $state(false);
+  let demandeACopier = $state<string | null>(null);
+  let reponseManuelle = $state<string | null>(null);
+  /** Où afficher le message d'erreur : près du bouton qui vient d'être touché. */
+  let zoneErreur = $state<'haut' | 'gratuit' | 'autres'>('haut');
+
   const aAnalyser = $derived(mode === 'texte' ? texte.trim().length > 0 : photos.length > 0);
   const recentes = $derived(
     mesRecettes.liste
@@ -36,6 +62,7 @@
   );
 
   async function photosChoisies(e: Event) {
+    zoneErreur = 'haut';
     const input = e.currentTarget as HTMLInputElement;
     const fichiers = [...(input.files ?? [])];
     input.value = '';
@@ -53,6 +80,7 @@
 
   async function analyserAvecClaude() {
     if (!aAnalyser || enCours || !cleClaude.presente) return;
+    zoneErreur = 'autres';
     if (!navigator.onLine) {
       erreur = "Pas de connexion Internet : Claude en a besoin pour lire la recette. Réessaie une fois connecté.";
       return;
@@ -83,9 +111,69 @@
     }
   }
 
+  /** Façon gratuite, étape 1 : copier la demande (consignes + recette) pour l'app Claude. */
+  async function copierDemande() {
+    erreur = null;
+    zoneErreur = 'gratuit';
+    const demande = demandePourAppClaude({ texte: mode === 'texte' ? texte : undefined, consignes, photo: mode === 'photo' });
+    try {
+      await navigator.clipboard.writeText(demande);
+      demandeCopiee = true;
+      demandeACopier = null;
+    } catch {
+      // Presse-papiers indisponible : on montre la demande pour la copier à la main.
+      demandeACopier = demande;
+      demandeCopiee = true;
+    }
+  }
+
+  /** Façon gratuite, étape 3 : coller la réponse de Claude. */
+  async function collerReponse() {
+    erreur = null;
+    zoneErreur = 'gratuit';
+    try {
+      const t = await navigator.clipboard.readText();
+      if (!t.trim()) throw new Error('vide');
+      importerReponse(t);
+    } catch (e) {
+      if (e instanceof ErreurLecture) erreur = e.message;
+      else reponseManuelle = ''; // lecture refusée : zone où coller soi-même
+    }
+  }
+
+  function importerReponse(t: string) {
+    erreur = null;
+    try {
+      const r = lireReponseClaude(t);
+      const fiche = versFiche(
+        r,
+        mode === 'texte' && texte.trim() && !ressembleReponseClaude(texte) ? texte : undefined,
+        mode === 'photo',
+      );
+      ajout.enAttente = {
+        brouillon: ficheVersBrouillon(fiche),
+        base: fiche,
+        info: "✓ Recette préparée par l'app Claude (gratuit). Vérifie-la, corrige si besoin, puis enregistre.",
+        modifications: r.modifications_appliquees,
+      };
+      vider();
+      demandeCopiee = false;
+      reponseManuelle = null;
+      routeur.aller(lienEditionRecette());
+    } catch (e) {
+      erreur = e instanceof Error ? e.message : String(e);
+    }
+  }
+
   /** Sans Claude : rangement automatique dans le téléphone (texte bien présenté, consignes non appliquées). */
   function rangerSansClaude() {
     if (!texte.trim()) return;
+    zoneErreur = 'autres';
+    // Réponse de l'app Claude collée ici par erreur : on la lit comme telle.
+    if (ressembleReponseClaude(texte)) {
+      importerReponse(texte);
+      return;
+    }
     ajout.enAttente = {
       brouillon: analyserTexte(texte),
       info: '✓ Recette rangée sans Claude. Vérifie chaque partie (et applique toi-même tes modifications), puis enregistre.',
@@ -102,6 +190,7 @@
 
   /** Fichier de recette préparé sur le Mac (même format qu'une sauvegarde) : ajouté sans rien effacer. */
   async function fichierChoisi(e: Event) {
+    zoneErreur = 'autres';
     const input = e.currentTarget as HTMLInputElement;
     const fichier = input.files?.[0];
     input.value = '';
@@ -151,6 +240,11 @@
         <span>Colle ici le texte de la recette <span class="discret">(site, message, livre…)</span></span>
         <textarea class="champ grand" bind:value={texte} rows="10" placeholder="Touche longuement ici, puis « Coller »"></textarea>
       </label>
+    {:else if !cleClaude.presente}
+      <p class="petit aide-photo">
+        📷 Avec l'app Claude (gratuit, ci-dessous), tu prendras la photo <strong>directement dans Claude</strong>, à
+        l'étape 2. Note juste ici tes modifications éventuelles.
+      </p>
     {:else}
       <p class="discret petit aide-photo">
         Photographie la page (bien à plat, toute la recette lisible). Une recette sur deux pages : ajoute les deux photos.
@@ -185,6 +279,46 @@
       />
     </label>
 
+    {#if erreur && zoneErreur === 'haut'}<p class="message-erreur" role="alert">{erreur}</p>{/if}
+  </div>
+
+  <h2 class="section-titre">Avec l'app Claude — gratuit</h2>
+  <div class="carte bloc gratuit">
+    <ol class="etapes-gratuit">
+      <li class:fait={demandeCopiee}>
+        <button class="bouton plein" onclick={copierDemande} disabled={mode === 'texte' && !texte.trim()}>
+          {#if demandeCopiee}<ClipboardCheck size={20} /> Demande copiée{:else}<Copy size={20} /> Copier la demande pour Claude{/if}
+        </button>
+        {#if mode === 'texte' && !texte.trim()}<span class="discret petit">Colle d'abord la recette ci-dessus.</span>{/if}
+        {#if demandeACopier}
+          <textarea class="champ" readonly rows="4" value={demandeACopier} onfocus={(e) => e.currentTarget.select()}></textarea>
+          <span class="discret petit">Sélectionne tout ce texte et copie-le.</span>
+        {/if}
+      </li>
+      <li>
+        <a class="bouton secondaire plein" href="https://claude.ai/new" target="_blank" rel="noopener noreferrer">
+          <ExternalLink size={18} /> Ouvrir l'app Claude
+        </a>
+        <span class="discret petit">
+          Colle la demande{#if mode === 'photo'}, ajoute la photo de la recette (bouton +){/if}, envoie. Quand Claude a
+          répondu, touche <strong>Copier</strong> sous sa réponse et reviens ici.
+        </span>
+      </li>
+      <li>
+        <button class="bouton plein" onclick={collerReponse}><ClipboardPaste size={20} /> Coller la réponse de Claude</button>
+        {#if reponseManuelle !== null}
+          <textarea class="champ" rows="4" bind:value={reponseManuelle} placeholder="Touche longuement ici, puis « Coller »"></textarea>
+          <button class="bouton secondaire plein" onclick={() => importerReponse(reponseManuelle ?? '')} disabled={!reponseManuelle?.trim()}>
+            Lire la réponse
+          </button>
+        {/if}
+      </li>
+    </ol>
+    {#if erreur && zoneErreur === 'gratuit'}<p class="message-erreur" role="alert">{erreur}</p>{/if}
+  </div>
+
+  <h2 class="section-titre">Autres façons</h2>
+  <div class="carte bloc">
     {#if enCours}
       <div class="attente" role="status">
         <div class="barre"><div class="remplissage"></div></div>
@@ -192,12 +326,12 @@
       </div>
     {:else if cleClaude.presente}
       <button class="bouton plein" onclick={analyserAvecClaude} disabled={!aAnalyser}>
-        <Sparkles size={20} /> Analyser avec Claude
+        <Sparkles size={20} /> Analyser avec Claude (en un toucher, payant)
       </button>
     {:else}
-      <a class="cle-manquante" href="#/reglages/claude">
-        <KeyRound size={20} />
-        <span><strong>Pour que Claude lise tes recettes</strong>, ajoute ta clé dans Réglages › Claude.</span>
+      <a class="lien-payant" href="#/reglages/claude">
+        <Sparkles size={18} />
+        <span>En un seul toucher, sans copier-coller : option payante (≈ 5 à 15 centimes par recette), à activer dans Réglages › Claude.</span>
       </a>
     {/if}
     {#if mode === 'texte' && !enCours}
@@ -205,10 +339,9 @@
         <WandSparkles size={20} /> Ranger sans Claude (hors ligne, gratuit)
       </button>
     {/if}
-    {#if erreur}<p class="message-erreur" role="alert">{erreur}</p>{/if}
+    {#if erreur && zoneErreur === 'autres'}<p class="message-erreur" role="alert">{erreur}</p>{/if}
   </div>
 
-  <h2 class="section-titre">Autres façons</h2>
   <div class="autres">
     <a class="bouton secondaire plein" href={lienEditionRecette()}><PenLine size={20} /> Écrire une recette à la main</a>
     <button class="bouton secondaire plein" onclick={() => champFichier?.click()}>
@@ -333,16 +466,46 @@
     padding: 0 10px;
   }
 
-  .cle-manquante {
+  .lien-payant {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px;
-    border-radius: 12px;
-    background: var(--ambre-doux);
-    color: var(--ambre);
+    padding: 10px 4px;
+    color: var(--texte-2);
     text-decoration: none;
-    font-size: 15px;
+    font-size: 14px;
+  }
+
+  .lien-payant :global(svg) {
+    flex: none;
+    color: var(--accent);
+  }
+
+  .gratuit {
+    border: 2px solid var(--vert);
+  }
+
+  .etapes-gratuit {
+    margin: 0;
+    padding-left: 1.4em;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .etapes-gratuit li {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .etapes-gratuit li::marker {
+    font-weight: 700;
+    color: var(--vert);
+  }
+
+  .etapes-gratuit li.fait .bouton {
+    background: var(--vert);
   }
 
   .attente p {
@@ -387,5 +550,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-top: 12px;
   }
 </style>

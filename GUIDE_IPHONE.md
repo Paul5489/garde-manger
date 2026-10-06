@@ -77,27 +77,28 @@ l'application installée et Safari ne partagent pas leurs données.
 
 ## 5 bis. Ajouter une recette (onglet Ajouter)
 
-**Par Claude (texte copié ou photo)** — il faut d'abord une clé Claude (une seule fois, voir plus bas).
-1. Onglet **Ajouter** (le ⊕ en bas).
-2. **Texte copié** : colle le texte d'une recette (touche longuement la zone › Coller).
-   **Photo** : **Prendre une photo** de la page du livre (ou **Choisir dans Photos**) ; jusqu'à 4 photos.
-3. Facultatif : **Modifications à faire** (« remplace la menthe par 2 bonbons à la menthe », « pour 6 personnes »).
-4. **Analyser avec Claude** : 15 à 60 secondes, il faut Internet. Claude traduit en français si besoin, convertit
-   les mesures américaines, range ingrédients et étapes, et applique tes modifications.
-5. Vérifie le formulaire, corrige si besoin, puis **Enregistrer la recette**.
+**Gratuit, avec l'app Claude de l'iPhone** (incluse dans ton abonnement Claude) :
+1. Onglet **Ajouter** (le ⊕ en bas). **Texte copié** : colle la recette. **Photo** : rien à faire ici, la photo se
+   prendra dans Claude.
+2. Facultatif : **Modifications à faire** (« remplace la menthe par 2 bonbons à la menthe », « pour 6 personnes »).
+3. **Copier la demande pour Claude**.
+4. **Ouvrir l'app Claude** : nouvelle conversation, touche longuement › **Coller** (et, pour une photo, ajoute-la
+   avec le **+**), puis envoie.
+5. Quand Claude a répondu, touche **Copier** sous sa réponse, reviens dans Garde-manger et touche
+   **Coller la réponse de Claude** (puis « Coller » si l'iPhone le demande).
+6. Vérifie le formulaire, corrige si besoin, puis **Enregistrer la recette**.
 
-Coût : environ 5 à 15 centimes par recette, payés sur ton compte Anthropic (affiché après chaque analyse).
+Claude traduit en français si besoin, convertit les mesures américaines, range ingrédients et étapes et applique
+tes modifications.
 
-**Sans Claude** (texte bien présenté, hors ligne, gratuit) : **Ranger sans Claude** au lieu d'« Analyser ».
-**À la main** : **Écrire une recette à la main**. **Fichier préparé sur le Mac** (`.json` reçu par AirDrop) :
-**Ajouter un fichier de recette**.
+**Autres façons**
+- **Ranger sans Claude** (texte bien présenté, hors ligne, gratuit).
+- **Analyser avec Claude en un toucher** (sans copier-coller) : option payante, environ 5 à 15 centimes par
+  recette, avec une clé Anthropic à créer dans Réglages › Claude (les étapes y sont écrites).
+- **Écrire une recette à la main**, ou **Ajouter un fichier de recette** (`.json` reçu par AirDrop).
 
 Tes recettes se mêlent aux autres (recherche, Frigo, courses, favoris) ; Recherche › Filtres › Univers
 « Mes recettes » les montre seules. Pour en changer une : le **crayon** en haut de la fiche.
-
-**Obtenir la clé Claude (une fois)** : Réglages › **Claude (lecture des recettes)** — les étapes y sont écrites :
-compte sur console.anthropic.com, un peu de crédit (Billing), **API keys › Create key › Copy**, puis colle la clé
-dans Garde-manger et touche **Enregistrer** (elle est vérifiée). La clé reste dans le téléphone.
 
 ## 5 ter. Supprimer une recette
 

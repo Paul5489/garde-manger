@@ -5,21 +5,14 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { z } from 'zod';
-import { duree } from './format';
-import { normaliserUnite } from './quantites';
-import { nouvelIdRecette, TYPES_DE_PLAT } from './mes-recettes';
-import type { Duree, Fermentation, Fiche, GroupeIngredients } from './types';
+import { CONSIGNES, UNITES, versFiche, type RecetteLue } from './lecture-recette';
+import { TYPES_DE_PLAT } from './mes-recettes';
+import type { Fiche } from './types';
 
 export const MODELE_CLAUDE = 'claude-opus-5-5';
 /** Tarifs du modèle (dollars par million de jetons), pour afficher le coût de chaque analyse. */
 const PRIX_ENTREE = 4;
 const PRIX_SORTIE = 20;
-
-const UNITES = [
-  'g', 'kg', 'ml', 'cl', 'l', 'cuillère à soupe', 'cuillère à café', 'pincée', 'gousse', 'pièce', 'botte',
-  'feuille', 'branche', 'brin', 'bâton', 'tranche', 'sachet', 'boîte', 'pot', 'verre', 'tasse', 'bol', 'poignée',
-  'morceau', 'bouquet', 'zeste', 'trait', 'goutte', 'cube', 'tête', 'cm',
-] as const;
 
 const SchemaIngredient = z.object({
   texte: z
@@ -34,7 +27,7 @@ const SchemaIngredient = z.object({
   alternative_du_precedent: z.boolean().describe("true si la ligne commence une alternative « ou … » de l'ingrédient précédent"),
 });
 
-const SchemaRecette = z.object({
+const SchemaRecette: z.ZodType<RecetteLue> = z.object({
   recette_trouvee: z.boolean(),
   probleme: z.string().nullable().describe("Si aucune recette n'est lisible : explication courte en français"),
   titre: z.string(),
@@ -67,21 +60,6 @@ const SchemaRecette = z.object({
     .nullable(),
   modifications_appliquees: z.array(z.string()),
 });
-
-type RecetteLue = z.infer<typeof SchemaRecette>;
-
-const CONSIGNES = `Tu lis une recette de cuisine (texte collé et/ou photos de pages) et tu la transformes en fiche pour Garde-manger, l'application de cuisine de Paul, un cuisinier amateur francophone.
-
-Règles :
-- Tout en français. Si la recette est dans une autre langue, traduis-la. Convertis les mesures américaines ou impériales (cups, oz, lb, °F…) en unités métriques (g, ml, °C), en arrondissant raisonnablement.
-- Garde exactement les quantités de la source. Nombres en chiffres, décimales avec une virgule dans les textes (« 0,5 »).
-- Ingrédients : un par ligne, regroupés si la source a des groupes (« Pour la sauce »). Le champ « texte » commence par la quantité en chiffres suivie de l'unité puis du nom (« 2 gousses d'ail hachées ») ; s'il n'y a pas de quantité, écris simplement l'ingrédient (« Sel, poivre »). Un ingrédient facultatif a optionnel = true.
-- Étapes : dans l'ordre, une action ou un petit groupe d'actions par étape, à l'infinitif (« Porter l'eau à ébullition »). Garde toutes les durées, températures et repères de cuisson. Donne un titre court à une étape seulement si la source en a un.
-- Ignore tout ce qui n'est pas la recette : publicités, commentaires, histoire de l'auteur, appels à s'abonner.
-- type_de_plat : choisis dans la liste si possible. cuisine : origine du plat (« Coréenne », « Française »…).
-- fermentation : seulement pour une recette de fermentation (kimchi, kombucha, lacto-fermentation, miso…), sinon null.
-- Si Paul donne des consignes de modification (remplacer un ingrédient, changer les portions…), applique-les partout de façon cohérente (ingrédients ET étapes) et résume chacune dans modifications_appliquees.
-- Si aucune recette n'est lisible, mets recette_trouvee = false et explique pourquoi dans probleme.`;
 
 export interface EntreeAnalyse {
   cle: string;
@@ -179,81 +157,6 @@ export async function analyserRecette(entree: EntreeAnalyse): Promise<ResultatAn
     modifications: lue.modifications_appliquees,
     coutDollars,
   };
-}
-
-/** « c. à s. », « cuillères à soupe », « grammes »… → unité des fiches (« cuillère à soupe », « g »). */
-function uniteFiche(u: string): string {
-  const n = u.trim().toLowerCase().replace(/\.$/, '');
-  if (/^c\.?\s*(à|a)?\s*s|^cuill[eè]res?\s+(à|a)\s+soupe|^cs$|^tbsp/.test(n)) return 'cuillère à soupe';
-  if (/^c\.?\s*(à|a)?\s*c|^cuill[eè]res?\s+(à|a)\s+caf[eé]|^cc$|^tsp/.test(n)) return 'cuillère à café';
-  const connue = UNITES.find((x) => x === n || `${x}s` === n || `${x}x` === n);
-  return connue ?? normaliserUnite(u) ?? u;
-}
-
-function minutes(m: number | null, texte?: string | null): Duree | undefined {
-  if (!m || m <= 0) return texte ? { texte } : undefined;
-  return { texte: texte || duree(m), minutes: Math.round(m) };
-}
-
-/** Recette lue par Claude → fiche « Mes recettes ». */
-export function versFiche(r: RecetteLue, texteSource?: string, depuisPhotos = false): Fiche {
-  const maintenant = Date.now();
-  const groupes: GroupeIngredients[] = r.groupes
-    .filter((g) => g.ingredients.length)
-    .map((g) => ({
-      ...(g.groupe ? { groupe: g.groupe } : {}),
-      items: g.ingredients.map((i) => ({
-        nom: i.nom || i.texte,
-        texte_original: i.texte,
-        ...(i.quantite !== null ? { quantite: i.quantite } : {}),
-        ...(i.quantite !== null && i.quantite_max !== null && i.quantite_max !== i.quantite
-          ? { quantite_min: i.quantite, quantite_max: i.quantite_max }
-          : {}),
-        ...(i.unite?.trim() ? { unite: uniteFiche(i.unite) } : {}),
-        ...(i.optionnel ? { optionnel: true } : {}),
-        ...(i.alternative_du_precedent ? { alternative_du_precedent: true } : {}),
-      })),
-    }));
-  const temps: Record<string, Duree> = {};
-  const p = minutes(r.temps.preparation_min);
-  const c = minutes(r.temps.cuisson_min);
-  const rp = minutes(r.temps.repos_min, r.temps.repos_texte);
-  if (p) temps.preparation = p;
-  if (c) temps.cuisson = c;
-  if (rp) temps.repos = rp;
-
-  const f: Fiche = {
-    id: nouvelIdRecette(r.titre),
-    type: 'recette',
-    titre: r.titre.trim() || 'Recette sans titre',
-    langue: 'fr',
-    source: { id: 'perso', nom: 'Mes recettes' },
-    classement: {
-      ...(r.categorie ? { categorie: r.categorie } : {}),
-      ...(r.type_de_plat?.trim() ? { type_de_plat: [r.type_de_plat.trim()] } : {}),
-      ...(r.cuisine.length ? { cuisine: r.cuisine } : {}),
-    },
-    creeLe: maintenant,
-    modifieLe: maintenant,
-  };
-  if (r.description) f.description = r.description;
-  if (r.portions && r.portions.nombre > 0)
-    f.portions = { nombre: r.portions.nombre, unite: r.portions.unite, texte: `${r.portions.nombre} ${r.portions.unite}` };
-  if (r.rendement) f.rendement = r.rendement;
-  if (Object.keys(temps).length) f.temps = temps;
-  if (groupes.length) f.ingredients = groupes;
-  if (r.etapes.length)
-    f.etapes = r.etapes.map((e, i) => ({ numero: i + 1, texte: e.texte, ...(e.titre ? { phase: e.titre } : {}) }));
-  if (r.notes.length) f.notes = r.notes;
-  if (r.materiel.length) f.materiel = r.materiel;
-  if (r.fermentation) {
-    const fe: Fermentation = {};
-    for (const [cle, valeur] of Object.entries(r.fermentation)) if (valeur !== null) (fe as Record<string, unknown>)[cle] = valeur;
-    if (Object.keys(fe).length) f.fermentation = fe;
-  }
-  const source = [texteSource?.trim(), depuisPhotos ? '(lue sur photo)' : ''].filter(Boolean).join('\n\n');
-  if (source) f.texte_source = source;
-  return f;
 }
 
 /** Messages d'erreur compréhensibles (classes d'erreur du kit Anthropic, de la plus précise à la plus large). */
