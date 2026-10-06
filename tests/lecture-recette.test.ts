@@ -69,3 +69,40 @@ describe('lecture de la réponse recollée', () => {
     expect(() => lireReponseClaude('{ "groupes": [] }')).toThrow(/titre/);
   });
 });
+
+describe('fiche construite depuis la réponse de Claude', async () => {
+  const { construireFiche, ficheVersBrouillon } = await import('../src/lib/mes-recettes');
+  const { ligneIngredient } = await import('../src/lib/quantites');
+  const r = lireReponseClaude(`{
+    "titre": "Thé glacé à la pêche", "type_de_plat": "Boisson fraîche", "materiel": ["Une grande carafe"],
+    "groupes": [{ "groupe": "Sirop", "ingredients": [
+      { "texte": "2 c. à s. de miel", "nom": "miel", "quantite": 2, "unite": "c. à s." },
+      { "texte": "4 à 5 sachets de thé noir", "nom": "thé noir", "quantite": 4, "quantite_max": 5, "unite": "sachets" },
+      { "texte": "200 grammes de pêches", "nom": "pêches", "quantite": 200, "unite": "grammes" },
+      { "texte": "1 tsp de cannelle", "nom": "cannelle", "quantite": 1, "unite": "tsp", "optionnel": true }
+    ] }],
+    "etapes": [{ "titre": "Infuser", "texte": "Infuser le thé 5 minutes." }]
+  }`);
+  const fiche = versFiche(r);
+
+  it('unités écrites librement ramenées à celles des fiches, fourchettes gardées', () => {
+    expect(fiche.ingredients?.[0].groupe).toBe('Sirop');
+    expect(fiche.ingredients?.[0].items?.map((i) => i.unite)).toEqual(['cuillère à soupe', 'sachet', 'g', 'cuillère à café']);
+    expect(fiche.ingredients?.[0].items?.[1]).toMatchObject({ quantite_min: 4, quantite_max: 5 });
+    expect(fiche.ingredients?.[0].items?.[3].optionnel).toBe(true);
+    expect(fiche.classement?.type_de_plat).toEqual(['Boisson fraîche']);
+    expect(fiche.etapes?.[0]).toMatchObject({ numero: 1, phase: 'Infuser' });
+    expect(ligneIngredient(fiche.ingredients![0].items![1], 'perso', 2).quantite).toBe('8 à 10');
+  });
+
+  it('le formulaire non retouché garde exactement ce que Claude a rendu', () => {
+    const f2 = construireFiche(ficheVersBrouillon(fiche), fiche);
+    expect(f2.id).toBe(fiche.id);
+    expect(f2.ingredients).toEqual(fiche.ingredients);
+    expect(f2.etapes).toEqual(fiche.etapes);
+    expect(f2.materiel).toEqual(['Une grande carafe']);
+    const b = ficheVersBrouillon(fiche);
+    const f3 = construireFiche({ ...b, ingredients: b.ingredients + '\n2 cuillères à soupe de sucre' }, fiche);
+    expect(f3.ingredients?.flatMap((g) => g.items ?? [])).toHaveLength(5);
+  });
+});

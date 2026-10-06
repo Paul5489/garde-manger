@@ -93,8 +93,6 @@ tes modifications.
 
 **Autres façons**
 - **Ranger sans Claude** (texte bien présenté, hors ligne, gratuit).
-- **Analyser avec Claude en un toucher** (sans copier-coller) : option payante, environ 5 à 15 centimes par
-  recette, avec une clé Anthropic à créer dans Réglages › Claude (les étapes y sont écrites).
 - **Écrire une recette à la main**, ou **Ajouter un fichier de recette** (`.json` reçu par AirDrop).
 
 Tes recettes se mêlent aux autres (recherche, Frigo, courses, favoris) ; Recherche › Filtres › Univers

@@ -51,7 +51,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 183 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 179 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -114,21 +114,19 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   catalogue (`etat.catalogue` = `catalogueArchive` + mes recettes), à la recherche (petit index MiniSearch dédié,
   **résultats placés avant ceux de l'archive** : les scores de deux index de tailles différentes ne se comparent pas),
   au Frigo (index d'ingrédients calculé à la volée) et à la sauvegarde. Jamais touchées par un réimport.
-- **Onglet Ajouter** (6e onglet, 06/10/2026) : texte collé ou photos (≤ 4, réduites à 1600 px) + consignes de
-  modification → **Claude** (`src/lib/claude.ts`, chargé à la demande : SDK `@anthropic-ai/sdk` + zod, ~80 Ko gzip).
-  Appel direct depuis le téléphone avec la clé API de Paul (`cle-claude.svelte.ts`, localStorage, jamais dans la
-  sauvegarde) : `client.beta.messages.parse`, modèle `claude-opus-5-5`, effort `medium`, sortie structurée
-  (`betaZodOutputFormat`, unités et type de plat en texte libre puis normalisés), `fallbacks: "default"`
-  (beta `server-side-fallback-2026-07-01`), erreurs traduites (clé, crédit, réseau, surcharge), coût affiché
-  (4 $ / 20 $ par million de jetons). Ou « Ranger sans Claude » (analyse locale). Le résultat passe par
-  `ajout.svelte.ts` puis le formulaire `EditionRecette` (vérifier → enregistrer) ; `construireFiche` reprend tels
-  quels les ingrédients/étapes non retouchés et garde fermentation, matériel… Tests : réponses API simulées (`fetch`).
+- **Onglet Ajouter** (6e onglet, 06/10/2026) : texte collé (ou photo prise dans l'app Claude) + consignes de
+  modification → **app Claude de l'iPhone, gratuite** (ci-dessous), ou « Ranger sans Claude » (analyse locale), ou
+  saisie à la main, ou fichier `.json`. Le résultat passe par `ajout.svelte.ts` puis le formulaire `EditionRecette`
+  (vérifier → enregistrer) ; `construireFiche` reprend tels quels les ingrédients/étapes non retouchés et garde
+  fermentation, matériel… **Aucun appel à l'API Claude depuis l'appli** : l'option payante (clé API Anthropic,
+  `claude.ts`, SDK + zod) a existé en v1.3–1.4 puis a été retirée à la demande de Paul (06/10/2026) ; `main.ts`
+  efface une clé éventuellement gardée (`garde-manger:cle-claude`). Ne pas la réintroduire sans qu'il le demande.
 - **Façon gratuite (app Claude de l'iPhone)**, demandée par Paul le 06/10/2026 (« sans payer ») : l'onglet Ajouter
   copie une demande toute prête (`demandePourAppClaude` : mêmes consignes que l'API + modèle de réponse JSON +
   consignes de Paul + texte de la recette), Paul la colle dans l'app Claude (photo jointe là-bas si besoin), copie
   la réponse et la recolle (« Coller la réponse de Claude » : `navigator.clipboard.readText`, sinon zone de saisie) ;
   `lireReponseClaude` trouve le bloc JSON et tolère champs manquants ou mal typés. Module léger commun :
-  `lecture-recette.ts` (CONSIGNES, RecetteLue, versFiche, unités) ; `claude.ts` (API payante) l'importe.
+  `lecture-recette.ts` (CONSIGNES, RecetteLue, versFiche, unités).
   Une réponse JSON collée par erreur dans la zone « Texte copié » est reconnue par « Ranger sans Claude ».
 - **Supprimer une recette** : recette perso = effacée ; fiche de l'archive = **masquée** (`masquees.svelte.ts`,
   réglage `fichesSupprimees`, donc sauvegardé et gardé au réimport), filtrée du catalogue et du Frigo,
@@ -268,7 +266,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   toujours mêlées aux autres, plus un univers « Mes recettes » dans les filtres. Analyse locale du texte collé (hors ligne,
   gratuit, sans compte). Puis, le même jour, Paul a demandé **Claude IA dans l'appli** (copier-coller ou photo
   analysés par Claude) et ne tient pas à une rubrique « Mes recettes » : onglet **Ajouter** à la place de la carte
-  de l'Accueil (filtre d'univers « Mes recettes » gardé). Il doit créer lui-même sa clé API (compte payant).
+  de l'Accueil (filtre d'univers « Mes recettes » gardé). Puis « sans payer » : façon gratuite par l'app Claude ;
+  enfin « enlève l'option payante » : plus de clé API ni d'appel direct (06/10/2026).
 - 06/10/2026 : livre *Koji Alchemy* **pas encore intégré** : en attente d'un exemplaire acheté par Paul (ebook sans DRM),
   ou ajout recette par recette via Mes recettes. Ne pas utiliser le fichier epub actuellement dans Téléchargements.
 - 06/10/2026 : recette du **bissap à l'ananas** (bonbons à la menthe à la place de la menthe fraîche) préparée en fichier
@@ -307,6 +306,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.5.0** (06/10/2026) : option payante retirée (bouton « Analyser avec Claude », Réglages › Claude, kit Anthropic,
+  prise de photo dans Garde-manger) ; seule reste la façon gratuite par l'app Claude (+ rangement local).
 - **1.4.0** (06/10/2026) : façon gratuite avec l'app Claude (copier la demande → coller la réponse) mise en premier ;
   l'appel direct par clé API devient l'option « en un toucher, payante ».
 - **1.3.0** (06/10/2026) : onglet Ajouter (Claude : texte ou photo, ou rangement local), suppression de n'importe

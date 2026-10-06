@@ -1,7 +1,6 @@
-// Lecture d'une recette par Claude : consignes, conversion de la réponse en fiche « Mes recettes ».
-// Module léger (sans le kit Anthropic), partagé par les deux façons de faire :
-//  - payante : l'appli appelle Claude directement avec la clé API de Paul (claude.ts) ;
-//  - gratuite : Paul colle la demande dans l'app Claude de son iPhone, puis recolle la réponse ici.
+// Lecture d'une recette par l'app Claude de l'iPhone (gratuit, compris dans l'abonnement de Paul) :
+// l'appli prépare une demande à coller dans Claude, puis lit la réponse recollée et en fait une fiche
+// « Mes recettes ». Aucun appel à un service extérieur depuis l'appli (pas de clé API : choix de Paul).
 
 import { duree } from './format';
 import { nouvelIdRecette, TYPES_DE_PLAT } from './mes-recettes';

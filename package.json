@@ -1,7 +1,7 @@
 {
   "name": "garde-manger",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -26,11 +26,9 @@
     "workbox-window": "^7.4.1"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.131.0",
     "@lucide/svelte": "^1.49.0",
     "dexie": "^4.4.6",
     "marked": "^18.0.14",
-    "minisearch": "^7.2.0",
-    "zod": "^4.6.5"
+    "minisearch": "^7.2.0"
   }
 }

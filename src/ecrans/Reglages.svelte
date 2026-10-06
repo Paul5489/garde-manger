@@ -2,7 +2,6 @@
   import BarreHaut from '../composants/BarreHaut.svelte';
   import Importeur from '../composants/Importeur.svelte';
   import RecettesSupprimees from '../composants/RecettesSupprimees.svelte';
-  import ReglagesClaude from '../composants/ReglagesClaude.svelte';
   import ReglagesFrigo from '../composants/ReglagesFrigo.svelte';
   import SauvegardePerso from '../composants/SauvegardePerso.svelte';
   import { NOMS_SOURCES } from '../lib/archive';
@@ -61,11 +60,6 @@
         notes, courses et bocaux sont conservés.
       </p>
       <Importeur libelle="Mettre à jour les recettes" />
-    </div>
-
-    <h2 class="section-titre" id="reglages-claude">Claude (lecture des recettes)</h2>
-    <div class="carte bloc">
-      <ReglagesClaude />
     </div>
 
     <h2 class="section-titre" id="reglages-supprimees">Recettes supprimées</h2>
