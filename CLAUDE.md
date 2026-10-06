@@ -11,6 +11,9 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ## 1. Règles impératives
 
+- **Avant de modifier quoi que ce soit** : `git fetch` puis `git log --oneline HEAD..origin/main`. D'autres conversations
+  (parfois dans le cloud) travaillent aussi sur ce dépôt : le 06/10/2026, deux versions parallèles ont dû être réunies.
+
 - **Aucune recette dans Git, dans `dist/`, ni en ligne** (droit d'auteur, usage personnel). Seul le **code** est public.
   Les recettes sont importées dans le téléphone (IndexedDB) depuis `archive_complete.json`.
 - Ne **jamais modifier** `../archive-recettes/` (données sources, lecture seule). Corrections de données = couche
