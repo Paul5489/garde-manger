@@ -139,6 +139,9 @@ class EtatRecherche {
 
   nbFiltres = $derived(Object.values(this.filtres).reduce((n, v) => n + v.length, 0));
 
+  /** Fiches trouvées par le texte mais cachées par les filtres (pour le signaler). */
+  cacheesParLesFiltres = $derived(this.nbFiltres ? this.#base.length - this.resultats.length : 0);
+
   /** Options d'un filtre avec le nombre de fiches correspondantes (compte tenu des autres filtres). */
   options(cle: CleFiltre): { valeur: string; libelle: string; nombre: number }[] {
     const compte = new Map<string, number>();

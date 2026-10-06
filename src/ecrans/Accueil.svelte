@@ -48,6 +48,8 @@
   }
 
   function chercher() {
+    // Le champ de l'accueil cherche dans toutes les fiches : on retire les filtres d'une visite précédente.
+    recherche.effacerFiltres();
     routeur.ouvrirOnglet('recherche');
     requestAnimationFrame(() => document.getElementById('champ-recherche')?.focus());
   }

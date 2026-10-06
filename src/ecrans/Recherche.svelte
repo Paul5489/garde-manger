@@ -93,9 +93,17 @@
 
   {#if !recherche.enAttenteIndex && !recherche.resultats.length}
     <div class="vide">
-      <p>Aucune fiche ne correspond.</p>
-      {#if recherche.nbFiltres}
-        <button class="bouton secondaire" onclick={() => recherche.effacerFiltres()}>Retirer les filtres</button>
+      {#if recherche.cacheesParLesFiltres}
+        <p>
+          <strong>{pluriel(recherche.cacheesParLesFiltres, 'fiche trouvée', 'fiches trouvées')}</strong>, mais
+          cachée{recherche.cacheesParLesFiltres > 1 ? 's' : ''} par les filtres choisis.
+        </p>
+        <button class="bouton" onclick={() => recherche.effacerFiltres()}>Retirer les filtres et voir</button>
+      {:else}
+        <p>Aucune fiche ne correspond.</p>
+        {#if recherche.nbFiltres}
+          <button class="bouton secondaire" onclick={() => recherche.effacerFiltres()}>Retirer les filtres</button>
+        {/if}
       {/if}
     </div>
   {:else}

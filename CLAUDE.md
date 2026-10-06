@@ -287,6 +287,10 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.2.1** (06/10/2026) : la recherche signale les fiches trouvées mais cachées par un filtre (« 1 fiche trouvée, mais
+  cachée par les filtres choisis » + bouton), et le champ de recherche de l'Accueil repart sans filtre. Cause probable de
+  « je ne trouve pas le bissap » : un filtre d'univers resté actif après avoir touché une tuile de l'Accueil.
+
 ## 10. Reste à faire
 
 Toutes les étapes du cahier des charges sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
