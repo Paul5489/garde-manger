@@ -138,6 +138,20 @@ export interface Fiche {
   texte_source?: string;
   creeLe?: number;
   modifieLe?: number;
+  /** Fiche AFPA complétée par La Cuisine de référence (calculé à l'ouverture, voir methode-livre.ts). */
+  methode_livre?: MethodeLivre;
+}
+
+export interface MethodeLivre {
+  /** Fiche du livre d'où viennent les explications. */
+  id: string;
+  titre: string;
+  /** même plat, plat proche, ou préparation de base expliquée dans une fiche technique (simple lien). */
+  lien: 'meme' | 'proche' | 'technique';
+  /** Nombre de couverts du livre (« 8 couverts ») : les quantités citées dans le détail sont les siennes. */
+  portions?: string;
+  /** Étapes AFPA d'origine. */
+  plan?: Etape[];
 }
 
 export type Univers = 'asiatique' | 'francaise' | 'techniques' | 'fermentation' | 'perso';

@@ -4,9 +4,10 @@
 import type MiniSearch from 'minisearch';
 import type { DocRecherche } from './archive';
 import { db } from './db';
-import { estExclue } from './exclusions';
+import { empreinte, estExclue } from './exclusions';
 import { masquees } from './masquees.svelte';
 import { mesRecettes } from './mes-recettes.svelte';
+import { completerAvecLeLivre, paireDuLivre } from './methode-livre';
 import { chargerIndex } from './moteur';
 import type { Fiche, InfosArchive, Resume } from './types';
 
@@ -63,7 +64,26 @@ class EtatApp {
   }
 
   async fiche(id: string): Promise<Fiche | undefined> {
-    return mesRecettes.trouver(id) ?? (await db.mesRecettes.get(id)) ?? db.fiches.get(id);
+    const mienne = mesRecettes.trouver(id) ?? (await db.mesRecettes.get(id));
+    if (mienne) return mienne;
+    const f = await db.fiches.get(id);
+    return f && this.#completer(f);
+  }
+
+  #parEmpreinte: { catalogue: Resume[]; ids: Map<string, string> } | null = null;
+
+  /** Fiche AFPA : les étapes sont complétées par la méthode de La Cuisine de référence (methode-livre.ts). */
+  async #completer(f: Fiche): Promise<Fiche> {
+    const paire = f.source.id === 'afpa' ? paireDuLivre(f.id) : undefined;
+    if (!paire) return f;
+    if (this.#parEmpreinte?.catalogue !== this.catalogueArchive)
+      this.#parEmpreinte = {
+        catalogue: this.catalogueArchive,
+        ids: new Map(this.catalogueArchive.map((r) => [empreinte(r.id), r.id])),
+      };
+    const idLivre = this.#parEmpreinte.ids.get(paire.livre);
+    const livre = idLivre ? await db.fiches.get(idLivre) : undefined;
+    return livre ? completerAvecLeLivre(f, livre, paire.lien) : f;
   }
 }
 

@@ -186,6 +186,12 @@
             {#if f.ingredients?.length}
               <div class="carte bloc"><Ingredients groupes={f.ingredients} source={f.source.id} {coef} /></div>
             {/if}
+            {#if f.methode_livre?.portions}
+              <p class="info-livre">
+                📖 Étapes détaillées d'après La Cuisine de référence : les quantités citées dans les étapes sont
+                celles du livre ({f.methode_livre.portions}). Suis celles de la liste ci-dessus.
+              </p>
+            {/if}
             {#if f.materiel?.length}
               <h2>Matériel</h2>
               <ul class="materiel">
@@ -203,7 +209,7 @@
             <p class="texte-principal">
               <TexteEtape
                 texte={majuscule(etape.texte)}
-                livre={f.source.id === 'cuisine-de-reference'}
+                livre={f.source.id === 'cuisine-de-reference' || !!f.methode_livre}
                 libelle="{titreCourt} — étape {n}"
                 ficheId={f.id}
               />
@@ -220,7 +226,7 @@
                   <li>
                     <TexteEtape
                       texte={d}
-                      livre={f.source.id === 'cuisine-de-reference'}
+                      livre={f.source.id === 'cuisine-de-reference' || !!f.methode_livre}
                       libelle="{titreCourt} — étape {n}"
                       ficheId={f.id}
                     />
@@ -394,6 +400,12 @@
 
   .info-portions {
     margin: 0 0 12px;
+  }
+
+  .info-livre {
+    margin: 12px 0 0;
+    font-size: 0.85em;
+    color: var(--texte-2);
   }
 
   .bloc {

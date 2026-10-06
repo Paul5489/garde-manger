@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import { tick } from 'svelte';
-  import { ChefHat, Clock, ExternalLink, Heart, Pencil, ShoppingBasket, Timer, Trash2, Undo2, Users } from '@lucide/svelte';
+  import { BookOpen, ChefHat, ChevronRight, Clock, ExternalLink, Heart, Pencil, ShoppingBasket, Timer, Trash2, Undo2, Users } from '@lucide/svelte';
   import BarreHaut from '../composants/BarreHaut.svelte';
   import CarnetFiche from '../composants/CarnetFiche.svelte';
   import CarteBocal from '../composants/CarteBocal.svelte';
@@ -137,7 +137,8 @@
     (fiche?.recettes_du_chapitre ?? []).map((i) => etat.parId.get(i)).filter((r): r is Resume => !!r),
   );
 
-  const livre = $derived(fiche?.source.id === 'cuisine-de-reference');
+  // Renvois « voir p. 57 » cliquables : fiches du livre et fiches AFPA complétées par le livre.
+  const livre = $derived(fiche?.source.id === 'cuisine-de-reference' || !!fiche?.methode_livre);
 
   const coef = $derived(fiche ? portions.coef(fiche.id) : 1);
   const titreCourt = $derived(
@@ -285,6 +286,35 @@
       {#if f.etapes?.length}
         <section>
           <h2 class="titre-section">Étapes</h2>
+          {#if f.methode_livre}
+            {@const m = f.methode_livre}
+            {#if m.lien === 'technique'}
+              <a class="carte methode-livre lien-livre" href={lienFiche(m.id)}>
+                <BookOpen size={22} />
+                <span class="texte-livre">
+                  <strong>Méthode détaillée dans le livre</strong>
+                  <span class="discret">« {m.titre} » · La Cuisine de référence</span>
+                </span>
+                <ChevronRight size={18} />
+              </a>
+            {:else}
+              <div class="carte methode-livre">
+                <BookOpen size={22} />
+                <div class="texte-livre">
+                  <p>
+                    {m.lien === 'meme' ? 'Étapes détaillées de La Cuisine de référence' : "Étapes complétées avec un plat proche du livre"} :
+                    <a href={lienFiche(m.id)}>« {m.titre} »</a>.
+                  </p>
+                  {#if m.lien === 'proche'}<p class="discret">Adapte ce qui diffère (poisson, viande, garniture…).</p>{/if}
+                  {#if m.portions}
+                    <p class="discret">
+                      Les quantités citées dans les étapes sont celles du livre ({m.portions}). Les tiennes sont dans la liste d'ingrédients.
+                    </p>
+                  {/if}
+                </div>
+              </div>
+            {/if}
+          {/if}
           <ol class="etapes">
             {#each f.etapes as e, i (i)}
               {@const phase = phaseUtile(e)}
@@ -323,6 +353,14 @@
               </li>
             {/each}
           </ol>
+          {#if f.methode_livre?.plan?.length}
+            <details class="plan-afpa">
+              <summary>Plan de travail AFPA d'origine</summary>
+              <ol>
+                {#each f.methode_livre.plan as e, i (i)}<li>{majuscule(e.texte)}</li>{/each}
+              </ol>
+            </details>
+          {/if}
         </section>
       {/if}
 
@@ -779,6 +817,75 @@
 
   .actions-archive p {
     margin: 0;
+  }
+
+  .methode-livre {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    color: var(--texte);
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+
+  .methode-livre > :global(svg) {
+    flex: none;
+    color: var(--accent);
+    margin-top: 1px;
+  }
+
+  .lien-livre {
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .lien-livre:active {
+    background: var(--surface-2);
+  }
+
+  .lien-livre > :global(svg:last-child) {
+    color: var(--texte-3);
+  }
+
+  .texte-livre {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .texte-livre p {
+    margin: 0;
+  }
+
+  .texte-livre .discret {
+    font-size: 13.5px;
+  }
+
+  .plan-afpa {
+    margin-top: 6px;
+  }
+
+  .plan-afpa summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .plan-afpa ol {
+    margin: 0;
+    padding-left: 22px;
+    font-size: 14.5px;
+    color: var(--texte-2);
+  }
+
+  .plan-afpa li + li {
+    margin-top: 4px;
   }
 
   .texte-source {

@@ -51,7 +51,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 187 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 197 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -148,6 +148,17 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   et répertoire du livre, bibliographie, pages de garde, introduction et « à propos » Noma, fournisseurs). Repérées par
   empreinte FNV-1a de l'id (l'appli publiée ne doit contenir aucun id en clair). Écartées à l'import **et** au
   démarrage (catalogue filtré : effet immédiat sans réimport). Gardés : techniques, produits, vocabulaire, équipement.
+- **Fiches AFPA complétées par le livre** (`methode-livre.ts`, demande de Paul du 06/10/2026) : les fiches AFPA ne
+  donnent qu'un plan en étapes courtes. 98 paires AFPA → La Cuisine de référence, **vérifiées une à une** (empreintes
+  FNV-1a, ids en commentaire) : 40 « même plat » (la méthode détaillée du livre remplace le plan, qui reste dans
+  « Plan de travail AFPA d'origine »), 28 « plat proche » (étapes AFPA gardées ; chacune reçoit les explications de
+  l'étape équivalente du livre, rapprochement par mots + programmation dynamique dans l'ordre, rien d'ajouté),
+  30 « préparation de base » (lien vers la fiche technique du livre, étapes inchangées). Ingrédients, quantités et
+  portions restent ceux de l'AFPA ; un encadré prévient que les quantités citées dans les étapes sont celles du livre
+  (8 couverts). Calculé à l'ouverture (`etat.fiche`), jamais enregistré ; une recette modifiée par Paul garde ce qu'il
+  a écrit. Écartées après revue : foie de veau à l'ancienne (≠ à l'anglaise), gratin dauphinois, travers laqués,
+  raie meunière, canard braisé à l'orange, tendrons, fricassée à l'estragon, entrecôte Choron, moules poulette, et
+  les paires où moins de 3 étapes trouvaient leur équivalent.
 - **Bocaux** (Dexie **version(3)** : `bocaux`, `journal` (photos en data URL JPEG ~1280 px, chargé bocal par bocal),
   `modelesBocaux`). Un bocal a toujours ≥ 1 étape (`min`/`max` en jours ou heures, facultatifs) ; début de la 1re =
   `debut` du bocal, des suivantes = `debut` posé à « Étape suivante » (sinon estimé). Jour N = jours de calendrier
@@ -197,7 +208,8 @@ src/lib/
   mes-recettes.ts                 analyse d'un texte collé (titres de sections, lignes d'ingrédients → quantité/unité/nom,
                                   portions, temps, « Titre : texte » → titre d'étape), construireFiche, ficheVersBrouillon
   mes-recettes.svelte.ts          mes recettes en mémoire + Dexie (charger, trouver, enregistrer, supprimer), index dédié
-  exclusions.ts                   empreintes des pages hors cuisine, estExclue
+  exclusions.ts                   empreintes des pages hors cuisine, estExclue (et empreinte, réutilisée)
+  methode-livre.ts                paires AFPA → livre, rapprochement des étapes, completerAvecLeLivre
   sauvegarde.ts                   exporter, lireSauvegarde (validation, messages clairs), restaurer (fusion)
   partage.ts, annonce.svelte.ts   menu Partager (texte / fichier) avec repli ; petit message temporaire en bas
   etat.svelte.ts                  état global : statut, catalogue, parId, index (chargé à la demande), fiche(id)
@@ -318,6 +330,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.7.0** (06/10/2026) : les fiches AFPA sans explications reçoivent la méthode détaillée de La Cuisine de
+  référence (98 recettes), en gardant les quantités AFPA ; plan AFPA d'origine consultable.
 - **1.6.0** (06/10/2026) : modifier n'importe quelle recette (copie qui remplace l'original, « Revenir à l'original ») ;
   nouvel accueil par type de plat.
 - **1.5.0** (06/10/2026) : option payante retirée (bouton « Analyser avec Claude », Réglages › Claude, kit Anthropic,

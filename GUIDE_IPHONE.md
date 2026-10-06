@@ -59,6 +59,10 @@ l'application installée et Safari ne partagent pas leurs données.
   qu'un rendement). Les quantités sont recalculées ; ton choix est retenu pour la prochaine fois.
 - Toucher un ingrédient le **raye** (pratique pour la mise en place).
 - Les durées en orange dans les étapes (« ⏱ 20 min ») lancent un **minuteur** d'un toucher.
+- **Recettes AFPA** : leurs étapes sont détaillées avec les explications de **La Cuisine de référence** quand le
+  livre a le même plat (ou un plat proche, ou la préparation de base : lien « Méthode détaillée dans le livre »).
+  Les quantités à suivre sont celles de la liste d'ingrédients (AFPA) ; celles citées dans les étapes sont pour
+  8 couverts. Le plan AFPA d'origine reste visible sous les étapes.
 - **Cuisiner pas à pas** : une étape à la fois en gros caractères. Balaie vers la gauche ou touche **Suivant**.
   **Aa** change la taille du texte, l'icône liste rappelle tous les ingrédients. L'appli reprend à la même étape
   si tu la quittes (pendant 12 heures).
