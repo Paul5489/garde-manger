@@ -10,10 +10,10 @@ import {
   type IndexIngredients,
 } from './classement-frigo';
 import { db } from './db';
+import { mesRecettes } from './mes-recettes.svelte';
 import type { ReponseIndex } from './index-ingredients.worker';
 import { Dictionnaire, PLACARD_DEFAUT, predicatListe, SYNONYMES_DEFAUT } from './normalisation';
 import { collator, normaliser } from './texte';
-import type { Fiche } from './types';
 
 type CleReglage = 'frigo' | 'placard' | 'synonymes';
 
@@ -37,7 +37,17 @@ class Frigo {
   statutIndex = $state<'attente' | 'preparation' | 'pret' | 'erreur'>('attente');
   #indexPour: string | null = null;
 
-  preparees = $derived(this.index ? preparer(this.index, this.dico) : []);
+  /**
+   * Index de l'archive + ingrédients de mes recettes, calculés à la volée (quelques fiches) : une recette
+   * ajoutée, modifiée ou supprimée compte tout de suite. Une recette perso remplace la fiche de même id.
+   */
+  #indexComplet = $derived.by(() => {
+    if (!this.index) return null;
+    const perso = construireIndexIngredients(mesRecettes.liste).fiches;
+    const ids = new Set(mesRecettes.liste.map((f) => f.id));
+    return { ...this.index, fiches: [...this.index.fiches.filter((f) => !ids.has(f.id)), ...perso] };
+  });
+  preparees = $derived(this.#indexComplet ? preparer(this.#indexComplet, this.dico) : []);
   vocabulaire = $derived(construireVocabulaire(this.preparees, this.dico, this.synonymes));
   resultats = $derived(classer(this.preparees, this.#jetonsPossedes, this.#jetonsPlacard));
   /** Déjà choisis ou au placard : pas proposés en suggestion. */
@@ -54,23 +64,18 @@ class Frigo {
   }
 
   /**
-   * Charge l'index des ingrédients de l'archive importée, complété par Mes recettes
-   * (repère : `etat.versionRecettes`, qui change à chaque import ou recette perso modifiée).
-   * S'il manque ou date d'une version précédente, il est construit en arrière-plan.
+   * Charge l'index des ingrédients de l'archive importée (repère : date d'import). Mes recettes y sont
+   * ajoutées à la volée (#indexComplet). S'il manque ou date d'une version précédente, il est construit
+   * en arrière-plan.
    */
-  async chargerIndex(version: string | undefined, mesRecettes: Fiche[] = []) {
-    if (!version || this.#indexPour === version) return;
-    this.#indexPour = version;
+  async chargerIndex(importeLe: string | undefined) {
+    if (!importeLe || this.#indexPour === importeLe) return;
+    this.#indexPour = importeLe;
     this.statutIndex = 'preparation';
     try {
       const e = await db.meta.get('ingredients');
       const lu = e?.valeur as IndexIngredients | undefined;
-      const index = lu?.version === VERSION_INDEX_INGREDIENTS ? lu : await construireEnArrierePlan();
-      const ids = new Set(mesRecettes.map((f) => f.id));
-      this.index = {
-        ...index,
-        fiches: [...index.fiches.filter((f) => !ids.has(f.id)), ...construireIndexIngredients(mesRecettes).fiches],
-      };
+      this.index = lu?.version === VERSION_INDEX_INGREDIENTS ? lu : await construireEnArrierePlan();
       this.statutIndex = 'pret';
     } catch {
       this.#indexPour = null;

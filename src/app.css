@@ -23,6 +23,7 @@
   --u-francaise: #2f5d8a;
   --u-techniques: #6b5844;
   --u-fermentation: #4f7a3a;
+  --u-perso: #7a4170;
   --ombre: 0 1px 2px rgb(60 40 20 / 0.06), 0 4px 16px rgb(60 40 20 / 0.06);
   --rayon: 14px;
   --rayon-petit: 10px;
@@ -57,6 +58,7 @@
     --u-francaise: #6a9bd0;
     --u-techniques: #b39b7f;
     --u-fermentation: #8cb86c;
+    --u-perso: #c58ab6;
     --ombre: 0 1px 2px rgb(0 0 0 / 0.3);
   }
 }

@@ -6,7 +6,7 @@ Tes recettes ne sont jamais sur Internet : elles sont copiées une seule fois da
 `archive_complete.json` du Mac. Tout le reste (favoris, courses, bocaux…) reste aussi dans le téléphone.
 
 **Sommaire** : 1. Installer · 2. Importer les recettes · 3. Les onglets · 4. Fiche, mode cuisine et minuteurs ·
-5. Favoris, notes et carnet · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
+5. Favoris, notes et carnet · 5 bis. Mes recettes · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
 10. Mettre à jour les recettes · 11. Mettre à jour l'application · 12. Hors ligne · 13. En cas de problème
 
 ---
@@ -75,6 +75,24 @@ l'application installée et Safari ne partagent pas leurs données.
 - **Cuisiné le…** : à la fin du mode cuisine (« Bon appétit ! »), donne des étoiles et touche
   **Noter dans mon carnet**. Ou, sur la fiche : **J'ai cuisiné cette recette**.
 
+## 5 bis. Mes recettes (ajouter une recette trouvée sur Internet)
+
+1. Sur Internet (Safari…), sélectionne tout le texte de la recette et touche **Copier**.
+2. Dans Garde-manger, **Accueil** › carte **Mes recettes** › **Ajouter**.
+3. Touche longuement la grande zone de texte › **Coller**, puis **Ranger la recette**.
+4. L'appli range seule le titre, les portions, les ingrédients et les étapes. **Vérifie** chaque champ
+   (tu peux tout corriger : une ligne par ingrédient, une ligne par étape), choisis le type de plat
+   (Boisson, Dessert…), puis **Enregistrer la recette**.
+
+Ta recette s'utilise comme les autres : portions, mode cuisine, minuteurs, courses, favoris, Frigo, recherche
+(elle passe en tête des résultats). Pour la changer : le **crayon** en haut de la fiche, ou **Modifier** en bas ;
+**Supprimer** est à côté. Le texte collé d'origine est gardé en bas de la fiche.
+
+- **Recette préparée sur le Mac** (fichier `garde-manger-recette-….json` reçu par AirDrop) : Mes recettes ›
+  **Ajouter** › **Ajouter un fichier de recette** › Parcourir › Sur mon iPhone › Téléchargements.
+- Mes recettes font partie de la **sauvegarde** (partie 9) et ne sont jamais effacées par une mise à jour
+  des recettes.
+
 ## 6. Liste de courses
 
 1. Sur une fiche, règle le nombre de portions, puis touche **Ajouter aux courses** (sous les ingrédients).
@@ -141,8 +159,8 @@ supprimer l'icône** :
    > Ton iCloud Drive est plein : « Enregistrer dans Fichiers › Sur mon iPhone » garde le fichier dans le
    > téléphone seulement. Pour être tranquille, envoie aussi une copie au Mac par AirDrop.
 
-Le fichier s'appelle `garde-manger-sauvegarde-AAAA-MM-JJ.json`. Les recettes n'y sont pas (elles viennent
-de l'archive).
+Le fichier s'appelle `garde-manger-sauvegarde-AAAA-MM-JJ.json`. Les recettes de l'archive n'y sont pas (elles
+viennent du fichier `archive_complete.json`) ; **Mes recettes**, elles, y sont.
 
 **Restaurer** (nouvel iPhone, ou après une réinstallation) : importe d'abord les recettes, puis Réglages ›
 **Restaurer une sauvegarde** › choisis le fichier. Rien n'est effacé : le contenu de la sauvegarde s'ajoute à ce
@@ -155,7 +173,10 @@ Quand l'archive a été régénérée sur le Mac :
 1. Envoie le nouveau `archive_complete.json` sur l'iPhone par AirDrop (comme à la partie 2).
 2. Garde-manger › ⚙️ Réglages › **Mettre à jour les recettes** › Parcourir › Sur mon iPhone › Téléchargements.
 
-Tes favoris, notes, courses, frigo et bocaux sont conservés.
+Tes favoris, notes, courses, frigo, bocaux et Mes recettes sont conservés.
+
+> Les pages sans rapport direct avec la cuisine (auteurs, préfaces, remerciements, hygiène et sécurité,
+> diplômes, bibliographie, fournisseurs) sont écartées automatiquement, même sans réimporter.
 
 ## 11. Mettre à jour l'application
 

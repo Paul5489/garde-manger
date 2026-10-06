@@ -2,6 +2,7 @@
 
 import { NOMS_SOURCES, NOMS_TYPES, UNIVERS } from './archive';
 import { etat } from './etat.svelte';
+import { mesRecettes } from './mes-recettes.svelte';
 import { chercher } from './moteur';
 import { perso } from './perso.svelte';
 import { collator } from './texte';
@@ -120,7 +121,7 @@ class EtatRecherche {
     const index = etat.index;
     if (!index) return null;
     const parId = etat.parId;
-    return chercher(index, q)
+    return chercher([mesRecettes.index, index], q)
       .map((id) => parId.get(id))
       .filter((r): r is Resume => !!r);
   });

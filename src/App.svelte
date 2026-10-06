@@ -9,6 +9,7 @@
   import Bocaux from './ecrans/Bocaux.svelte';
   import Courses from './ecrans/Courses.svelte';
   import EditionBocal from './ecrans/EditionBocal.svelte';
+  import EditionRecette from './ecrans/EditionRecette.svelte';
   import Fiche from './ecrans/Fiche.svelte';
   import Frigo from './ecrans/Frigo.svelte';
   import ModeCuisine from './ecrans/ModeCuisine.svelte';
@@ -18,12 +19,15 @@
   import { courses } from './lib/courses.svelte';
   import { etat } from './lib/etat.svelte';
   import { frigo } from './lib/frigo.svelte';
+  import { mesRecettes } from './lib/mes-recettes.svelte';
   import { perso } from './lib/perso.svelte';
   import { ONGLETS, routeur, type Onglet } from './lib/routeur.svelte';
 
   etat.demarrer();
   // Données personnelles (favoris, notes, courses) : indépendantes des recettes importées.
-  Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger()]).catch((e) => console.error(e));
+  Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger(), mesRecettes.charger()]).catch((e) =>
+    console.error(e),
+  );
 
   // Les onglets déjà ouverts restent en mémoire : on retrouve sa place en revenant.
   let visites = $state(new Set<Onglet>());
@@ -32,7 +36,7 @@
     if (!visites.has(o)) visites = new Set([...visites, o]);
   });
 
-  const pageEmpilee = $derived(['fiche', 'reglages', 'cuisine', 'bocal', 'bocal-edition'].includes(routeur.route.nom));
+  const pageEmpilee = $derived(['fiche', 'reglages', 'cuisine', 'bocal', 'bocal-edition', 'recette-edition'].includes(routeur.route.nom));
   const enCuisine = $derived(routeur.route.nom === 'cuisine');
 
   // Liens internes (#/…) : navigation avec historique pour le bouton Retour.
@@ -80,6 +84,10 @@
   {:else if routeur.route.nom === 'bocal-edition'}
     {#key `${routeur.route.id}|${routeur.route.fiche}|${routeur.route.modele}`}
       <EditionBocal id={routeur.route.id} fiche={routeur.route.fiche} modele={routeur.route.modele} />
+    {/key}
+  {:else if routeur.route.nom === 'recette-edition'}
+    {#key routeur.route.id ?? 'nouvelle'}
+      <EditionRecette id={routeur.route.id} />
     {/key}
   {:else if routeur.route.nom === 'cuisine'}
     <ModeCuisine id={routeur.route.id} />

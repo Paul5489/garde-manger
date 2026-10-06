@@ -9,7 +9,8 @@ export type Route =
   | { nom: 'cuisine'; id: string }
   | { nom: 'reglages'; section?: string }
   | { nom: 'bocal'; id: string }
-  | { nom: 'bocal-edition'; id?: string; fiche?: string; modele?: string };
+  | { nom: 'bocal-edition'; id?: string; fiche?: string; modele?: string }
+  | { nom: 'recette-edition'; id?: string };
 
 export function lireRoute(hash: string): Route {
   const chemin = hash.replace(/^#\/?/, '');
@@ -30,9 +31,18 @@ export function lireRoute(hash: string): Route {
     if (reste[1] === 'modifier') return { nom: 'bocal-edition', id: d(0) };
     return { nom: 'bocal', id: d(0)! };
   }
+  if (nom === 'recette' && reste[0]) {
+    if (reste[0] === 'nouvelle') return { nom: 'recette-edition' };
+    if (reste[1] === 'modifier') return { nom: 'recette-edition', id: decodeURIComponent(reste[0]) };
+  }
   if (nom === 'reglages') return reste[0] ? { nom: 'reglages', section: reste[0] } : { nom: 'reglages' };
   if ((ONGLETS as string[]).includes(nom)) return { nom: nom as Onglet };
   return { nom: 'accueil' };
+}
+
+/** Mes recettes : nouvelle recette, ou modification d'une recette perso. */
+export function lienEditionRecette(id?: string): string {
+  return id ? `#/recette/${encodeURIComponent(id)}/modifier` : '#/recette/nouvelle';
 }
 
 export function lienCuisine(id: string): string {

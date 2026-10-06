@@ -48,7 +48,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 148 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 167 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -103,18 +103,25 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   « huile d'olive » est une huile), puis **synonymes** (éditables). Correspondance = les jetons de l'un sont tous
   dans l'autre (« poireau » ↔ « blancs de poireaux »). Classement : manquants croissants puis part possédée ;
   placard et facultatifs neutres. Réglages perso dans `reglages` : `frigo`, `placard`, `synonymes` (null = défaut).
+- **Mes recettes** (Dexie **version(4)** : `mesRecettes`, format `Fiche`, `source.id = 'perso'`, ids `perso-<titre>-<aléa>` ;
+  les recettes ajoutées le 05/10 par fichier ont la source `notes-perso` : est « ma recette » toute fiche de source
+  `perso` ou d'id `perso-…` (`estMaRecette`, archive.ts). Univers `perso`, champs en plus `texte_source`, `creeLe`, `modifieLe`). Ajoutées par Paul dans l'appli : texte collé
+  analysé **dans le téléphone** (`mes-recettes.ts` : `analyserTexte` → `Brouillon` → formulaire → `construireFiche`),
+  ou fichier préparé sur le Mac (format sauvegarde ne contenant que `mesRecettes`, ajouté par fusion). Fusionnées au
+  catalogue (`etat.catalogue` = `catalogueArchive` + mes recettes), à la recherche (petit index MiniSearch dédié,
+  **résultats placés avant ceux de l'archive** : les scores de deux index de tailles différentes ne se comparent pas),
+  au Frigo (index d'ingrédients calculé à la volée) et à la sauvegarde. Jamais touchées par un réimport.
+- **Pages « hors cuisine » écartées** (`exclusions.ts`, demande de Paul du 06/10/2026) : 13 fiches (préfaces,
+  remerciements, auteurs, Généralités = hygiène/sécurité/tenue, hygiène des aliments, documents BEP/CAP, référentiel
+  et répertoire du livre, bibliographie, pages de garde, introduction et « à propos » Noma, fournisseurs). Repérées par
+  empreinte FNV-1a de l'id (l'appli publiée ne doit contenir aucun id en clair). Écartées à l'import **et** au
+  démarrage (catalogue filtré : effet immédiat sans réimport). Gardés : techniques, produits, vocabulaire, équipement.
 - **Bocaux** (Dexie **version(3)** : `bocaux`, `journal` (photos en data URL JPEG ~1280 px, chargé bocal par bocal),
   `modelesBocaux`). Un bocal a toujours ≥ 1 étape (`min`/`max` en jours ou heures, facultatifs) ; début de la 1re =
   `debut` du bocal, des suivantes = `debut` posé à « Étape suivante » (sinon estimé). Jour N = jours de calendrier
   écoulés (mise en bocal = « aujourd'hui », jour 0). Phases : attente → à goûter (dès min − 20 %, au moins 1 j avant)
   → prêt (min..max) → dépassé. `derniereNoteLe` = « goûté aujourd'hui ». Rappels : .ics (heure locale flottante,
   18 h, VALARM à l'heure) ouvert par un lien blob (Calendrier iOS) ou partagé en fichier.
-- **Recettes ajoutées hors archive** (Dexie **version(4)** : `mesRecettes`, fiches au format de l'archive + `modifieLe`,
-  source `notes-perso`) : fusionnées au catalogue, à la recherche et au Frigo par `etat.svelte.ts` (`mesRecettes`,
-  `versionRecettes`), jamais effacées par un réimport, incluses dans la sauvegarde. **Pas de section ni de bouton à
-  part** (choix de Paul, 05/10/2026 : « juste l'ajouter aux autres »). Pour ajouter une recette demandée par Paul :
-  écrire hors du dépôt un fichier de sauvegarde ne contenant que `donnees.mesRecettes: [fiche]` (id `perso-…`), le lui
-  envoyer, il le restaure (Réglages › Restaurer une sauvegarde). Jamais de texte de recette dans Git.
 - Sauvegarde : JSON `{ format: 'garde-manger-sauvegarde', version: 1, exporteLe, donnees: { <table>: [...] } }`,
   restauration = **fusion** (ajout, ou remplacement si `modifieLe` plus récent ; jamais d'effacement).
   Fichier préparé à l'ouverture des Réglages car iOS n'ouvre le menu Partager que juste après un toucher.
@@ -155,6 +162,10 @@ src/lib/
                                   evenementsCalendrier, fichierIcs (échappement, pliage 75 octets)
   bocaux.svelte.ts                liste + modèles en mémoire, horloge (minute), étapes, statut, journal, modèles
   photo.ts                        compression des photos (canvas → JPEG)
+  mes-recettes.ts                 analyse d'un texte collé (titres de sections, lignes d'ingrédients → quantité/unité/nom,
+                                  portions, temps, « Titre : texte » → titre d'étape), construireFiche, ficheVersBrouillon
+  mes-recettes.svelte.ts          mes recettes en mémoire + Dexie (charger, trouver, enregistrer, supprimer), index dédié
+  exclusions.ts                   empreintes des pages hors cuisine, estExclue
   sauvegarde.ts                   exporter, lireSauvegarde (validation, messages clairs), restaurer (fusion)
   partage.ts, annonce.svelte.ts   menu Partager (texte / fichier) avec repli ; petit message temporaire en bas
   etat.svelte.ts                  état global : statut, catalogue, parId, index (chargé à la demande), fiche(id)
@@ -184,7 +195,8 @@ src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFich
                                   Etoiles, FormulaireRealisation, CarnetFiche, FeuilleCourses, SauvegardePerso, Annonce,
                                   LigneFrigo, ReglagesFrigo (placard + synonymes), CarteBocal (avancement + barre)
 src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Courses,
-                                  Frigo, Bocaux (onglet), Bocal (page d'un bocal), EditionBocal (nouveau / modifier)
+                                  Frigo, Bocaux (onglet), Bocal (page d'un bocal), EditionBocal (nouveau / modifier),
+                                  EditionRecette (#/recette/nouvelle, #/recette/<id>/modifier : coller → ranger → formulaire)
 tests/                            archive-reelle.ts (accès à la vraie archive) + tests par module
 ```
 
@@ -225,6 +237,20 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
 - 30/09/2026 (étape 5, choix par défaut) : rappels du Calendrier à 18 h ; dégustation un peu avant la durée
   minimale ; pas de modèle de bocal fourni d'office (les fiches Noma servent de base, Paul crée les siens).
 
+- 06/10/2026 : **ménage** des pages hors cuisine (liste ci-dessus, choisie selon le critère de Paul : « les recettes
+  et les explications des produits, rien sur les auteurs, l'hygiène, les diplômes »). Le pied des fiches n'affiche
+  plus le nom de l'auteur. Le poids n'était pas un problème (≈ 6,5 Mo dans le téléphone, sans souci pour un iPhone 13).
+- 05/10/2026 (autre conversation) : Paul voulait que ses recettes soient « juste ajoutées aux autres » (mêlées aux
+  listes, à la recherche, au Frigo). 06/10/2026 : il demande un endroit pour **saisir** ses recettes (coller un texte
+  d'Internet) → carte « Mes recettes » + bouton « Ajouter » sur l'Accueil (pas de 6e onglet : barre pleine), recettes
+  toujours mêlées aux autres, plus un univers « Mes recettes » dans les filtres. Analyse locale du texte collé (hors ligne,
+  gratuit, sans compte). **Pas de Claude IA dans l'appli** (choix de Paul du 06/10/2026 : le rangement automatique
+  suffit ; pour un cas compliqué, il donne la recette dans une conversation et Claude prépare un fichier).
+- 06/10/2026 : livre *Koji Alchemy* **pas encore intégré** : en attente d'un exemplaire acheté par Paul (ebook sans DRM),
+  ou ajout recette par recette via Mes recettes. Ne pas utiliser le fichier epub actuellement dans Téléchargements.
+- 06/10/2026 : recette du **bissap à l'ananas** (bonbons à la menthe à la place de la menthe fraîche) préparée en fichier
+  `~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json` (hors dépôt), à ajouter via Mes recettes.
+
 ## 9. Fait
 
 - **Étape 1** : squelette PWA, import (fichier ou Mac en dev), accueil par univers + « Idées du jour », recherche plein texte
@@ -252,14 +278,17 @@ tests/                            archive-reelle.ts (accès à la vraie archive)
   contrastes WCAG AA, zones tactiles, audit des noms accessibles (aucun bouton sans nom), hors ligne vérifié sur le Mac
   (service worker : 16 fichiers en cache dont les 2 workers et eveil.mp4 ; appli servie serveur arrêté), ménage du code.
 
-- **05/10/2026** (v1.1.0) : recettes ajoutées hors archive (`mesRecettes`, voir § 5). Première : bissap à l'ananas
-  (2 bonbons à la menthe au lieu des feuilles de menthe), envoyée à Paul en fichier `bissap-ananas.json`.
-  Correction : espace manquante après « ou » dans les ingrédients en alternative.
+- **05/10/2026** (v1.1.0, autre conversation) : recettes ajoutées hors archive (`mesRecettes`), par fichier de
+  sauvegarde. Correction : espace manquante après « ou » dans les ingrédients en alternative.
+- **06/10/2026** (v1.2.0) : écran « Nouvelle recette » (coller → rangement automatique → formulaire), modification
+  et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
+  06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
 ## 10. Reste à faire
 
 Toutes les étapes du cahier des charges sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
-0. Restauration du fichier `bissap-ananas.json` (la recette doit apparaître dans la recherche).
+0. Ajout du bissap (`~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json`, id `perso-bissap-ananas`,
+   source `notes-perso` pour marcher aussi avec la v1.1.0) et de l'écran « Nouvelle recette » (coller une recette).
 1. Étapes 3 à 5 : menu Partager (liste de courses, fichier de sauvegarde → « Enregistrer dans Fichiers » / AirDrop),
    restauration depuis Fichiers, champ date iOS, clavier des champs « Ajouter un article » et Frigo (suggestions),
    reconstruction de l'index des ingrédients au 1er passage sur Frigo, photo du journal (appareil / photothèque).
@@ -270,6 +299,10 @@ Ensuite : corrections selon ses retours ; idées possibles si Paul le demande (p
 lignes rédigées, rappels Calendrier mis à jour à chaque étape, partage d'une recette en texte).
 
 ## 11. Problèmes connus et limites
+
+- Un seul renvoi de page pointait vers les Généralités écartées (« voir p. 12 », crudités) : il n'est plus cliquable.
+- Mes recettes : l'analyse du texte collé est faite par règles simples ; les textes très désordonnés (publicités,
+  commentaires) demandent plus de corrections dans le formulaire. Mots-nombres (« Une pincée ») non mis à l'échelle.
 
 - **iCloud Drive de Paul plein** : le dossier Garde-manger du Mac n'est pas envoyé vers iCloud.
   Utiliser `http://<IP>:5180/archive` (serveur dev lancé) ou AirDrop pour les futurs imports.

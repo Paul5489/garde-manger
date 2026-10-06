@@ -5,7 +5,8 @@ import { construireIndexIngredients } from '../src/lib/classement-frigo';
 import { db, remplacerRecettes } from '../src/lib/db';
 import { etat } from '../src/lib/etat.svelte';
 import { frigo } from '../src/lib/frigo.svelte';
-import { creerIndex } from '../src/lib/moteur';
+import { mesRecettes } from '../src/lib/mes-recettes.svelte';
+import { chercher, creerIndex } from '../src/lib/moteur';
 import { documentDeRecherche, resumer } from '../src/lib/archive';
 import { compter, exporter, lireSauvegarde, restaurer } from '../src/lib/sauvegarde';
 import type { Fiche } from '../src/lib/types';
@@ -46,14 +47,14 @@ describe('mes recettes', () => {
   beforeEach(async () => {
     await Promise.all(db.tables.map((t) => t.clear()));
     await importer([soupe]);
-    await etat.demarrer();
+    await Promise.all([etat.demarrer(), mesRecettes.charger()]);
   });
 
   it('s’ajoutent par un fichier de sauvegarde, sans rien effacer', async () => {
     const s = lireSauvegarde(fichierAvec([{ ...tisane, modifieLe: 1 }]));
     expect(compter(s).mesRecettes).toBe(1);
     expect((await restaurer(s)).ajoutes).toBe(1);
-    await etat.demarrer();
+    await mesRecettes.charger();
     expect(etat.catalogue.map((r) => r.id)).toEqual(['afpa-soupe', 'perso-tisane-test']);
     expect((await etat.fiche('perso-tisane-test'))?.titre).toBe('Tisane de verveine glacée');
     expect((await etat.fiche('afpa-soupe'))?.titre).toBe('Soupe exemple');
@@ -73,12 +74,12 @@ describe('mes recettes', () => {
 
   it('se retrouvent dans la recherche, le Frigo et la sauvegarde', async () => {
     await restaurer(lireSauvegarde(fichierAvec([{ ...tisane, modifieLe: 1 }])));
-    await etat.demarrer();
-    const index = await etat.chargerIndex();
-    expect(index?.search('verveine').map((r) => r.id)).toEqual(['perso-tisane-test']);
-    expect(index?.search('poireaux').map((r) => r.id)).toEqual(['afpa-soupe']);
+    await mesRecettes.charger();
+    const index = (await etat.chargerIndex())!;
+    expect(chercher([mesRecettes.index, index], 'verveine')).toEqual(['perso-tisane-test']);
+    expect(chercher([mesRecettes.index, index], 'poireaux')).toEqual(['afpa-soupe']);
 
-    await frigo.chargerIndex(etat.versionRecettes, etat.mesRecettes);
+    await frigo.chargerIndex(etat.archive?.importeLe);
     await frigo.vider();
     await frigo.ajouter('Verveine');
     expect(frigo.resultats[0]).toMatchObject({ id: 'perso-tisane-test', manquants: [] });
@@ -89,7 +90,7 @@ describe('mes recettes', () => {
   it('restent après un réimport de l’archive', async () => {
     await restaurer(lireSauvegarde(fichierAvec([{ ...tisane, modifieLe: 1 }])));
     await importer([soupe]);
-    await etat.demarrer();
+    await Promise.all([etat.demarrer(), mesRecettes.charger()]);
     expect(etat.parId.has('perso-tisane-test')).toBe(true);
   });
 });

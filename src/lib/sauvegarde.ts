@@ -1,6 +1,7 @@
-// Sauvegarde des données personnelles (favoris, notes, carnet, courses, réglages) dans un fichier JSON,
-// pour changer de téléphone sans rien perdre. Les recettes de l'archive n'y figurent jamais ; « Mes recettes » (ajoutées
-// à la main) oui : un fichier de sauvegarde sert aussi à en ajouter une.
+// Sauvegarde des données personnelles (favoris, notes, carnet, courses, réglages, bocaux, mes recettes)
+// dans un fichier JSON, pour changer de téléphone sans rien perdre. Les recettes de l'archive n'y figurent
+// jamais (elles viennent du fichier archive_complete.json) ; « Mes recettes », ajoutées par Paul, oui :
+// un fichier de sauvegarde ne contenant qu'elles sert aussi à en ajouter une préparée sur le Mac.
 
 import { ficheValide } from './archive';
 import { db as baseParDefaut, TABLES_PERSO, type BaseGardeManger, type TablePerso } from './db';
@@ -59,6 +60,11 @@ export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
   modelesBocaux: ['modèle de bocal', 'modèles de bocaux'],
   mesRecettes: ['recette perso', 'recettes perso'],
 };
+
+/** Données vides pour chaque table (pour ne restaurer qu'une partie d'un fichier). */
+export function TABLES_VIDES(): Sauvegarde['donnees'] {
+  return Object.fromEntries(TABLES_PERSO.map((t) => [t, []])) as unknown as Sauvegarde['donnees'];
+}
 
 export function nomFichierSauvegarde(d: Date = new Date()): string {
   return `garde-manger-sauvegarde-${aujourdhui(d)}.json`;

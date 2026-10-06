@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Search, Settings } from '@lucide/svelte';
+  import { Plus, Search, Settings } from '@lucide/svelte';
   import AideInstallation from '../composants/AideInstallation.svelte';
   import CarteBocal from '../composants/CarteBocal.svelte';
   import ListeFiches from '../composants/ListeFiches.svelte';
@@ -9,11 +9,12 @@
   import { nombre } from '../lib/format';
   import { perso } from '../lib/perso.svelte';
   import { recherche } from '../lib/recherche.svelte';
-  import { routeur } from '../lib/routeur.svelte';
+  import { mesRecettes } from '../lib/mes-recettes.svelte';
+  import { lienEditionRecette, routeur } from '../lib/routeur.svelte';
   import type { Resume, Univers } from '../lib/types';
 
   const compte = $derived.by(() => {
-    const c: Record<Univers, number> = { asiatique: 0, francaise: 0, techniques: 0, fermentation: 0 };
+    const c: Record<Univers, number> = { asiatique: 0, francaise: 0, techniques: 0, fermentation: 0, perso: 0 };
     for (const r of etat.catalogue) for (const u of r.univers) c[u]++;
     return c;
   });
@@ -65,7 +66,7 @@
   </button>
 
   <div class="univers">
-    {#each UNIVERS as u (u.id)}
+    {#each UNIVERS.filter((u) => u.id !== 'perso') as u (u.id)}
       <button class="tuile" style:--couleur="var(--u-{u.id})" onclick={() => ouvrir(u.id)}>
         <span class="emoji" aria-hidden="true">{u.emoji}</span>
         <span class="titre-tuile">{u.titre}</span>
@@ -73,6 +74,21 @@
         <span class="nombre">{nombre(compte[u.id], 0)} fiches</span>
       </button>
     {/each}
+  </div>
+
+  <div class="mes-recettes carte">
+    <button class="ouvrir-mes-recettes" onclick={() => mesRecettes.liste.length && ouvrir('perso')}>
+      <span class="emoji-petit" aria-hidden="true">📝</span>
+      <span class="texte-mes-recettes">
+        <span class="titre-tuile">Mes recettes</span>
+        <span class="sous-titre">
+          {mesRecettes.liste.length
+            ? `${nombre(mesRecettes.liste.length, 0)} recette${mesRecettes.liste.length > 1 ? 's' : ''} ajoutée${mesRecettes.liste.length > 1 ? 's' : ''} par toi`
+            : 'Colle une recette trouvée sur Internet'}
+        </span>
+      </span>
+    </button>
+    <a class="bouton ajouter" href={lienEditionRecette()}><Plus size={18} /> Ajouter</a>
   </div>
 
   {#if bocaux.parRubrique['a-gouter'].length || bocaux.parRubrique.prets.length || bocaux.parRubrique['en-cours'].length}
@@ -180,6 +196,51 @@
       background: color-mix(in srgb, var(--couleur) 30%, var(--surface));
       color: var(--texte);
     }
+  }
+
+  .mes-recettes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 10px 12px 10px 4px;
+    border-left: 5px solid var(--u-perso);
+  }
+
+  .ouvrir-mes-recettes {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    border: none;
+    background: none;
+    text-align: left;
+    padding: 0 0 0 8px;
+  }
+
+  .emoji-petit {
+    font-size: 26px;
+  }
+
+  .texte-mes-recettes {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .texte-mes-recettes .sous-titre {
+    color: var(--texte-2);
+    opacity: 1;
+  }
+
+  .ajouter {
+    flex: none;
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 15px;
+    background: var(--u-perso);
   }
 
   .emoji {

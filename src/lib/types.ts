@@ -2,7 +2,7 @@
 // Les champs vides sont omis dans l'archive : tout est optionnel sauf l'essentiel.
 
 export type TypeFiche = 'recette' | 'technique' | 'chapitre' | 'annexe';
-export type SourceId = 'marc-winer' | 'afpa' | 'cuisine-de-reference' | 'noma' | 'notes-perso';
+export type SourceId = 'marc-winer' | 'afpa' | 'cuisine-de-reference' | 'noma' | 'notes-perso' | 'perso';
 
 export interface Duree {
   texte: string;
@@ -133,9 +133,14 @@ export interface Fiche {
   extraction?: { methode?: string; avertissements?: string[]; remarque?: string };
   /** Présent dans l'archive mais jamais conservé dans l'application (texte anglais). */
   version_originale?: unknown;
+  // ───── Mes recettes (source « perso ») ─────
+  /** Texte collé à l'origine, gardé pour référence. */
+  texte_source?: string;
+  creeLe?: number;
+  modifieLe?: number;
 }
 
-export type Univers = 'asiatique' | 'francaise' | 'techniques' | 'fermentation';
+export type Univers = 'asiatique' | 'francaise' | 'techniques' | 'fermentation' | 'perso';
 
 /** Version légère d'une fiche, gardée en mémoire pour les listes et les filtres. */
 export interface Resume {
@@ -164,4 +169,6 @@ export interface InfosArchive {
   importeLe: string;
   nomFichier?: string;
   ignorees: number;
+  /** Pages « hors cuisine » écartées (auteurs, hygiène, diplômes…), voir exclusions.ts. */
+  ecartees?: number;
 }

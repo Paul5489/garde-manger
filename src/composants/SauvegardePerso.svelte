@@ -4,9 +4,9 @@
   import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
   import { db } from '../lib/db';
-  import { etat } from '../lib/etat.svelte';
   import { date, pluriel } from '../lib/format';
   import { frigo } from '../lib/frigo.svelte';
+  import { mesRecettes } from '../lib/mes-recettes.svelte';
   import { enregistrerFichier } from '../lib/partage';
   import { perso } from '../lib/perso.svelte';
   import {
@@ -81,7 +81,7 @@
       const quand = s.exporteLe ? ` du ${date(s.exporteLe)}` : '';
       if (!confirm(`Sauvegarde${quand} : ${resume(s)}.\n\nL'ajouter aux données de ce téléphone ? Rien ne sera effacé.`)) return;
       const bilan = await restaurer(s);
-      await Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger(), etat.demarrer()]);
+      await Promise.all([perso.charger(), courses.charger(), frigo.charger(), bocaux.charger(), mesRecettes.charger()]);
       await preparer();
       message = `✓ Sauvegarde restaurée : ${pluriel(bilan.ajoutes, 'élément ajouté', 'éléments ajoutés')}${
         bilan.misAJour ? `, ${pluriel(bilan.misAJour, 'mis à jour', 'mis à jour')}` : ''

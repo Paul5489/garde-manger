@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import { tick } from 'svelte';
-  import { ChefHat, Clock, ExternalLink, Heart, ShoppingBasket, Timer, Users } from '@lucide/svelte';
+  import { ChefHat, Clock, ExternalLink, Heart, Pencil, ShoppingBasket, Timer, Trash2, Users } from '@lucide/svelte';
   import BarreHaut from '../composants/BarreHaut.svelte';
   import CarnetFiche from '../composants/CarnetFiche.svelte';
   import CarteBocal from '../composants/CarteBocal.svelte';
@@ -29,7 +29,9 @@
   import { perso } from '../lib/perso.svelte';
   import { portions, portionsDeBase } from '../lib/portions.svelte';
   import { fichesDeLaPage } from '../lib/renvois';
-  import { lienCuisine, lienFiche, lienNouveauBocal } from '../lib/routeur.svelte';
+  import { annonce } from '../lib/annonce.svelte';
+  import { mesRecettes } from '../lib/mes-recettes.svelte';
+  import { lienCuisine, lienEditionRecette, lienFiche, lienNouveauBocal, routeur } from '../lib/routeur.svelte';
   import { casseLisible, insecables, majuscule } from '../lib/texte';
   import type { Duree, Etape, Fiche, GroupeMateriel, Resume } from '../lib/types';
 
@@ -153,6 +155,13 @@
     conteneur?.querySelector('#carnet')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  async function supprimerMaRecette(f: Fiche) {
+    if (!confirm(`Supprimer « ${f.titre} » de Mes recettes ?`)) return;
+    await mesRecettes.supprimer(f.id);
+    annonce.afficher('Recette supprimée.');
+    routeur.retour();
+  }
+
   function surDefilement() {
     if (idAffiche && conteneur) positions.set(idAffiche, conteneur.scrollTop);
     defile = (conteneur?.scrollTop ?? 0) > 60;
@@ -173,6 +182,9 @@
         >
           <Heart size={24} fill={favori ? 'currentColor' : 'none'} />
         </button>
+      {/if}
+      {#if fiche?.source.id === 'perso'}
+        <a class="bouton-icone" href={lienEditionRecette(fiche.id)} aria-label="Modifier ma recette"><Pencil size={22} /></a>
       {/if}
       {#if fiche?.etapes?.length}
         <a class="bouton-icone" href={lienCuisine(fiche.id)} aria-label="Mode cuisine"><ChefHat size={24} /></a>
@@ -393,9 +405,29 @@
 
       <CarnetFiche fiche={f} />
 
+      {#if f.source.id === 'perso'}
+        <section class="ma-recette">
+          <p class="discret petit">
+            {['Ma recette', f.creeLe ? `ajoutée le ${date(f.creeLe)}` : '', f.modifieLe && f.creeLe && f.modifieLe - f.creeLe > 60_000 ? `modifiée le ${date(f.modifieLe)}` : '']
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+          <div class="actions-perso">
+            <a class="bouton secondaire" href={lienEditionRecette(f.id)}><Pencil size={18} /> Modifier</a>
+            <button class="bouton secondaire supprimer" onclick={() => supprimerMaRecette(f)}><Trash2 size={18} /> Supprimer</button>
+          </div>
+          {#if f.texte_source}
+            <details class="texte-source">
+              <summary>Texte collé à l'origine</summary>
+              <p>{f.texte_source}</p>
+            </details>
+          {/if}
+        </section>
+      {/if}
+
       <footer class="pied">
         <p>
-          <strong>{f.source.nom}</strong>{#if f.source.auteur} — {f.source.auteur}{/if}
+          <strong>{f.source.nom}</strong>
           {#if f.source.pages?.length}<br />Pages {f.source.pages[0]}{#if f.source.pages.length > 1}–{f.source.pages[f.source.pages.length - 1]}{/if}{/if}
           {#if f.source.fiche_n} · fiche n° {f.source.fiche_n}{/if}
         </p>
@@ -674,6 +706,47 @@
     align-items: center;
     font-weight: 600;
     color: var(--accent);
+  }
+
+  .ma-recette {
+    margin-top: 32px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--trait);
+  }
+
+  .ma-recette > p {
+    margin: 0 0 8px;
+  }
+
+  .actions-perso {
+    display: flex;
+    gap: 8px;
+  }
+
+  .actions-perso .bouton {
+    flex: 1;
+  }
+
+  .supprimer {
+    color: var(--rouge);
+  }
+
+  .texte-source {
+    margin-top: 12px;
+  }
+
+  .texte-source summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .texte-source p {
+    white-space: pre-wrap;
+    font-size: 14.5px;
+    color: var(--texte-2);
   }
 
   .pied {

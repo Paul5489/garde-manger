@@ -1,6 +1,7 @@
 // Lecture de l'archive : validation, allègement des fiches, résumés pour les listes.
 // Aucune donnée n'est incluse dans l'application : tout vient du fichier importé.
 
+import { estExclue } from './exclusions';
 import { casseLisible } from './texte';
 import type { Fiche, Resume, SourceId, TypeFiche, Univers } from './types';
 
@@ -10,6 +11,7 @@ export const NOMS_SOURCES: Record<SourceId, string> = {
   'cuisine-de-reference': 'La Cuisine de référence',
   noma: 'Noma — Fermentation',
   'notes-perso': 'Mes notes',
+  perso: 'Mes recettes',
 };
 
 export const UNIVERS: { id: Univers; titre: string; sousTitre: string; emoji: string }[] = [
@@ -17,6 +19,7 @@ export const UNIVERS: { id: Univers; titre: string; sousTitre: string; emoji: st
   { id: 'francaise', titre: 'Cuisine française', sousTitre: 'AFPA · Cuisine de référence', emoji: '🥖' },
   { id: 'techniques', titre: 'Techniques pro', sousTitre: 'Fonds, sauces, découpes…', emoji: '🔪' },
   { id: 'fermentation', titre: 'Fermentation', sousTitre: 'Noma', emoji: '🫙' },
+  { id: 'perso', titre: 'Mes recettes', sousTitre: 'Ajoutées par moi', emoji: '📝' },
 ];
 
 export const NOMS_TYPES: Record<TypeFiche, string> = {
@@ -35,6 +38,7 @@ export interface ArchiveLue {
   genereLe?: string;
   fiches: Fiche[];
   ignorees: number;
+  ecartees: number;
 }
 
 /** Vérifie que le JSON est bien l'archive complète et garde les fiches exploitables. */
@@ -55,15 +59,20 @@ export function lireArchive(donnees: unknown): ArchiveLue {
   }
   const fiches: Fiche[] = [];
   let ignorees = 0;
+  let ecartees = 0;
   for (const brute of obj.fiches as unknown[]) {
     if (!ficheValide(brute)) {
       ignorees++;
       continue;
     }
+    if (estExclue(brute.id)) {
+      ecartees++;
+      continue;
+    }
     fiches.push(alleger(brute));
   }
   if (!fiches.length) throw new ErreurArchive("Aucune fiche lisible dans ce fichier.");
-  return { genereLe: typeof obj.genere_le === 'string' ? obj.genere_le : undefined, fiches, ignorees };
+  return { genereLe: typeof obj.genere_le === 'string' ? obj.genere_le : undefined, fiches, ignorees, ecartees };
 }
 
 /** L'essentiel d'une fiche : identifiant, titre, type et source connus. */
@@ -123,7 +132,8 @@ export function universDe(f: Fiche): Univers[] {
   if (s === 'marc-winer') u.push('asiatique');
   if ((s === 'afpa' || s === 'cuisine-de-reference') && f.type === 'recette') u.push('francaise');
   if (s === 'noma') u.push('fermentation');
-  if (s !== 'noma' && f.type !== 'recette') u.push('techniques');
+  if (s === 'perso') u.push('perso');
+  if (s !== 'noma' && s !== 'perso' && f.type !== 'recette') u.push('techniques');
   if (s === 'afpa' && f.classement?.categorie?.startsWith('Techniques de base')) u.push('techniques');
   return u;
 }

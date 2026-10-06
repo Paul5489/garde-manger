@@ -33,12 +33,18 @@ export function chargerIndex(json: string): MiniSearch<DocRecherche> {
   return MiniSearch.loadJSON<DocRecherche>(json, OPTIONS_INDEX);
 }
 
-/** Identifiants des fiches correspondant à la requête, du plus pertinent au moins pertinent. */
-export function chercher(index: MiniSearch<DocRecherche>, requete: string): string[] {
+/**
+ * Identifiants des fiches correspondant à la requête, du plus pertinent au moins pertinent.
+ * Plusieurs index possibles : les résultats du premier passent devant (mes recettes avant l'archive ;
+ * les scores de deux index de tailles très différentes ne sont pas comparables).
+ */
+export function chercher(index: MiniSearch<DocRecherche> | MiniSearch<DocRecherche>[], requete: string): string[] {
   const q = requete.trim();
   if (!q) return [];
-  let res = index.search(q, OPTIONS_RECHERCHE);
+  const indexes = Array.isArray(index) ? index : [index];
+  const lancer = (options: typeof OPTIONS_RECHERCHE) => indexes.flatMap((i) => i.search(q, options));
+  let res = lancer(OPTIONS_RECHERCHE);
   // Si tous les mots ensemble ne donnent rien, on accepte les fiches qui en contiennent une partie.
-  if (!res.length) res = index.search(q, { ...OPTIONS_RECHERCHE, combineWith: 'OR' });
-  return res.map((r) => String(r.id));
+  if (!res.length) res = lancer({ ...OPTIONS_RECHERCHE, combineWith: 'OR' });
+  return [...new Set(res.map((r) => String(r.id)))];
 }

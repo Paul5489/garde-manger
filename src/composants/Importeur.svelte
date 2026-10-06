@@ -29,6 +29,8 @@
       await etat.demarrer();
       succes = `${pluriel(infos.nbFiches, 'fiche importée', 'fiches importées')}.`;
       if (infos.ignorees) succes += ` ${pluriel(infos.ignorees, 'fiche illisible ignorée', 'fiches illisibles ignorées')}.`;
+      if (infos.ecartees)
+        succes += ` ${pluriel(infos.ecartees, 'page hors cuisine écartée', 'pages hors cuisine écartées')} (auteurs, hygiène, diplômes…).`;
     } catch (e) {
       erreur = e instanceof Error ? e.message : String(e);
     } finally {

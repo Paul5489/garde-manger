@@ -93,7 +93,7 @@ export class BaseGardeManger extends Dexie {
   bocaux!: EntityTable<Bocal, 'id'>;
   journal!: EntityTable<EntreeJournal, 'id'>;
   modelesBocaux!: EntityTable<ModeleBocal, 'id'>;
-  mesRecettes!: EntityTable<MaRecette, 'id'>;
+  mesRecettes!: EntityTable<Fiche, 'id'>;
 
   constructor(nom = 'garde-manger') {
     super(nom);
@@ -118,7 +118,7 @@ export class BaseGardeManger extends Dexie {
       modelesBocaux: 'id',
     });
     this.version(4).stores({
-      // Mes recettes, ajoutées hors archive (un réimport ne les efface pas)
+      // Mes recettes : ajoutées par Paul (même format qu'une fiche) ; un réimport ne les efface pas
       mesRecettes: 'id',
     });
   }

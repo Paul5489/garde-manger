@@ -52,6 +52,7 @@ self.onmessage = async (e: MessageEvent<MessageImport>) => {
       importeLe: new Date().toISOString(),
       nomFichier,
       ignorees: archive.ignorees,
+      ecartees: archive.ecartees,
     };
     await remplacerRecettes(db, archive.fiches, [
       { cle: 'catalogue', valeur: catalogue },
