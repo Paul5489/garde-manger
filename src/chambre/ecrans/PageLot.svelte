@@ -1,12 +1,14 @@
 <script lang="ts">
   // Page d'un lot : avancement, sécurité, pH, perte de poids, phases, contrôles, notes, fin du lot.
-  import { ChevronRight, RotateCcw, ShieldAlert, Trash2 } from '@lucide/svelte';
+  import { CalendarPlus, ChevronRight, RotateCcw, ShieldAlert, Trash2 } from '@lucide/svelte';
   import { annonce } from '../../lib/annonce.svelte';
   import { date, dateCourte, heure, nombre } from '../../lib/format';
   import { lienChambre, routeur } from '../../lib/routeur.svelte';
   import { couleurMode, quandLisible, t } from '../affichage';
   import { chambre } from '../chambre.svelte';
   import CourbePerte from '../composants/CourbePerte.svelte';
+  import FeuilleRappels from '../composants/FeuilleRappels.svelte';
+  import { evenementsLot, sequenceDuLot } from '../ics';
   import LigneControle from '../composants/LigneControle.svelte';
   import { MODES_PAR_ID, NOMS_LIEUX } from '../donnees';
   import {
@@ -50,6 +52,11 @@
   const jour = $derived(lot ? joursCalendaires(lot.entree, maintenant) : 0);
 
   let faitsOuverts = $state(false);
+  let feuilleRappels = $state(false);
+  const rappels = $derived(lot && feuilleRappels ? evenementsLot(lot, maintenant, chambre.heureRappels) : []);
+  const nomFichier = $derived(
+    `rappels-${(lot?.nom ?? 'lot').normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase()}.ics`,
+  );
 
   // Phase suivante
   let quandPhase = $state(versChampDateHeure(new Date()));
@@ -148,6 +155,7 @@
               : `entre le ${dateCourte(fin.min)} et le ${dateCourte(fin.max)}`}
           <span class="petit discret">· {t(r.fin.texte)}</span>
         </p>
+        <button class="bouton secondaire rappels" onclick={() => (feuilleRappels = true)}><CalendarPlus size={18} /> Ajouter au Calendrier</button>
       {:else}
         <p class="jour">{lot.statut === 'rate' ? 'Raté' : 'Terminé'} le {date(lot.finLe ?? lot.entree)}</p>
         <button class="bouton secondaire" onclick={() => lots.reprendre(lot.id)}><RotateCcw size={16} /> Remettre en cours</button>
@@ -350,6 +358,15 @@
     {/if}
     <button class="bouton secondaire plein supprimer" onclick={supprimer}><Trash2 size={18} /> Supprimer le lot</button>
   </article>
+  <FeuilleRappels
+    bind:ouvert={feuilleRappels}
+    titre="Rappels dans le Calendrier"
+    sousTitre={lot.nom}
+    evenements={rappels}
+    {nomFichier}
+    sequence={sequenceDuLot(lot)}
+    {maintenant}
+  />
 {/if}
 
 <style>
@@ -390,6 +407,12 @@
 
   .etat .bouton {
     margin-top: 10px;
+  }
+
+  .rappels {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 15px;
   }
 
   .securite {

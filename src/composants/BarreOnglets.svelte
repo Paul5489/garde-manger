@@ -3,6 +3,7 @@
   import IconeBocal from './IconeBocal.svelte';
   import { bocaux } from '../lib/bocaux.svelte';
   import { courses } from '../lib/courses.svelte';
+  import { pastilles } from '../lib/pastilles.svelte';
   import { routeur, type Onglet } from '../lib/routeur.svelte';
 
   const onglets: { id: Onglet; libelle: string }[] = [
@@ -38,8 +39,9 @@
       {:else}
         <span class="icone-badge">
           <IconeBocal size={25} strokeWidth={actif ? 2.3 : 1.8} />
-          {#if bocaux.aSignaler}
-            <span class="badge vert" aria-label="{bocaux.aSignaler} à goûter ou prêts">{bocaux.aSignaler}</span>
+          {#if bocaux.aSignaler + pastilles.chambre}
+            {@const n = bocaux.aSignaler + pastilles.chambre}
+            <span class="badge vert" aria-label="{n} à faire aujourd'hui">{n > 99 ? '99+' : n}</span>
           {/if}
         </span>
       {/if}

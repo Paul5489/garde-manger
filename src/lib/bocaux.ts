@@ -292,12 +292,12 @@ export function evenementsCalendrier(b: Bocal, maintenant: Date | number = Date.
   return res.filter((ev) => ev.date.getTime() > seuil);
 }
 
-function texteIcs(t: string): string {
+export function texteIcs(t: string): string {
   return t.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
 }
 
 /** Coupe les lignes à 75 octets (norme iCalendar), sans couper un caractère. */
-function plier(ligne: string): string {
+export function plier(ligne: string): string {
   const enc = new TextEncoder();
   const morceaux: string[] = [];
   let courant = '';
@@ -314,10 +314,10 @@ function plier(ligne: string): string {
 
 const deux = (n: number) => String(n).padStart(2, '0');
 /** Heure locale « flottante » : le Calendrier l'affiche à l'heure du téléphone. */
-function dateLocaleIcs(d: Date): string {
+export function dateLocaleIcs(d: Date): string {
   return `${d.getFullYear()}${deux(d.getMonth() + 1)}${deux(d.getDate())}T${deux(d.getHours())}${deux(d.getMinutes())}00`;
 }
-function dateUtcIcs(d: Date): string {
+export function dateUtcIcs(d: Date): string {
   return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 }
 

@@ -43,7 +43,7 @@
               <strong>{l.nom}</strong>
               <span class="petit discret">
                 Jour {Math.max(0, joursCalendaires(l.entree, chambre.maintenant))}{x.phase ? ` · ${x.phase}` : ''} ·
-                {x.mode ? `mode ${x.mode.nom}` : NOMS_LIEUX[l.recette.lieu]}
+                {x.mode ? `mode ${x.mode.nom}` : NOMS_LIEUX[l.recette.phases?.[l.phaseCourante]?.lieu ?? l.recette.lieu]}
               </span>
               <span class="petit">
                 {#if x.bloque}<span class="rouge">Ne pas sécher</span>

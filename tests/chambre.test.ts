@@ -11,6 +11,7 @@ import {
   prochainsChangements,
 } from '../src/chambre/calendrier';
 import { CONTENU, mode, recette, verifierContenu, type Contenu } from '../src/chambre/donnees';
+import { evenementsChambre, evenementsLot, evenementsStock, fichierIcsChambre, regleRepetition } from '../src/chambre/ics';
 import {
   arrondiGrammes,
   calculer,
@@ -391,5 +392,69 @@ describe('lots', () => {
     expect(etatStock(a, d(1, 25))).toBe('bientot');
     expect(etatStock(a, d(2, 1))).toBe('depasse');
     expect(etatStock({ ...a, limite: undefined }, d(2, 1))).toBe('sans-date');
+  });
+});
+
+describe('rappels pour le Calendrier (.ics)', () => {
+  const coppa = () => {
+    const rec = structuredClone(recette('coppa')!);
+    return nouveauLot(rec, CONTENU.techniques.salaison_entiere, { entree: d(11, 28, 10), quantiteBase: 1500 }, 'lot1');
+  };
+
+  it('un lot : contrôles (répétés en une seule entrée), début de la phase suivante, fin ; UID stables', () => {
+    const ev = evenementsLot(coppa(), d(11, 28, 11));
+    const uids = ev.map((e) => e.uid);
+    expect(uids).toContain('lot1-phase-1');
+    expect(uids).toContain('lot1-fin');
+    const pesee = ev.find((e) => e.titre === '⚖️ Coppa : Pesée')!;
+    expect(pesee.debut).toEqual(d(12, 26, 8));
+    expect(pesee.rrule).toMatch(/^FREQ=DAILY;INTERVAL=7;COUNT=\d+$/);
+    expect(new Set(uids).size).toBe(uids.length);
+    expect(evenementsLot(coppa(), d(11, 28, 11)).map((e) => e.uid)).toEqual(uids); // mêmes UID à chaque export
+  });
+
+  it('les contrôles déjà cochés ou passés ne sont plus proposés', () => {
+    const l = coppa();
+    const avant = evenementsLot(l, d(11, 28, 11)).length;
+    const cle = occurrences(l).find((o) => o.controle.titre === 'Fin du salage')!.cle;
+    expect(evenementsLot({ ...l, controles: { [cle]: { etat: 'ok', le: '' } } }, d(11, 28, 11)).length).toBe(avant - 1);
+    expect(evenementsLot(l, d(4, 1, 12))).toEqual([]);
+  });
+
+  it('fichier valide : alarme, répétition, version, lignes de 75 octets au plus', () => {
+    expect(regleRepetition(0.5, 4)).toBe('FREQ=HOURLY;INTERVAL=12;COUNT=4');
+    const ics = fichierIcsChambre(evenementsLot(coppa(), d(11, 28, 11)), 42, new Date(Date.UTC(2026, 10, 28)));
+    expect(ics.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true);
+    expect(ics).toContain('UID:lot1-phase-1@garde-manger-chambre');
+    expect(ics).toContain('SEQUENCE:42');
+    expect(ics).toContain('RRULE:FREQ=DAILY;INTERVAL=7;COUNT=');
+    expect(ics).toContain('DTSTART:20261226T080000');
+    expect(ics.match(/BEGIN:VALARM/g)?.length).toBe(ics.match(/BEGIN:VEVENT/g)?.length);
+    for (const ligne of ics.split('\r\n')) expect(new TextEncoder().encode(ligne).length).toBeLessThanOrEqual(75);
+  });
+
+  it('la chambre : changements de mode, réservoir au rythme du mode, vérification, calibrage, pH-mètre', () => {
+    const ev = evenementsChambre(d(10, 7, 9), 8, {});
+    const koji = ev.find((e) => e.titre.includes('passer en mode Chaud · koji'))!;
+    expect(koji.debut).toEqual(d(10, 15, 8));
+    expect(ev.find((e) => e.titre.startsWith('🧽'))?.debut).toEqual(d(11, 9, 8));
+    const sechage = ev.find((e) => e.uid === 'reservoir-20261101-1')!;
+    expect([sechage.debut, sechage.rrule]).toEqual([d(11, 2, 8), 'FREQ=DAILY;INTERVAL=1;COUNT=7']);
+    const cave = ev.filter((e) => e.uid.startsWith('reservoir-20261221'));
+    expect(cave.map((e) => [e.debut.getDate(), e.rrule])).toEqual([
+      [24, 'FREQ=DAILY;INTERVAL=3;COUNT=6'],
+      [11, expect.stringMatching(/^FREQ=DAILY;INTERVAL=7;COUNT=/)],
+    ]);
+    expect(ev.some((e) => e.uid.startsWith('verification-'))).toBe(true);
+    expect(ev.filter((e) => e.uid === 'calibrage' || e.uid === 'etalonnage-ph')).toHaveLength(2);
+    expect(new Set(ev.map((e) => e.uid)).size).toBe(ev.length);
+  });
+
+  it('le stock : 7 jours avant la date limite, et le jour même', () => {
+    const a = { id: 's1', recetteId: 'coppa', nom: 'Coppa', conservation: { mode: 'Frigo', comment: 'sous vide', duree: '4 mois', jours: 120 }, depuis: d(3, 1, 10).toISOString(), limite: d(6, 29, 10).toISOString(), statut: 'en-stock' as const, modifieLe: 0 };
+    expect(evenementsStock([a], d(3, 1, 12), 8).map((e) => [e.titre, e.debut])).toEqual([
+      ['📦 À finir dans 7 jours : Coppa', d(6, 22, 8)],
+      ['📦 Date limite : Coppa', d(6, 29, 8)],
+    ]);
   });
 });

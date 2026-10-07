@@ -2,6 +2,9 @@
 // incluses dans la sauvegarde, jamais effacées par un réimport des recettes).
 
 import { db } from '../lib/db';
+import { pastilles } from '../lib/pastilles.svelte';
+import { lireLocal } from '../lib/stockage-local';
+import { bocaux } from '../lib/bocaux.svelte';
 import { CONTENU, verifierContenu } from './donnees';
 import {
   aFaire,
@@ -125,8 +128,25 @@ class Chambre {
       .sort((a, b) => (a.limite ?? '').localeCompare(b.limite ?? '')),
   );
 
+  /** Sauvegarde du mois : jamais faite, ou il y a plus de 30 jours (s'il y a des lots ou des bocaux à protéger). */
+  sauvegardeDue = $derived.by(() => {
+    const derniere = lireLocal<string | null>('derniere-sauvegarde', null);
+    if (!lots.liste.length && !bocaux.liste.length) return false;
+    return !derniere || joursCalendaires(derniere, this.maintenant) >= 30;
+  });
+
+  /** Nombre de choses à faire aujourd'hui dans la chambre (pastille de l'onglet et de l'icône). */
+  get nombreAujourdhui(): number {
+    return this.taches.filter((t) => t.due).length + (this.changementAFaire ? 1 : 0) + this.actionsLots.length + (this.sauvegardeDue ? 1 : 0);
+  }
+
   constructor() {
     if (typeof document === 'undefined') return;
+    $effect.root(() => {
+      $effect(() => {
+        pastilles.chambre = this.charge ? this.nombreAujourdhui : 0;
+      });
+    });
     setInterval(() => (this.maintenant = Date.now()), 60_000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') this.maintenant = Date.now();

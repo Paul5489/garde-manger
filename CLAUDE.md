@@ -58,7 +58,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 239 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 244 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -209,6 +209,16 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
     saucisson (5,3 ; mesure « à 72 h » au-dessus → `MESSAGE_PH_BLOQUE`, passage en Cave refusé), stock (date limite
     = fin + `jours`, alerte à 7 jours). `chambre.actionsLots` et `stockAFinir` alimentent l'écran Chambre ;
     `debutVague` (dernière entrée en Cave) règle le réservoir et la phase IHC.
+  - `ics.ts` : rappels .ics (UID stables `…@garde-manger-chambre`, `SEQUENCE` = secondes de la dernière
+    modification, alarme à l'heure, heure locale flottante) : `evenementsLot` (une entrée avec `RRULE` par contrôle
+    qui se répète, début de la phase suivante, fin ; rien si pH bloquant), `evenementsChambre` (un an selon le
+    calendrier : changements de mode, réservoir par période — Cave : 3 j puis 7 j —, vérification hebdomadaire hors
+    Pause, calibrage annuel, pH-mètre mensuel), `evenementsStock` (J − 7 et date limite). Feuille commune
+    `FeuilleRappels` : « Ajouter au Calendrier » (lien blob) ou « Envoyer le fichier… » (menu Partager).
+  - Pastille : `src/lib/pastilles.svelte.ts` (bundle principal) reçoit `chambre.nombreAujourdhui` ; onglet Chambre
+    = bocaux à signaler + chambre ; icône = Badging API (`setAppBadge`), sur iPhone seulement appli installée et
+    notifications autorisées (⚙️ de la Chambre › « Autoriser la pastille »). Le module Chambre est préchargé
+    1,5 s après le démarrage pour que la pastille soit juste.
   - `assistant.ts` : écrans de « Changer de mode » (nettoyage de la transition, refroidir après un mode chaud, ITC
     puis IHC code par code avec la touche et la valeur, thermostat, branchements, ventilateur, sondes, à vide).
   - `chambre.svelte.ts` : état gardé dans la table `reglages` (clés `chambre:…` : mode choisi, mise en service,
@@ -408,6 +418,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.12.0** (07/10/2026) : Chambre, étape 4 : rappels .ics des lots, de la chambre (un an) et du stock ;
+  pastille de l'onglet, de l'icône (Badging API) et ligne « Chambre » de l'Accueil.
 - **1.11.0** (07/10/2026) : Chambre, étape 3 : lots (copie de la recette, phases, contrôles à cocher, pesées avec
   courbe et fin estimée, pH du saucisson avec blocage à 72 h, fin du lot), stock avec dates limites ; écran Chambre
   avec les actions des lots, les fins proches et le stock à finir ; rappel de sauvegarde mensuel.
@@ -435,8 +447,7 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
 ## 10. Reste à faire
 
 **Chambre de fermentation** (ordre de travail de Paul, une version publiée par étape) : ~~1. plan~~ ·
-~~2. réglages, mise en service, assistant (1.9.0)~~ · ~~3. fiches, calendrier, matériel (1.10.0)~~ · ~~4. lots, stock (1.11.0)~~ · 5. Aujourd'hui complet, pastille de
-l'icône (Badging API), `.ics` des lots et de la chambre (UID stables) · 6. compatibilité · 7. installation expliquée.
+~~2. réglages, mise en service, assistant (1.9.0)~~ · ~~3. fiches, calendrier, matériel (1.10.0)~~ · ~~4. lots, stock (1.11.0)~~ · ~~5. rappels .ics, pastille (1.12.0)~~ · 6. compatibilité · 7. installation expliquée.
 À signaler à Paul : le shoyu a un contrôle « Remuer » chaque jour sans `fin_j` (donc pendant 6 à 12 mois) en plus
 de « Remuer chaque semaine » dès le 30e jour : un `fin_j: 30` manque peut-être.
 

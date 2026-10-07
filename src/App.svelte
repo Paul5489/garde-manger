@@ -21,6 +21,7 @@
   import { frigo } from './lib/frigo.svelte';
   import { masquees } from './lib/masquees.svelte';
   import { mesRecettes } from './lib/mes-recettes.svelte';
+  import { afficherSurIcone, pastilles } from './lib/pastilles.svelte';
   import { perso } from './lib/perso.svelte';
   import { ONGLETS, routeur, type Onglet } from './lib/routeur.svelte';
 
@@ -41,8 +42,12 @@
     ['fiche', 'reglages', 'cuisine', 'bocal', 'bocal-edition', 'recette-edition', 'chambre-page'].includes(routeur.route.nom),
   );
   const cheminChambre = $derived(routeur.route.nom === 'chambre-page' ? routeur.route.chemin : []);
-  // Module Chambre : chargé à la première ouverture de l'onglet ou d'une de ses pages.
+  // Module Chambre : chargé à la première ouverture de l'onglet ou d'une de ses pages, et peu après le démarrage
+  // pour la pastille (choses à faire aujourd'hui).
   const moduleChambre = () => import('./chambre/module');
+  setTimeout(() => void moduleChambre().catch(() => {}), 1500);
+  // Pastille de l'icône : choses à faire dans la chambre + bocaux à goûter ou prêts.
+  $effect(() => afficherSurIcone(pastilles.chambre + bocaux.aSignaler));
   const enCuisine = $derived(routeur.route.nom === 'cuisine');
 
   // Liens internes (#/…) : navigation avec historique pour le bouton Retour.

@@ -260,7 +260,23 @@ rouge si elle est dépassée. ✓ quand c'est fini.
 L'écran Chambre reprend tout ça dans **Aujourd'hui** (contrôles, phase à commencer, fin d'un lot, sauvegarde du
 mois) et **Bientôt** (lots qui finissent, produits à finir).
 
-À venir : les rappels dans le Calendrier de l'iPhone, la pastille sur l'icône et la compatibilité.
+**Rappels dans le Calendrier de l'iPhone** (l'appli ne peut pas sonner seule quand elle est fermée : c'est le
+Calendrier qui le fait, avec une alarme à l'heure de chaque rappel)
+- Un lot : page du lot › **Ajouter au Calendrier** (contrôles, pesées, pH, début de la phase suivante, fin).
+- La chambre : ⚙️ › Rappels › **Rappels de la chambre** (changements de mode, réservoir, vérification de la
+  semaine, calibrage, pH-mètre, sur un an, selon le calendrier).
+- Le stock : Stock › **Dates limites dans le Calendrier** (7 jours avant, et le jour même).
+- Dans la feuille qui s'ouvre : **Ajouter au Calendrier**. **À tester sur ton iPhone** : si rien ne s'ouvre depuis
+  l'appli installée, touche **Envoyer le fichier…** › **Enregistrer dans Fichiers**, puis ouvre l'app **Fichiers**,
+  touche le fichier `rappels-….ics` › **Ajouter tout**.
+- Après un changement (passage en Cave, contrôle coché, autre date), refais « Ajouter au Calendrier » : les rappels
+  du même lot sont remplacés (mêmes identifiants).
+
+**Pastille** : le chiffre vert sur l'onglet Chambre (et une ligne « Chambre : … à faire » sur l'Accueil) compte
+ce qu'il y a à faire aujourd'hui. Pour l'avoir aussi sur l'**icône** de l'appli : ⚙️ › Pastille sur l'icône ›
+**Autoriser la pastille** (l'iPhone demande d'autoriser les notifications ; aucune n'est envoyée).
+
+À venir : la compatibilité (ce qui peut partager la chambre).
 
 ## 9. Sauvegarder mes données personnelles
 

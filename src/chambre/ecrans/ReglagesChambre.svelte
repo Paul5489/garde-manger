@@ -1,7 +1,10 @@
 <script lang="ts">
   // Réglages de la chambre : les 7 modes, le mode choisi à la main, la mise en service, l'entretien,
   // et tout ce qui explique le matériel.
-  import { ChevronRight } from '@lucide/svelte';
+  import { CalendarPlus, ChevronRight } from '@lucide/svelte';
+  import FeuilleRappels from '../composants/FeuilleRappels.svelte';
+  import { evenementsChambre } from '../ics';
+  import { demanderPastille, etatPastille } from '../../lib/pastilles.svelte';
   import { date } from '../../lib/format';
   import { lienChambre } from '../../lib/routeur.svelte';
   import { couleurMode, t } from '../affichage';
@@ -13,6 +16,14 @@
   const faites = $derived(requises.filter((e) => chambre.miseEnService.includes(e.titre)).length);
   const derniere = (cle: 'verification' | 'calibrage' | 'etalonnage-ph') =>
     chambre.faites[cle] ? `Fait le ${date(chambre.faites[cle]!)}` : 'Jamais noté';
+
+  let feuilleRappels = $state(false);
+  const rappels = $derived(feuilleRappels ? evenementsChambre(chambre.maintenant, chambre.heureRappels, chambre.faites) : []);
+  let pastille = $state(etatPastille());
+
+  async function autoriserPastille() {
+    pastille = await demanderPastille();
+  }
 
   const COMPRENDRE: [string, string, string][] = [
     ['appareils', 'Mon matériel', 'Frigo, Inkbird, tapis, ventilateur, déshumidificateur, pH-mètre'],
@@ -105,10 +116,47 @@
         {#each [6, 7, 8, 9, 10, 11, 12, 17, 18, 19, 20] as h (h)}<option value={h}>{h} h</option>{/each}
       </select>
     </label>
+    <p class="petit discret">
+      Dans le Calendrier de l'iPhone, sur un an : changements de mode, vidages du réservoir, vérification de la
+      semaine, calibrage des sondes, pH-mètre. Les rappels des lots se mettent depuis chaque lot.
+    </p>
+    <button class="bouton secondaire plein" onclick={() => (feuilleRappels = true)}><CalendarPlus size={18} /> Rappels de la chambre</button>
+  </div>
+
+  <h2 class="section-titre">Pastille sur l'icône</h2>
+  <div class="carte bloc">
+    {#if pastille === 'active'}
+      <p>✓ La pastille de l'icône montre le nombre de choses à faire aujourd'hui.</p>
+    {:else if pastille === 'impossible'}
+      <p class="petit discret">
+        La pastille ne marche que dans l'appli installée sur l'écran d'accueil (iOS 16.4 ou plus), pas dans Safari.
+      </p>
+    {:else if pastille === 'refusee'}
+      <p class="petit discret">
+        Les notifications sont refusées : pour la pastille, autorise-les dans Réglages de l'iPhone › Notifications ›
+        Garde-manger.
+      </p>
+    {:else}
+      <p class="petit discret">
+        Le nombre de choses à faire aujourd'hui sur l'icône de l'appli. L'iPhone demande pour cela d'autoriser les
+        notifications : c'est gratuit, et l'appli n'en enverra aucune.
+      </p>
+      <button class="bouton secondaire plein" onclick={autoriserPastille}>Autoriser la pastille</button>
+    {/if}
   </div>
 
   <p class="role petit discret">{t(CONTENU.modes.role_de_l_appli)}</p>
 </div>
+
+<FeuilleRappels
+  bind:ouvert={feuilleRappels}
+  titre="Rappels de la chambre"
+  sousTitre="Selon le calendrier, sur un an"
+  evenements={rappels}
+  nomFichier="rappels-chambre.ics"
+  sequence={Math.floor(chambre.maintenant / 1000)}
+  maintenant={chambre.maintenant}
+/>
 
 <style>
   h1 {

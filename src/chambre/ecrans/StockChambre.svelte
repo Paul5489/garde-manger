@@ -1,6 +1,8 @@
 <script lang="ts">
   // Stock : les produits finis, triés par date limite, avec une alerte 7 jours avant.
-  import { Check, RotateCcw, Trash2 } from '@lucide/svelte';
+  import { CalendarPlus, Check, RotateCcw, Trash2 } from '@lucide/svelte';
+  import FeuilleRappels from '../composants/FeuilleRappels.svelte';
+  import { evenementsStock } from '../ics';
   import { date } from '../../lib/format';
   import { lienChambre } from '../../lib/routeur.svelte';
   import { t } from '../affichage';
@@ -11,6 +13,8 @@
   import type { ArticleStock } from '../types';
 
   let finisOuverts = $state(false);
+  let feuilleRappels = $state(false);
+  const rappels = $derived(feuilleRappels ? evenementsStock(lots.stock, chambre.maintenant, chambre.heureRappels) : []);
   const parEcheance = (a: ArticleStock, b: ArticleStock) => (a.limite ?? '9999').localeCompare(b.limite ?? '9999');
   const enStock = $derived(lots.stock.filter((s) => s.statut === 'en-stock').sort(parEcheance));
   const finis = $derived(lots.stock.filter((s) => s.statut === 'fini').sort((a, b) => b.modifieLe - a.modifieLe));
@@ -49,6 +53,10 @@
     </ul>
   {/if}
 
+  {#if enStock.some((a) => a.limite)}
+    <button class="bouton secondaire plein rappels" onclick={() => (feuilleRappels = true)}><CalendarPlus size={18} /> Dates limites dans le Calendrier</button>
+  {/if}
+
   {#if finis.length}
     <button class="section-titre bascule" onclick={() => (finisOuverts = !finisOuverts)} aria-expanded={finisOuverts}>
       Finis ({finis.length}) {finisOuverts ? '▾' : '▸'}
@@ -67,7 +75,20 @@
   {/if}
 </div>
 
+<FeuilleRappels
+  bind:ouvert={feuilleRappels}
+  titre="Dates limites du stock"
+  evenements={rappels}
+  nomFichier="rappels-stock.ics"
+  sequence={Math.floor(chambre.maintenant / 1000)}
+  maintenant={chambre.maintenant}
+/>
+
 <style>
+  .rappels {
+    margin-top: 12px;
+  }
+
   h1 {
     font-size: 28px;
     margin: 4px 0 14px;

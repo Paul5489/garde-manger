@@ -66,10 +66,7 @@
 
   const actionsLots = $derived(chambre.actionsLots);
   // Sauvegarde : une fois par mois (pas de synchronisation, tout est dans le téléphone).
-  const derniereSauvegarde = $derived(lireLocal<string | null>('derniere-sauvegarde', null));
-  const sauvegardeDue = $derived(
-    (lots.liste.length > 0 || bocaux.liste.length > 0) && (!derniereSauvegarde || joursCalendaires(derniereSauvegarde, chambre.maintenant) >= 30),
-  );
+  const sauvegardeDue = $derived(chambre.sauvegardeDue);
   // Bientôt : lots qui finissent dans la semaine, produits à finir.
   const finissent = $derived(
     lots.enCours

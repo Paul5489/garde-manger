@@ -7,6 +7,7 @@
   import { UNIVERS } from '../lib/archive';
   import { etatEtape, libelleAvancement } from '../lib/bocaux';
   import { bocaux } from '../lib/bocaux.svelte';
+  import { pastilles } from '../lib/pastilles.svelte';
   import { courses } from '../lib/courses.svelte';
   import { etat } from '../lib/etat.svelte';
   import { nombre, pluriel } from '../lib/format';
@@ -41,7 +42,7 @@
   const aGouter = $derived(bocaux.parRubrique['a-gouter']);
   const prets = $derived(bocaux.parRubrique.prets);
   const enCours = $derived(bocaux.parRubrique['en-cours']);
-  const rienAujourdhui = $derived(!aGouter.length && !prets.length && !enCours.length && !courses.restants.length);
+  const rienAujourdhui = $derived(!aGouter.length && !prets.length && !enCours.length && !courses.restants.length && !pastilles.chambre);
 
   function ouvrirRubrique(r: Rubrique) {
     recherche.ouvrirRubrique(r);
@@ -105,6 +106,15 @@
           <a href="#/chambre/bocaux">
             <span class="pictogramme" aria-hidden="true">🫙</span>
             <span class="texte">{pluriel(enCours.length, 'bocal en cours', 'bocaux en cours')}</span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/if}
+      {#if pastilles.chambre}
+        <li>
+          <a href="#/chambre">
+            <span class="pictogramme" aria-hidden="true">🌡️</span>
+            <span class="texte">Chambre : <strong>{pluriel(pastilles.chambre, 'chose', 'choses')}</strong> à faire</span>
             <ChevronRight size={18} class="chevron" />
           </a>
         </li>
