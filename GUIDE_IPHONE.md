@@ -219,8 +219,25 @@ chaque étape quand elle est faite ; « Si ça ne marche pas » dit quoi faire. 
 - **Comprendre** : ton matériel, les touches des Inkbird, ménager le matériel (le compresseur), économiser
   l'énergie, les nettoyages, la coupure de courant.
 
-À venir dans les prochaines mises à jour : les 83 recettes de la chambre, le calendrier de l'année, les lots
-(contrôles, pesées, pH), le stock, le matériel à acheter, les rappels dans le Calendrier et la compatibilité.
+**Calendrier** (tuile Calendrier) : un écran par mois, d'octobre à septembre, ouvert sur le mois en cours (‹ ›
+pour changer de mois). Le bandeau montre les modes jour par jour (le trait noir = aujourd'hui, les petites barres
+= rendez-vous et sorties), puis les rendez-vous, les sorties et les **recettes de saison** : « À faire ce mois-ci »
+(fenêtre d'un seul mois) ou « Dernier mois ». Touche l'**étoile ★** d'une recette pour la prévoir ce mois-là :
+elle s'ajoute à « Mon programme ».
+
+**Recettes** (tuile Recettes) : les 83 recettes par famille, avec recherche et « De saison ». Sur une fiche :
+- la saison, le lieu et le mode (touche-le pour ses réglages), la durée, la difficulté, la fin ;
+- pour la charcuterie, la **sécurité sans nitrite** tout en haut ;
+- le matériel à cocher ;
+- le **calculateur** : pèse l'ingrédient de base (ex. le riz du koji), saisis son poids, toutes les quantités se
+  recalculent (au gramme, au dixième sous 10 g ; « environ » pour les gousses, brins, pièces…) ;
+- les étapes, les contrôles (jour par jour, ceux de la technique puis ceux de la recette), la conservation, les
+  notes et les recettes liées.
+
+**Matériel** (tuile Matériel) : les achats par échéance, à cocher, et le matériel des recettes prévues (★).
+
+À venir dans les prochaines mises à jour : les lots (contrôles, pesées, pH), le stock, les rappels dans le
+Calendrier et la compatibilité.
 
 ## 9. Sauvegarder mes données personnelles
 

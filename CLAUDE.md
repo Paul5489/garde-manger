@@ -58,7 +58,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 226 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 231 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -196,13 +196,20 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   - `taches.ts` : mode actif = calendrier, ou **choisi à la main** (`chambre:mode`) jusqu'au retour au calendrier ;
     réservoir au rythme du mode (Cave : 3 j pendant 21 j après une entrée, puis 7 j ; idem phase IHC 80 → 76 %),
     vérification hebdomadaire, calibrage annuel, étalonnage mensuel du pH-mètre.
+  - `recettes.ts` : calculateur (grammes au gramme, au dixième sous 10 g ; unités comptées à la demi-unité,
+    « environ »), fenêtres de saison (cycle circulaire : [9, 10] = une fenêtre ; « À faire ce mois-ci » /
+    « Dernier mois »), contrôles de la technique puis de la recette avec leur point de départ (`ancre` : `cave`
+    pour pesées et surface des recettes salées ou étuvées avant la Cave), durées lisibles, cible de pH.
   - `assistant.ts` : écrans de « Changer de mode » (nettoyage de la transition, refroidir après un mode chaud, ITC
     puis IHC code par code avec la touche et la valeur, thermostat, branchements, ventilateur, sondes, à vide).
   - `chambre.svelte.ts` : état gardé dans la table `reglages` (clés `chambre:…` : mode choisi, mise en service,
     dates des tâches, heure des rappels, dernier changement) → sauvegardé, jamais effacé par un réimport.
   - Écrans (`chambre/ecrans/`) : `Chambre` (onglet : mode actuel, Aujourd'hui, Bientôt, tuiles), `PageChambre`
     (pages `#/chambre/…` : `mode/<id>`, `changer[/<id>]`, `mise-en-service`, `reglages`, `infos/<section>`,
-    `bocaux`), `PageMode`, `AssistantMode`, `MiseEnService`, `ReglagesChambre`, `InfosChambre`. Couleurs des modes :
+    `bocaux`, `recettes`, `recette/<id>`, `calendrier[/<mois>]`, `materiel`), `PageMode`, `AssistantMode`,
+    `MiseEnService`, `ReglagesChambre`, `InfosChambre`, `RecettesChambre`, `FicheChambre` (sécurité en haut pour
+    la charcuterie), `CalendrierChambre` (bandeau à l'échelle des jours, étoiles « prévu » : `chambre:etoiles`),
+    `MaterielChambre` (`chambre:achats` ; matériel coché des fiches : `chambre:materiel-fiches`). Couleurs des modes :
     `--m-chaud`, `--m-sech`, `--m-froid`, `--m-cave`, `--m-temp`, `--m-off` (app.css).
   - Mise en service proposée une fois à la première ouverture de l'onglet (localStorage
     `chambre-mise-en-service-proposee`).
@@ -389,6 +396,8 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.10.0** (07/10/2026) : Chambre, étape 2 : fiches des 83 recettes (calculateur, contrôles, sécurité), liste
+  avec recherche, calendrier mois par mois (bandeau, rendez-vous, recettes de saison, étoiles), matériel à acheter.
 - **1.9.0** (07/10/2026) : module **Chambre**, étape 1 : onglet Chambre (à la place de Bocaux), mode actuel selon
   le calendrier ou choisi à la main, tâches du jour (réservoir, vérification, calibrage, pH-mètre), 7 modes (codes
   des Inkbird expliqués), assistant « Changer de mode », mise en service, pages d'explication.
@@ -411,8 +420,7 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
 ## 10. Reste à faire
 
 **Chambre de fermentation** (ordre de travail de Paul, une version publiée par étape) : ~~1. plan~~ ·
-~~2. réglages, mise en service, assistant (1.9.0)~~ · 3. fiches des 83 recettes (calculateur) et calendrier (mois,
-recettes de saison, étoiles « prévu »), matériel à acheter · 4. lots (copie de la recette, phases, contrôles avec
+~~2. réglages, mise en service, assistant (1.9.0)~~ · ~~3. fiches, calendrier, matériel (1.10.0)~~ · 4. lots (copie de la recette, phases, contrôles avec
 `repeter_j`/`fin_j`, pesées et fin estimée, pH et blocage à 72 h), stock · 5. Aujourd'hui complet, pastille de
 l'icône (Badging API), `.ics` des lots et de la chambre (UID stables) · 6. compatibilité · 7. installation expliquée.
 À signaler à Paul : le shoyu a un contrôle « Remuer » chaque jour sans `fin_j` (donc pendant 6 à 12 mois) en plus

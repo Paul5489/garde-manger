@@ -2,9 +2,13 @@
   // Pages de la chambre, empilées au-dessus des onglets : #/chambre/<page>/<…>.
   import BarreHaut from '../../composants/BarreHaut.svelte';
   import Bocaux from '../../ecrans/Bocaux.svelte';
-  import { MODES_PAR_ID } from '../donnees';
+  import { MODES_PAR_ID, recette } from '../donnees';
   import type { IdMode } from '../types';
   import AssistantMode from './AssistantMode.svelte';
+  import CalendrierChambre from './CalendrierChambre.svelte';
+  import FicheChambre from './FicheChambre.svelte';
+  import MaterielChambre from './MaterielChambre.svelte';
+  import RecettesChambre from './RecettesChambre.svelte';
   import InfosChambre from './InfosChambre.svelte';
   import MiseEnService from './MiseEnService.svelte';
   import PageMode from './PageMode.svelte';
@@ -19,11 +23,20 @@
     if (page === 'mise-en-service') return 'Mise en service';
     if (page === 'reglages') return 'Réglages de la chambre';
     if (page === 'bocaux') return 'Mes bocaux';
+    if (page === 'recette') return recette(arg)?.nom ?? 'Recette';
+    if (page === 'recettes') return 'Recettes de la chambre';
+    if (page === 'calendrier') return 'Calendrier';
+    if (page === 'materiel') return 'Matériel';
     return 'Chambre';
   });
 
   let conteneur = $state<HTMLElement>();
   let defile = $state(false);
+  // D'une page de la chambre à une autre (recette liée, mois suivant) : on repart du haut.
+  $effect(() => {
+    void chemin.join('/');
+    if (conteneur) conteneur.scrollTop = 0;
+  });
 </script>
 
 <div class="ecran calque" bind:this={conteneur} onscroll={() => (defile = (conteneur?.scrollTop ?? 0) > 40)}>
@@ -35,6 +48,10 @@
     {:else if page === 'reglages'}<ReglagesChambre />
     {:else if page === 'infos' && arg}<InfosChambre section={arg} />
     {:else if page === 'bocaux'}<Bocaux enPage />
+    {:else if page === 'recette' && arg}<FicheChambre id={arg} />
+    {:else if page === 'recettes'}<RecettesChambre />
+    {:else if page === 'calendrier'}<CalendrierChambre mois={arg} />
+    {:else if page === 'materiel'}<MaterielChambre />
     {:else}<p class="vide">Page introuvable.</p>{/if}
   {/key}
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
   // Onglet Chambre : le mode actif, ce qu'il y a à faire aujourd'hui, et l'accès à tout le reste
   // (réglages de la chambre, bocaux…). L'appli ne pilote rien : ce sont les Inkbird qui régulent.
-  import { Check, ChevronRight, CircleAlert, Settings2, Wrench } from '@lucide/svelte';
+  import { BookOpen, CalendarDays, Check, ChevronRight, CircleAlert, Settings2, ShoppingBag, Wrench } from '@lucide/svelte';
   import IconeBocal from '../../composants/IconeBocal.svelte';
   import { etatEtape, libelleAvancement } from '../../lib/bocaux';
   import { bocaux } from '../../lib/bocaux.svelte';
@@ -176,6 +176,21 @@
 
   <h2 class="section-titre">La chambre</h2>
   <div class="tuiles">
+    <a class="carte tuile" href={lienChambre('calendrier')}>
+      <CalendarDays size={26} />
+      <strong>Calendrier</strong>
+      <span class="petit discret">Modes, rendez-vous, recettes de saison</span>
+    </a>
+    <a class="carte tuile" href={lienChambre('recettes')}>
+      <BookOpen size={26} />
+      <strong>Recettes</strong>
+      <span class="petit discret">{CONTENU.recettes.length} recettes, avec calculateur</span>
+    </a>
+    <a class="carte tuile" href={lienChambre('materiel')}>
+      <ShoppingBag size={26} />
+      <strong>Matériel</strong>
+      <span class="petit discret">À acheter, par échéance</span>
+    </a>
     <a class="carte tuile" href={lienChambre('reglages')}>
       <Settings2 size={26} />
       <strong>Réglages</strong>

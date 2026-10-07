@@ -13,6 +13,9 @@ const CLES = {
   taches: 'chambre:taches',
   heure: 'chambre:heure-rappels',
   changement: 'chambre:dernier-changement',
+  etoiles: 'chambre:etoiles',
+  achats: 'chambre:achats',
+  materielFiches: 'chambre:materiel-fiches',
 } as const;
 
 /** Dernier changement de mode fait avec l'assistant (ou choisi à la main). */
@@ -43,6 +46,12 @@ class Chambre {
   /** Heure des contrôles sans heure précise et des rappels du Calendrier. */
   heureRappels = $state(8);
   dernierChangement = $state.raw<ChangementFait | null>(null);
+  /** Recettes prévues, par mois : « coppa@11 ». */
+  etoiles = $state.raw<string[]>([]);
+  /** Matériel à acheter déjà acheté (texte de l'article). */
+  achats = $state.raw<string[]>([]);
+  /** Matériel coché sur chaque fiche. */
+  materielFiches = $state.raw<Record<string, string[]>>({});
 
   readonly verification = verifierContenu();
 
@@ -61,8 +70,20 @@ class Chambre {
   }
 
   async charger() {
-    const [m, s, t, h, c] = await db.reglages.bulkGet([CLES.mode, CLES.miseEnService, CLES.taches, CLES.heure, CLES.changement]);
+    const [m, s, t, h, c, e, a, f] = await db.reglages.bulkGet([
+      CLES.mode,
+      CLES.miseEnService,
+      CLES.taches,
+      CLES.heure,
+      CLES.changement,
+      CLES.etoiles,
+      CLES.achats,
+      CLES.materielFiches,
+    ]);
     this.dernierChangement = (c?.valeur as ChangementFait | null) ?? null;
+    this.etoiles = Array.isArray(e?.valeur) ? (e.valeur as string[]) : [];
+    this.achats = Array.isArray(a?.valeur) ? (a.valeur as string[]) : [];
+    this.materielFiches = (f?.valeur as Record<string, string[]>) ?? {};
     this.manuel = (m?.valeur as ModeManuel | null) ?? null;
     this.miseEnService = Array.isArray(s?.valeur) ? (s.valeur as string[]) : [];
     this.faites = (t?.valeur as DatesTaches) ?? {};
@@ -112,6 +133,28 @@ class Chambre {
     else delete faites[tache];
     this.faites = faites;
     await this.#ecrire(CLES.taches, faites);
+  }
+
+  estPrevue(id: string, mois: number): boolean {
+    return this.etoiles.includes(`${id}@${mois}`);
+  }
+
+  async basculerEtoile(id: string, mois: number) {
+    const cle = `${id}@${mois}`;
+    this.etoiles = this.etoiles.includes(cle) ? this.etoiles.filter((x) => x !== cle) : [...this.etoiles, cle];
+    await this.#ecrire(CLES.etoiles, this.etoiles);
+  }
+
+  async cocherAchat(article: string, coche: boolean) {
+    this.achats = coche ? [...new Set([...this.achats, article])] : this.achats.filter((x) => x !== article);
+    await this.#ecrire(CLES.achats, this.achats);
+  }
+
+  async cocherMaterielFiche(id: string, element: string, coche: boolean) {
+    const avant = this.materielFiches[id] ?? [];
+    const apres = coche ? [...new Set([...avant, element])] : avant.filter((x) => x !== element);
+    this.materielFiches = { ...this.materielFiches, [id]: apres };
+    await this.#ecrire(CLES.materielFiches, this.materielFiches);
   }
 
   async reglerHeure(h: number) {

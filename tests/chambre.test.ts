@@ -10,7 +10,18 @@ import {
   modePrevu,
   prochainsChangements,
 } from '../src/chambre/calendrier';
-import { CONTENU, mode, verifierContenu, type Contenu } from '../src/chambre/donnees';
+import { CONTENU, mode, recette, verifierContenu, type Contenu } from '../src/chambre/donnees';
+import {
+  arrondiGrammes,
+  calculer,
+  cibleDuPh,
+  controlesDeLaRecette,
+  dureeLisible,
+  fenetres,
+  libelleJour,
+  repereDuMois,
+  saison,
+} from '../src/chambre/recettes';
 import { modeActif, rythmeReservoir, tachesDuJour, type DatesTaches } from '../src/chambre/taches';
 import { apres, joursCalendaires } from '../src/chambre/temps';
 
@@ -205,5 +216,61 @@ describe('assistant « Changer de mode »', () => {
     const e = etapesAssistant(mode('biltong'), mode('pause'));
     expect(e.some((x) => x.type === 'code')).toBe(false);
     expect(textes(e).join('\n')).toMatch(/Inkbird compris/);
+  });
+});
+
+describe('fiches des recettes', () => {
+  const r = (id: string) => recette(id)!;
+
+  it('calculateur : koji de riz pour 1 000 g, puis 1 500 g', () => {
+    expect(calculer(r('kojiriz'), 1000).map((l) => l.quantite)).toEqual(['1 000 g', '1 g', '5 g']);
+    expect(calculer(r('kojiriz'), 1500).map((l) => l.quantite)).toEqual(['1 500 g', '1,5 g', '7,5 g']);
+  });
+
+  it('arrondi au gramme, au dixième sous 10 g ; unités comptées à la demi-unité, « environ »', () => {
+    expect(arrondiGrammes(40.5)).toBe(41);
+    expect(arrondiGrammes(6.75)).toBe(6.8);
+    const l = calculer(r('guanciale'), 1350);
+    expect(l.find((x) => x.nom === 'Ail écrasé')?.quantite).toBe('environ 2,5 gousses');
+    expect(calculer(r('pissenlit'), 200).find((x) => x.nom === 'Ail')?.quantite).toBe('1 gousse');
+    expect(calculer(r('pissenlit'), 50).find((x) => x.nom === 'Ail')?.quantite).toBe('environ 0,5 gousse');
+  });
+
+  it('saison : le cycle est circulaire, [9, 10] est une seule fenêtre', () => {
+    expect(fenetres([9, 10])).toEqual([[9, 10]]);
+    expect(fenetres([10, 4])).toEqual([[10], [4]]);
+    expect(fenetres([11, 12, 1, 2])).toEqual([[11, 12, 1, 2]]);
+    const vin = CONTENU.recettes.find((x) => x.mois?.join() === '9,10' || x.mois?.join() === '10,9');
+    if (vin) {
+      expect(repereDuMois(vin, 10)).toBe('dernier-mois');
+      expect(repereDuMois(vin, 9)).toBeUndefined();
+    }
+    expect(repereDuMois(r('kojipoudre'), 11)).toBe('ce-mois');
+    expect(repereDuMois(r('cepes'), 11)).toBe('dernier-mois');
+    expect(saison(r('kojiriz'))).toBe('Octobre et avril');
+    expect(saison(r('suancai'))).toBe('Octobre à février');
+  });
+
+  it('contrôles : la coppa pèse depuis l’entrée en Cave, le saucisson mesure le pH depuis le début', () => {
+    const coppa = controlesDeLaRecette(r('coppa'));
+    expect(coppa.filter((c) => c.ancre === 'cave').map((c) => c.controle.titre)).toEqual(['Pesée d’entrée', 'Pesée', 'Surface']);
+    expect(coppa.find((c) => c.controle.titre === 'Fin du salage')?.ancre).toBe('debut');
+    const sauc = controlesDeLaRecette(r('saucisson'));
+    expect(sauc.filter((c) => c.ancre === 'debut').map((c) => c.controle.j)).toEqual([0, 1, 2, 3]);
+    expect(sauc.filter((c) => c.ancre === 'cave').map((c) => c.controle.titre)).toEqual(['Pesée', 'Surface']);
+    expect(controlesDeLaRecette(r('kojiriz')).map((c) => c.controle.j)).toEqual([0, 0.75, 1.15, 1.5, 1.75]);
+    expect(libelleJour(0.75)).toBe('18 h');
+    expect(libelleJour(1.75)).toBe('jour 1 + 18 h');
+  });
+
+  it('durées lisibles et cible de pH', () => {
+    expect(dureeLisible(1.7, 2.1)).toBe('41 à 50 h');
+    expect(dureeLisible(0.05)).toBe('72 min');
+    expect(dureeLisible(70)).toBe('10 semaines');
+    expect(dureeLisible(180, 365)).toBe('6 à 12 mois');
+    expect(cibleDuPh(r('cepes'))?.valeur).toBe(4.2);
+    expect(cibleDuPh(r('kimchi'))?.valeur).toBe(4.2);
+    expect(cibleDuPh(r('saucisson'))?.valeur).toBe(5.3);
+    expect(cibleDuPh(r('vinriz'))).toBeUndefined();
   });
 });
