@@ -22,7 +22,24 @@ import {
   repereDuMois,
   saison,
 } from '../src/chambre/recettes';
+import {
+  aFaire,
+  dateLimite,
+  debutsDesPhases,
+  debutVagueCave,
+  etatPh,
+  etatStock,
+  finPrevue,
+  modeDuLot,
+  nouveauLot,
+  occurrences,
+  passageSuivant,
+  perteDePoids,
+  poidsDemande,
+  type NouveauLot,
+} from '../src/chambre/lots';
 import { modeActif, rythmeReservoir, tachesDuJour, type DatesTaches } from '../src/chambre/taches';
+import type { MesurePh } from '../src/chambre/types';
 import { apres, joursCalendaires } from '../src/chambre/temps';
 
 const d = (mois: number, jour: number, h = 12, min = 0, annee = mois >= 10 ? 2026 : 2027) => new Date(annee, mois - 1, jour, h, min);
@@ -272,5 +289,107 @@ describe('fiches des recettes', () => {
     expect(cibleDuPh(r('kimchi'))?.valeur).toBe(4.2);
     expect(cibleDuPh(r('saucisson'))?.valeur).toBe(5.3);
     expect(cibleDuPh(r('vinriz'))).toBeUndefined();
+  });
+});
+
+describe('lots', () => {
+  const r = (id: string) => structuredClone(recette(id)!);
+  const lot = (id: string, entree: Date, n: Partial<NouveauLot> = {}) => {
+    const rec = r(id);
+    return nouveauLot(rec, rec.technique ? CONTENU.techniques[rec.technique] : undefined, { entree, quantiteBase: rec.base.quantite, ...n }, 'essai');
+  };
+
+  it('koji démarré le 15 octobre à 18 h : émiettage le 16 vers 12 h, récolte le 17 entre le matin et le soir', () => {
+    const l = lot('kojiriz', d(10, 15, 18));
+    const occ = occurrences(l);
+    expect(occ.find((o) => o.controle.titre === 'Émiettage')?.quand).toEqual(d(10, 16, 12));
+    expect(occ.find((o) => o.controle.titre === 'Récolte')?.quand).toEqual(d(10, 17, 12));
+    expect(occ.every((o) => o.exacte)).toBe(true);
+    const fin = finPrevue(l);
+    expect([fin.min, fin.max]).toEqual([d(10, 17, 10, 48), d(10, 17, 20, 24)]);
+  });
+
+  it('le lot garde sa copie de la recette', () => {
+    const rec = r('kojiriz');
+    const l = nouveauLot(rec, undefined, { entree: d(10, 15, 18), quantiteBase: 1000 }, 'x');
+    rec.controles.push({ j: 1, titre: 'Ajout', observer: '', normal: '', probleme: '', action: '' });
+    rec.duree.max_j = 9;
+    expect(l.recette.controles).toHaveLength(5);
+    expect(finPrevue(l).max).toEqual(d(10, 17, 20, 24));
+  });
+
+  it('répétitions : jusqu’à fin_j, toutes les 12 h pour le gravlax, à 8 h même après le changement d’heure', () => {
+    const citrons = occurrences(lot('citrons', d(10, 20, 18))).filter((o) => o.controle.titre === 'Retourner le bocal');
+    expect(citrons.map((o) => o.quand.getDate())).toEqual([21, 22, 23, 24, 25, 26, 27]);
+    expect(citrons.every((o) => o.quand.getHours() === 8)).toBe(true); // 25 octobre : heure d'hiver
+    const gravlax = occurrences(lot('gravlax', d(10, 20, 9))).filter((o) => o.controle.titre === 'Retourner');
+    expect(gravlax.map((o) => o.quand.getHours())).toEqual([21, 9, 21, 9]);
+    expect(occurrences(lot('citrons', d(10, 20, 18)), 7)[0].quand.getHours()).toBe(7); // heure des rappels choisie
+  });
+
+  it('coppa démarrée le 28 novembre : 21 jours de salage en Froid, puis pesée chaque semaine en Cave, cible 35 %', () => {
+    let l = lot('coppa', d(11, 28, 10));
+    const debuts = debutsDesPhases(l);
+    expect(debuts.min[1]).toEqual(d(12, 19, 10));
+    expect(modeDuLot(l)).toBe('froid');
+    // Avant l'entrée en Cave : pas de pesée à faire, même si sa date estimée est passée.
+    expect(aFaire(l, d(12, 20, 12)).map((o) => o.controle.titre)).toEqual(['Fin du salage']);
+    // Entrée en Cave le 19 décembre, 1 400 g ; pesées les 26 décembre et 2 janvier.
+    l = { ...l, phaseCourante: 1, phases: [{}, { debut: d(12, 19, 10).toISOString(), poids: 1400 }] };
+    expect(modeDuLot(l)).toBe('cave');
+    const pesees = occurrences(l).filter((o) => o.controle.titre === 'Pesée');
+    expect(pesees.slice(0, 3).map((o) => [o.quand.getMonth() + 1, o.quand.getDate(), o.quand.getHours()])).toEqual([
+      [12, 26, 8],
+      [1, 2, 8],
+      [1, 9, 8],
+    ]);
+    l = { ...l, pesees: [{ le: d(12, 26, 9).toISOString(), g: 1330 }, { le: d(1, 2, 9).toISOString(), g: 1260 }] };
+    const p = perteDePoids(l)!;
+    expect(p.reference.g).toBe(1400);
+    expect(Math.round(p.pct)).toBe(10);
+    expect(p.cible).toBe(35);
+    expect(p.atteinte).toBe(false);
+    expect(Math.abs(p.finEstimee!.getTime() - d(2, 6, 10).getTime())).toBeLessThan(86_400_000);
+    l = { ...l, pesees: [...l.pesees, { le: d(2, 6, 9).toISOString(), g: 900 }] };
+    expect(perteDePoids(l)!.atteinte).toBe(true);
+  });
+
+  it('saucisson : pH 5,6 à 72 h → « Ne pas sécher », pas de passage en Cave', () => {
+    const l = lot('saucisson', d(1, 10, 18));
+    expect(passageSuivant(l).possible).toBe(false); // aucun pH noté
+    const ph = (valeur: number, moment: MesurePh['moment'], h: number) => ({ le: new Date(d(1, 10, 18).getTime() + h * 3_600_000).toISOString(), valeur, moment });
+    const bon = { ...l, ph: [ph(5.9, 'depart', 0), ph(5.2, '48h', 48)] };
+    expect(passageSuivant(bon).possible).toBe(true);
+    const lent = { ...l, ph: [ph(5.9, 'depart', 0), ph(5.5, '48h', 48)] };
+    expect(passageSuivant(lent)).toEqual({ possible: false, raison: 'pH encore au-dessus de 5,3 : prolonge l’étuvage et remesure à 72 h.' });
+    const rate = { ...lent, ph: [...lent.ph, ph(5.6, '72h', 72)] };
+    expect(etatPh(rate).bloque).toBe(true);
+    expect(passageSuivant(rate)).toEqual({ possible: false, raison: 'Ne pas sécher : cuire en saucisses fraîches dans les 24 h, ou jeter.' });
+    // Les pH de 48 et 72 h tombent à l'heure exacte.
+    const occ = occurrences(l).filter((o) => o.type === 'ph');
+    expect(occ.map((o) => o.quand)).toEqual([d(1, 10, 18), d(1, 12, 18), d(1, 13, 18)]);
+    expect(poidsDemande(l.recette, 1)).toBe(true);
+  });
+
+  it('cible de pH des autres lots, sans blocage', () => {
+    const k = lot('kimchi', d(10, 20, 18));
+    expect(etatPh(k)).toMatchObject({ bloque: false, peutPasserEnCave: true, cible: { valeur: 4.2 } });
+  });
+
+  it('début de la vague de Cave : dernière entrée d’un lot en Cave', () => {
+    const coppa = { ...lot('coppa', d(11, 28, 10)), phaseCourante: 1, phases: [{}, { debut: d(12, 19, 10).toISOString(), poids: 1400 }] };
+    const sauc = { ...lot('saucisson', d(1, 10, 18)), id: 's' };
+    expect(debutVagueCave([coppa, sauc])).toEqual(d(12, 19, 10));
+  });
+
+  it('stock : date limite = fin + jours, alerte 7 jours avant', () => {
+    const c = { mode: 'Frigo', comment: 'sous vide', duree: '1 mois', jours: 30 };
+    expect(dateLimite(d(1, 1, 12), c)).toBe(d(1, 31, 12).toISOString());
+    expect(dateLimite(d(1, 1, 12), { ...c, jours: 0 })).toBeUndefined();
+    const a = { id: 'a', recetteId: 'coppa', nom: 'Coppa', conservation: c, depuis: d(1, 1, 12).toISOString(), limite: d(1, 31, 12).toISOString(), statut: 'en-stock' as const, modifieLe: 0 };
+    expect(etatStock(a, d(1, 20))).toBe('ok');
+    expect(etatStock(a, d(1, 25))).toBe('bientot');
+    expect(etatStock(a, d(2, 1))).toBe('depasse');
+    expect(etatStock({ ...a, limite: undefined }, d(2, 1))).toBe('sans-date');
   });
 });

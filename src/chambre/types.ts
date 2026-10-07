@@ -200,3 +200,69 @@ export interface Achats {
   echeance: string;
   articles: string[];
 }
+
+// ───── Données personnelles : lots et stock (tables Dexie « lots » et « stock ») ─────
+
+export interface ControleCoche {
+  etat: 'ok' | 'probleme';
+  note?: string;
+  /** Date où il a été coché (ISO). */
+  le: string;
+}
+
+export interface Pesee {
+  le: string;
+  /** Poids en grammes. */
+  g: number;
+}
+
+export type MomentPh = 'depart' | '48h' | '72h' | 'libre';
+
+export interface MesurePh {
+  le: string;
+  valeur: number;
+  moment: MomentPh;
+}
+
+export interface Lot {
+  id: string;
+  recetteId: string;
+  /** Copie de la recette au démarrage : une mise à jour des données ne change jamais un lot en cours. */
+  recette: RecetteChambre;
+  /** Copie de la technique (contrôles, sécurité) au démarrage. */
+  technique?: Technique;
+  nom: string;
+  /** Date et heure d'entrée (ISO). */
+  entree: string;
+  /** Quantité de la base (dans l'unité de la recette). */
+  quantiteBase: number;
+  /** Poids d'entrée (g), si la fin se juge à la perte de poids et sans phase avant la Cave. */
+  poidsEntree?: number;
+  notes?: string;
+  /** Pour chaque phase (même ordre que la recette) : début réel (sauf la 1re) et poids à son entrée. */
+  phases: { debut?: string; poids?: number }[];
+  phaseCourante: number;
+  /** Contrôles cochés, par occurrence (« technique:2:0 »). */
+  controles: Record<string, ControleCoche>;
+  pesees: Pesee[];
+  ph: MesurePh[];
+  statut: 'en-cours' | 'termine' | 'rate';
+  finLe?: string;
+  modifieLe: number;
+}
+
+export interface ArticleStock {
+  id: string;
+  lotId?: string;
+  recetteId: string;
+  nom: string;
+  /** Quantité notée à la fin (« 1,2 kg », « 6 saucissons »). */
+  quantite?: string;
+  conservation: Conservation;
+  /** Fin du lot (ISO) : point de départ de la date limite. */
+  depuis: string;
+  /** Date limite (ISO), absente si la conservation n'en a pas (jours = 0). */
+  limite?: string;
+  statut: 'en-stock' | 'fini';
+  modifieLe: number;
+}

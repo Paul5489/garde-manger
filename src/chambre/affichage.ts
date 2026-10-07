@@ -78,3 +78,14 @@ export const t = (texte: string | undefined) => (texte ? insecables(texte) : '')
 export function refroidirAvant(de: Mode | undefined, vers: Mode | undefined): boolean {
   return !!de?.itc && de.itc.TS >= 25 && vers?.branchements.itc_froid === 'Frigo' && (vers.itc?.TS ?? 0) < de.itc.TS;
 }
+
+const fmtJour = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+const fmtHeure = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+/** « aujourd'hui à 12:00 », « demain », « ven. 16 oct. à 08:00 » (l'heure seulement si elle compte). */
+export function quandLisible(d: Date, avecHeure: boolean, maintenant: Date | number = Date.now()): string {
+  const m = new Date(maintenant);
+  const ecart = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - new Date(m.getFullYear(), m.getMonth(), m.getDate()).getTime()) / 86_400_000);
+  const jour = ecart === 0 ? 'aujourd’hui' : ecart === 1 ? 'demain' : ecart === -1 ? 'hier' : fmtJour.format(d);
+  return avecHeure ? `${jour} à ${fmtHeure.format(d)}` : jour;
+}

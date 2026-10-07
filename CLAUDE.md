@@ -58,7 +58,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 231 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 239 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -200,6 +200,15 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
     « environ »), fenêtres de saison (cycle circulaire : [9, 10] = une fenêtre ; « À faire ce mois-ci » /
     « Dernier mois »), contrôles de la technique puis de la recette avec leur point de départ (`ancre` : `cave`
     pour pesées et surface des recettes salées ou étuvées avant la Cave), durées lisibles, cible de pH.
+  - `lots.ts` (pur, testé) + `lots.svelte.ts` (Dexie **version(5)** : tables `lots` et `stock`, dans la sauvegarde) :
+    un lot copie la recette **et** la technique au démarrage ; phases (début réel ou estimé min/max), fin prévue,
+    occurrences des contrôles (clé `source:rang:k`, `repeter_j` jusqu'à `fin_j` ou la fin du lot ; heure exacte si
+    décimales, pH, j = 0 ou recette ≤ 3 j, sinon heure des rappels), « à faire » (dernière occurrence due d'une
+    série ; pas de contrôle « depuis la Cave » avant d'y être), perte de poids (référence = poids à l'entrée en Cave
+    pour les recettes à phases, sinon poids d'entrée ; tendance = moindres carrés sur les 4 derniers points), pH du
+    saucisson (5,3 ; mesure « à 72 h » au-dessus → `MESSAGE_PH_BLOQUE`, passage en Cave refusé), stock (date limite
+    = fin + `jours`, alerte à 7 jours). `chambre.actionsLots` et `stockAFinir` alimentent l'écran Chambre ;
+    `debutVague` (dernière entrée en Cave) règle le réservoir et la phase IHC.
   - `assistant.ts` : écrans de « Changer de mode » (nettoyage de la transition, refroidir après un mode chaud, ITC
     puis IHC code par code avec la touche et la valeur, thermostat, branchements, ventilateur, sondes, à vide).
   - `chambre.svelte.ts` : état gardé dans la table `reglages` (clés `chambre:…` : mode choisi, mise en service,
@@ -209,7 +218,9 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
     `bocaux`, `recettes`, `recette/<id>`, `calendrier[/<mois>]`, `materiel`), `PageMode`, `AssistantMode`,
     `MiseEnService`, `ReglagesChambre`, `InfosChambre`, `RecettesChambre`, `FicheChambre` (sécurité en haut pour
     la charcuterie), `CalendrierChambre` (bandeau à l'échelle des jours, étoiles « prévu » : `chambre:etoiles`),
-    `MaterielChambre` (`chambre:achats` ; matériel coché des fiches : `chambre:materiel-fiches`). Couleurs des modes :
+    `MaterielChambre` (`chambre:achats` ; matériel coché des fiches : `chambre:materiel-fiches`), `NouveauLot`
+    (`#/chambre/lot/nouveau/<recette>`), `PageLot` (`#/chambre/lot/<id>`), `LotsChambre`, `StockChambre` ;
+    composants `LigneControle` (OK / Problème / pesée / pH), `CourbePerte` (SVG). Couleurs des modes :
     `--m-chaud`, `--m-sech`, `--m-froid`, `--m-cave`, `--m-temp`, `--m-off` (app.css).
   - Mise en service proposée une fois à la première ouverture de l'onglet (localStorage
     `chambre-mise-en-service-proposee`).
@@ -242,7 +253,8 @@ src/lib/
   types.ts                        types Fiche (schéma de l'archive), Resume, InfosArchive
   archive.ts                      lireArchive (validation), alleger, resumer, univers, tempsTotal, documentDeRecherche
   import.worker.ts / importer.ts  import hors fil principal / lanceur
-  db.ts                           Dexie : base « garde-manger », v1 = fiches, meta ; v2 = données perso ; remplacerRecettes, nouvelId
+  db.ts                           Dexie : base « garde-manger », v1 = fiches, meta ; v2 = données perso ; v3 bocaux ;
+                                  v4 mesRecettes ; v5 lots et stock de la chambre ; remplacerRecettes, nouvelId
   perso.svelte.ts                 favoris, notes, réalisations (« cuisiné le… ») en mémoire + Dexie
   courses.svelte.ts               liste de courses : ajout d'une recette (remplace l'ajout précédent), articles libres,
                                   cocher, rayon choisi à la main (mémorisé par clé), retirer une recette, vider
@@ -396,6 +408,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.11.0** (07/10/2026) : Chambre, étape 3 : lots (copie de la recette, phases, contrôles à cocher, pesées avec
+  courbe et fin estimée, pH du saucisson avec blocage à 72 h, fin du lot), stock avec dates limites ; écran Chambre
+  avec les actions des lots, les fins proches et le stock à finir ; rappel de sauvegarde mensuel.
 - **1.10.0** (07/10/2026) : Chambre, étape 2 : fiches des 83 recettes (calculateur, contrôles, sécurité), liste
   avec recherche, calendrier mois par mois (bandeau, rendez-vous, recettes de saison, étoiles), matériel à acheter.
 - **1.9.0** (07/10/2026) : module **Chambre**, étape 1 : onglet Chambre (à la place de Bocaux), mode actuel selon
@@ -420,8 +435,7 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
 ## 10. Reste à faire
 
 **Chambre de fermentation** (ordre de travail de Paul, une version publiée par étape) : ~~1. plan~~ ·
-~~2. réglages, mise en service, assistant (1.9.0)~~ · ~~3. fiches, calendrier, matériel (1.10.0)~~ · 4. lots (copie de la recette, phases, contrôles avec
-`repeter_j`/`fin_j`, pesées et fin estimée, pH et blocage à 72 h), stock · 5. Aujourd'hui complet, pastille de
+~~2. réglages, mise en service, assistant (1.9.0)~~ · ~~3. fiches, calendrier, matériel (1.10.0)~~ · ~~4. lots, stock (1.11.0)~~ · 5. Aujourd'hui complet, pastille de
 l'icône (Badging API), `.ics` des lots et de la chambre (UID stables) · 6. compatibilité · 7. installation expliquée.
 À signaler à Paul : le shoyu a un contrôle « Remuer » chaque jour sans `fin_j` (donc pendant 6 à 12 mois) en plus
 de « Remuer chaque semaine » dès le 30e jour : un `fin_j: 30` manque peut-être.

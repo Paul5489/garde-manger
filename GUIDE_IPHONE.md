@@ -236,12 +236,36 @@ elle s'ajoute à « Mon programme ».
 
 **Matériel** (tuile Matériel) : les achats par échéance, à cocher, et le matériel des recettes prévues (★).
 
-À venir dans les prochaines mises à jour : les lots (contrôles, pesées, pH), le stock, les rappels dans le
-Calendrier et la compatibilité.
+**Lots** (bouton **Démarrer un lot** sur une fiche, puis tuile Mes lots)
+- Au démarrage : date et heure d'entrée (maintenant, modifiable), quantité de base, poids d'entrée si la fin se
+  juge à la perte de poids (pour la coppa, le saucisson… le poids se note en entrant en Cave), notes. Le lot garde
+  une copie de la recette : une mise à jour de l'appli ne change jamais un lot en cours.
+- La page du lot : le jour, la phase, la fin prévue ; pour la charcuterie, les règles de sécurité sans nitrite.
+- **Contrôles** : « À faire » (ouverts), « À venir », « Faits ». Pour chacun : quoi observer, ce qui est normal, ce
+  qui ne l'est pas, quoi faire. Touche **OK**, ou **Problème** avec une note. Les contrôles en heures (koji, pH à
+  48 et 72 h) tombent à l'heure exacte ; les autres à 8 h (réglable : ⚙️ › Rappels).
+- **Phases** (coppa : salage en Froid puis Cave ; saucisson : étuvage puis Cave) : **Commencer « Séchage »**
+  avec la date et le poids d'entrée en Cave.
+- **Perte de poids** : note chaque pesée ; l'appli trace la courbe, la cible et la fin estimée d'après les
+  dernières pesées, et te dit quand la cible est atteinte.
+- **pH** du saucisson (sur la saucisse témoin) : au départ, à 48 h, à 72 h. Encore au-dessus de 5,3 à 72 h :
+  « **Ne pas sécher** : cuire en saucisses fraîches dans les 24 h, ou jeter. » en rouge, et le passage en Cave
+  est bloqué. Pour les autres lots, le pH est facultatif et la cible s'affiche (4,2 pour les lacto).
+- **Terminer le lot** : choisis la conservation et la quantité : il va dans le **Stock** avec sa date limite.
+  « Raté, ou jeté » le termine sans stock.
+
+**Stock** (tuile Stock) : tes produits, du plus pressé au moins pressé, en orange 7 jours avant la date limite, en
+rouge si elle est dépassée. ✓ quand c'est fini.
+
+L'écran Chambre reprend tout ça dans **Aujourd'hui** (contrôles, phase à commencer, fin d'un lot, sauvegarde du
+mois) et **Bientôt** (lots qui finissent, produits à finir).
+
+À venir : les rappels dans le Calendrier de l'iPhone, la pastille sur l'icône et la compatibilité.
 
 ## 9. Sauvegarder mes données personnelles
 
-Tes favoris, notes, carnet, courses, frigo, placard, synonymes et bocaux (avec les photos du journal) ne sont
+Tes favoris, notes, carnet, courses, frigo, placard, synonymes, bocaux (avec les photos du journal), lots et stock
+de la chambre ne sont
 que dans l'iPhone. Fais une sauvegarde de temps en temps, et **toujours avant de changer de téléphone ou de
 supprimer l'icône** :
 

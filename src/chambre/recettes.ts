@@ -2,7 +2,7 @@
 
 import { nombre } from '../lib/format';
 import { CONTENU } from './donnees';
-import type { Controle, IngredientChambre, RecetteChambre } from './types';
+import type { Controle, IngredientChambre, RecetteChambre, Technique } from './types';
 
 // ───── Calculateur ─────
 
@@ -141,10 +141,16 @@ export function phaseCave(r: RecetteChambre): number {
 const estPh = (c: Controle) => /\bpH\b/.test(`${c.titre} ${c.observer}`);
 const estPeseeOuSurface = (c: Controle) => /pes[ée]e|surface/i.test(c.titre);
 
-/** Contrôles de la technique puis ceux de la recette, chacun avec son point de départ, triés par jour. */
-export function controlesDeLaRecette(r: RecetteChambre): ControleRecette[] {
+/**
+ * Contrôles de la technique puis ceux de la recette, chacun avec son point de départ, triés par jour.
+ * Un lot passe sa propre copie de la technique (celle du jour de son démarrage).
+ */
+export function controlesDeLaRecette(
+  r: RecetteChambre,
+  tech: Technique | undefined = r.technique ? CONTENU.techniques[r.technique] : undefined,
+): ControleRecette[] {
   const cave = phaseCave(r) >= 0;
-  const technique = r.technique ? (CONTENU.techniques[r.technique]?.controles ?? []) : [];
+  const technique = tech?.controles ?? [];
   const res: ControleRecette[] = [
     ...technique.map((controle) => ({
       controle,

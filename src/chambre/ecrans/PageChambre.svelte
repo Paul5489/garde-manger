@@ -3,6 +3,7 @@
   import BarreHaut from '../../composants/BarreHaut.svelte';
   import Bocaux from '../../ecrans/Bocaux.svelte';
   import { MODES_PAR_ID, recette } from '../donnees';
+  import { lots } from '../lots.svelte';
   import type { IdMode } from '../types';
   import AssistantMode from './AssistantMode.svelte';
   import CalendrierChambre from './CalendrierChambre.svelte';
@@ -10,6 +11,10 @@
   import MaterielChambre from './MaterielChambre.svelte';
   import RecettesChambre from './RecettesChambre.svelte';
   import InfosChambre from './InfosChambre.svelte';
+  import LotsChambre from './LotsChambre.svelte';
+  import NouveauLot from './NouveauLot.svelte';
+  import PageLot from './PageLot.svelte';
+  import StockChambre from './StockChambre.svelte';
   import MiseEnService from './MiseEnService.svelte';
   import PageMode from './PageMode.svelte';
   import ReglagesChambre from './ReglagesChambre.svelte';
@@ -27,6 +32,9 @@
     if (page === 'recettes') return 'Recettes de la chambre';
     if (page === 'calendrier') return 'Calendrier';
     if (page === 'materiel') return 'Matériel';
+    if (page === 'lot') return arg === 'nouveau' ? 'Nouveau lot' : (lots.lot(arg)?.nom ?? 'Lot');
+    if (page === 'lots') return 'Mes lots';
+    if (page === 'stock') return 'Stock';
     return 'Chambre';
   });
 
@@ -52,6 +60,10 @@
     {:else if page === 'recettes'}<RecettesChambre />
     {:else if page === 'calendrier'}<CalendrierChambre mois={arg} />
     {:else if page === 'materiel'}<MaterielChambre />
+    {:else if page === 'lot' && arg === 'nouveau' && chemin[2]}<NouveauLot recetteId={chemin[2]} />
+    {:else if page === 'lot' && arg}<PageLot id={arg} />
+    {:else if page === 'lots'}<LotsChambre />
+    {:else if page === 'stock'}<StockChambre />
     {:else}<p class="vide">Page introuvable.</p>{/if}
   {/key}
 </div>

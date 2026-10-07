@@ -1,4 +1,5 @@
-// Sauvegarde des données personnelles (favoris, notes, carnet, courses, réglages, bocaux, mes recettes)
+// Sauvegarde des données personnelles (favoris, notes, carnet, courses, réglages, bocaux, mes recettes,
+// lots et stock de la chambre)
 // dans un fichier JSON, pour changer de téléphone sans rien perdre. Les recettes de l'archive n'y figurent
 // jamais (elles viennent du fichier archive_complete.json) ; « Mes recettes », ajoutées par Paul, oui :
 // un fichier de sauvegarde ne contenant qu'elles sert aussi à en ajouter une préparée sur le Mac.
@@ -34,6 +35,8 @@ const CLES: Record<TablePerso, string> = {
   journal: 'id',
   modelesBocaux: 'id',
   mesRecettes: 'id',
+  lots: 'id',
+  stock: 'id',
 };
 
 /** Champs indispensables en plus de la clé. */
@@ -46,6 +49,8 @@ const CHAMPS: Partial<Record<TablePerso, [string, 'string' | 'object' | 'number'
   journal: [['bocalId', 'string'], ['date', 'string']],
   modelesBocaux: [['nom', 'string'], ['etapes', 'object']],
   mesRecettes: [['titre', 'string'], ['type', 'string'], ['source', 'object']],
+  lots: [['recetteId', 'string'], ['entree', 'string'], ['recette', 'object'], ['statut', 'string']],
+  stock: [['nom', 'string'], ['statut', 'string'], ['conservation', 'object']],
 };
 
 export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
@@ -59,6 +64,8 @@ export const NOMS_TABLES: Record<TablePerso, [string, string]> = {
   journal: ['note de bocal', 'notes de bocaux'],
   modelesBocaux: ['modèle de bocal', 'modèles de bocaux'],
   mesRecettes: ['recette perso', 'recettes perso'],
+  lots: ['lot de la chambre', 'lots de la chambre'],
+  stock: ['produit en stock', 'produits en stock'],
 };
 
 /** Données vides pour chaque table (pour ne restaurer qu'une partie d'un fichier). */

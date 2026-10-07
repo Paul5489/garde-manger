@@ -70,7 +70,7 @@
     <h2 class="section-titre" id="reglages-frigo">Avec ce que j'ai</h2>
     <ReglagesFrigo />
 
-    <h2 class="section-titre">Mes données</h2>
+    <h2 class="section-titre" id="reglages-donnees">Mes données</h2>
     <div class="carte bloc">
       <SauvegardePerso />
     </div>
@@ -105,7 +105,8 @@
     padding: 14px 16px 16px;
   }
 
-  #reglages-frigo {
+  #reglages-frigo,
+  #reglages-donnees {
     scroll-margin-top: calc(var(--haut) + 56px);
   }
 

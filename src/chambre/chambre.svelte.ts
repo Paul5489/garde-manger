@@ -3,9 +3,35 @@
 
 import { db } from '../lib/db';
 import { CONTENU, verifierContenu } from './donnees';
+import {
+  aFaire,
+  debutVagueCave,
+  debutsDesPhases,
+  etatPh,
+  etatStock,
+  finPrevue,
+  passageSuivant,
+  perteDePoids,
+  type Occurrence,
+} from './lots';
+import { lots } from './lots.svelte';
 import { modeActif, tachesDuJour, type DatesTaches, type ModeManuel, type Tache } from './taches';
 import { joursCalendaires } from './temps';
-import type { IdMode } from './types';
+import type { ArticleStock, IdMode, Lot } from './types';
+
+export interface ActionLot {
+  lot: Lot;
+  type: 'controle' | 'phase' | 'fin' | 'bloque';
+  occ?: Occurrence;
+  /** Nom de la phase à commencer. */
+  phase?: string;
+}
+
+function finDuJour(d: number): Date {
+  const r = new Date(d);
+  r.setHours(23, 59, 59, 999);
+  return r;
+}
 
 const CLES = {
   mode: 'chambre:mode',
@@ -57,8 +83,46 @@ class Chambre {
 
   actif = $derived(modeActif(this.maintenant, this.manuel));
   miseEnServiceFaite = $derived(ETAPES_REQUISES.every((t) => this.miseEnService.includes(t)));
+  /** Dernière entrée d'un produit en Cave (lot en cours), ou début du mode : rythme du réservoir, phase de l'IHC. */
+  debutVague = $derived.by(() => {
+    const d = debutVagueCave(lots.liste);
+    return d && d > this.actif.depuis ? d : this.actif.depuis;
+  });
   taches = $derived(
-    tachesDuJour({ maintenant: this.maintenant, actif: this.actif, faites: this.faites, miseEnService: this.miseEnServiceFaite }),
+    tachesDuJour({
+      maintenant: this.maintenant,
+      actif: this.actif,
+      faites: this.faites,
+      debutVague: this.debutVague,
+      miseEnService: this.miseEnServiceFaite,
+    }),
+  );
+
+  /** Ce que les lots en cours demandent aujourd'hui : contrôles, phase à commencer, fin, pH bloquant. */
+  actionsLots = $derived.by(() => {
+    const res: ActionLot[] = [];
+    const ce = finDuJour(this.maintenant);
+    for (const lot of lots.enCours) {
+      if (etatPh(lot).bloque) res.push({ lot, type: 'bloque' });
+      for (const occ of aFaire(lot, this.maintenant, this.heureRappels)) res.push({ lot, type: 'controle', occ });
+      const phases = lot.recette.phases ?? [];
+      const suivante = phases[lot.phaseCourante + 1];
+      // Phase suivante à commencer (jamais en Cave tant que le pH du saucisson ne le permet pas).
+      if (suivante && debutsDesPhases(lot).min[lot.phaseCourante + 1] <= ce && passageSuivant(lot).possible)
+        res.push({ lot, type: 'phase', phase: suivante.nom });
+      else if (!suivante) {
+        const perte = lot.recette.fin.type === 'perte_poids' ? perteDePoids(lot) : undefined;
+        if (perte?.atteinte || (!perte && finPrevue(lot).min <= ce)) res.push({ lot, type: 'fin' });
+      }
+    }
+    return res;
+  });
+
+  /** Produits en stock à finir dans les 7 jours (ou dépassés). */
+  stockAFinir = $derived(
+    lots.stock
+      .filter((a: ArticleStock) => a.statut === 'en-stock' && ['bientot', 'depasse'].includes(etatStock(a, this.maintenant)))
+      .sort((a, b) => (a.limite ?? '').localeCompare(b.limite ?? '')),
   );
 
   constructor() {

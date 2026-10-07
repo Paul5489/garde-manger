@@ -42,7 +42,7 @@
 
   function resume(s: Sauvegarde): string {
     const c = compter(s);
-    const parties = (['mesRecettes', 'favoris', 'notes', 'realisations', 'courses', 'bocaux', 'modelesBocaux'] as const)
+    const parties = (['mesRecettes', 'favoris', 'notes', 'realisations', 'courses', 'bocaux', 'modelesBocaux', 'lots', 'stock'] as const)
       .filter((t) => c[t] > 0)
       .map((t) => pluriel(c[t], NOMS_TABLES[t][0], NOMS_TABLES[t][1]));
     return parties.length ? parties.join(', ') : 'aucune donnée pour l’instant';

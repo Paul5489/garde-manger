@@ -2,10 +2,11 @@
   // Fiche d'une recette de la chambre : en-tête, matériel à cocher, calculateur, étapes, contrôles
   // (technique puis recette), conservation, sécurité, notes, recettes liées.
   import { ChevronRight, ShieldAlert, Star } from '@lucide/svelte';
-  import { nombre } from '../../lib/format';
+  import { dateCourte, nombre } from '../../lib/format';
   import { lienChambre } from '../../lib/routeur.svelte';
   import { couleurMode, t } from '../affichage';
   import { chambre } from '../chambre.svelte';
+  import { lots } from '../lots.svelte';
   import { CONTENU, MODES_PAR_ID, NOMS_FAMILLES, NOMS_LIEUX, recette } from '../donnees';
   import {
     calculer,
@@ -37,6 +38,7 @@
   const ajuste = $derived(!!r && quantite !== r.base.quantite);
 
   const coches = $derived(chambre.materielFiches[id] ?? []);
+  const lotsDeLaRecette = $derived(lots.enCours.filter((l) => l.recetteId === id));
   const FINS: Record<string, string> = {
     aspect: 'À l’aspect',
     gout: 'Au goût',
@@ -101,6 +103,11 @@
         {/each}
       </ol>
     {/if}
+
+    <a class="bouton plein demarrer" href={lienChambre('lot', 'nouveau', r.id)}>Démarrer un lot</a>
+    {#each lotsDeLaRecette as l (l.id)}
+      <a class="lot-en-cours" href={lienChambre('lot', l.id)}>Lot en cours depuis le {dateCourte(l.entree)} <ChevronRight size={16} /></a>
+    {/each}
 
     {#if r.mois?.length}
       <div class="etoiles">
@@ -308,6 +315,19 @@
     border-top: 4px solid var(--couleur);
     box-shadow: var(--ombre);
     font-size: 15px;
+  }
+
+  .demarrer {
+    margin-top: 12px;
+  }
+
+  .lot-en-cours {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 40px;
+    font-weight: 600;
+    text-decoration: none;
   }
 
   .etoiles {

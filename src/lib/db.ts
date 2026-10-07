@@ -3,6 +3,7 @@
 // réimporter les recettes ne touche jamais aux données personnelles (liées par id de fiche).
 
 import Dexie, { type EntityTable } from 'dexie';
+import type { ArticleStock, Lot } from '../chambre/types';
 import type { Bocal, EntreeJournal, ModeleBocal } from './bocaux';
 import type { Fiche } from './types';
 
@@ -94,6 +95,8 @@ export class BaseGardeManger extends Dexie {
   journal!: EntityTable<EntreeJournal, 'id'>;
   modelesBocaux!: EntityTable<ModeleBocal, 'id'>;
   mesRecettes!: EntityTable<Fiche, 'id'>;
+  lots!: EntityTable<Lot, 'id'>;
+  stock!: EntityTable<ArticleStock, 'id'>;
 
   constructor(nom = 'garde-manger') {
     super(nom);
@@ -121,6 +124,11 @@ export class BaseGardeManger extends Dexie {
       // Mes recettes : ajoutées par Paul (même format qu'une fiche) ; un réimport ne les efface pas
       mesRecettes: 'id',
     });
+    this.version(5).stores({
+      // Chambre de fermentation : lots (copie de la recette, contrôles, pesées, pH) et produits en stock
+      lots: 'id, statut',
+      stock: 'id, statut',
+    });
   }
 }
 
@@ -136,6 +144,8 @@ export const TABLES_PERSO = [
   'journal',
   'modelesBocaux',
   'mesRecettes',
+  'lots',
+  'stock',
 ] as const;
 export type TablePerso = (typeof TABLES_PERSO)[number];
 

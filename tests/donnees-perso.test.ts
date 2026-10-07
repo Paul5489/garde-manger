@@ -1,6 +1,8 @@
 // Données personnelles dans une base IndexedDB simulée (fake-indexeddb) : magasins, sauvegarde, réimport.
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { CONTENU, recette as recetteChambre } from '../src/chambre/donnees';
+import { nouveauLot } from '../src/chambre/lots';
 import { etatEtape } from '../src/lib/bocaux';
 import { bocaux } from '../src/lib/bocaux.svelte';
 import { construireIndexIngredients } from '../src/lib/classement-frigo';
@@ -287,6 +289,11 @@ describe('sauvegarde des données personnelles', () => {
     await a.recettesCourses.put({ ficheId: 'afpa-a', titre: 'A', coef: 1, modifieLe: 1 });
     await a.reglages.put({ cle: 'rayons', valeur: { beurre: 'cremerie' }, modifieLe: 1 });
     await a.fiches.put(ficheExemple('afpa-a', []));
+    // Chambre : un lot (avec sa copie de la recette, un contrôle coché, une pesée) et un produit en stock.
+    const coppa = recetteChambre('coppa')!;
+    const lot = nouveauLot(coppa, CONTENU.techniques.salaison_entiere, { entree: new Date(2026, 10, 28, 10), quantiteBase: 1500 }, 'lot1');
+    await a.lots.put({ ...lot, controles: { 'recette:0:0': { etat: 'ok', le: '2026-12-19T09:00:00Z' } }, pesees: [{ le: '2026-12-26T08:00:00Z', g: 1330 }] });
+    await a.stock.put({ id: 's1', recetteId: 'coppa', nom: 'Coppa', conservation: coppa.conservation[0], depuis: '2027-03-01T10:00:00Z', limite: '2027-06-29T10:00:00Z', statut: 'en-stock', modifieLe: 1 });
 
     const fichier = JSON.stringify(await exporter(a, 'test'));
     expect(fichier).not.toContain('"fiches"'); // jamais les recettes
@@ -302,11 +309,15 @@ describe('sauvegarde des données personnelles', () => {
       journal: 0,
       modelesBocaux: 0,
       mesRecettes: 0,
+      lots: 1,
+      stock: 1,
     });
-    expect(await restaurer(s, b)).toEqual({ ajoutes: 7, misAJour: 0, inchanges: 0 });
+    expect(await restaurer(s, b)).toEqual({ ajoutes: 9, misAJour: 0, inchanges: 0 });
     expect(await b.courses.get('c1')).toEqual(await a.courses.get('c1'));
+    expect(await b.lots.get('lot1')).toEqual(await a.lots.get('lot1'));
+    expect(await b.stock.get('s1')).toEqual(await a.stock.get('s1'));
     // Restaurer deux fois ne duplique rien
-    expect(await restaurer(s, b)).toEqual({ ajoutes: 0, misAJour: 0, inchanges: 7 });
+    expect(await restaurer(s, b)).toEqual({ ajoutes: 0, misAJour: 0, inchanges: 9 });
     a.close();
     b.close();
   });

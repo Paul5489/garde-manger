@@ -1,14 +1,27 @@
 <script lang="ts">
   // Onglet Chambre : le mode actif, ce qu'il y a à faire aujourd'hui, et l'accès à tout le reste
   // (réglages de la chambre, bocaux…). L'appli ne pilote rien : ce sont les Inkbird qui régulent.
-  import { BookOpen, CalendarDays, Check, ChevronRight, CircleAlert, Settings2, ShoppingBag, Wrench } from '@lucide/svelte';
+  import {
+    Archive,
+    BookOpen,
+    CalendarDays,
+    Check,
+    ChevronRight,
+    CircleAlert,
+    FlaskConical,
+    Settings2,
+    ShoppingBag,
+    Wrench,
+  } from '@lucide/svelte';
   import IconeBocal from '../../composants/IconeBocal.svelte';
   import { etatEtape, libelleAvancement } from '../../lib/bocaux';
   import { bocaux } from '../../lib/bocaux.svelte';
   import { dateCourte, pluriel } from '../../lib/format';
   import { lienBocal, lienChambre, routeur } from '../../lib/routeur.svelte';
   import { ecrireLocal, lireLocal } from '../../lib/stockage-local';
-  import { couleurMode, t } from '../affichage';
+  import { couleurMode, quandLisible, t } from '../affichage';
+  import { finPrevue } from '../lots';
+  import { lots } from '../lots.svelte';
   import { modeAvant, prochainsChangements } from '../calendrier';
   import { chambre, estFacultative } from '../chambre.svelte';
   import { CONTENU, mode as modeParId } from '../donnees';
@@ -51,7 +64,20 @@
   const suivant = $derived(prochainsChangements(chambre.maintenant, 1)[0]);
   const versSuivant = $derived(suivant && suivant.vers !== 'nettoyage' ? modeParId(suivant.vers) : undefined);
 
-  const rien = $derived(!dues.length && !changement && !aGouter.length && !prets.length);
+  const actionsLots = $derived(chambre.actionsLots);
+  // Sauvegarde : une fois par mois (pas de synchronisation, tout est dans le téléphone).
+  const derniereSauvegarde = $derived(lireLocal<string | null>('derniere-sauvegarde', null));
+  const sauvegardeDue = $derived(
+    (lots.liste.length > 0 || bocaux.liste.length > 0) && (!derniereSauvegarde || joursCalendaires(derniereSauvegarde, chambre.maintenant) >= 30),
+  );
+  // Bientôt : lots qui finissent dans la semaine, produits à finir.
+  const finissent = $derived(
+    lots.enCours
+      .map((l) => ({ l, fin: finPrevue(l).min }))
+      .filter(({ l, fin }) => joursCalendaires(chambre.maintenant, fin) > 0 && joursCalendaires(chambre.maintenant, fin) <= 7 && !actionsLots.some((a) => a.lot.id === l.id && a.type === 'fin')),
+  );
+
+  const rien = $derived(!dues.length && !changement && !aGouter.length && !prets.length && !actionsLots.length && !sauvegardeDue);
 
   /** La chambre reste dans le mode d'avant au calendrier, jusqu'à ce que l'assistant soit suivi. */
   function pasEncore() {
@@ -85,7 +111,7 @@
     </a>
   {/if}
 
-  <CarteMode {actif} maintenant={chambre.maintenant} />
+  <CarteMode {actif} debutVague={chambre.debutVague} maintenant={chambre.maintenant} />
   <div class="boutons-mode">
     <a class="bouton secondaire" href={lienChambre('changer')}>Changer de mode</a>
     {#if actif.manuel}
@@ -118,6 +144,29 @@
           {/if}
         </li>
       {/if}
+      {#each actionsLots as a, i (`${a.lot.id}-${a.type}-${a.occ?.cle ?? i}`)}
+        <li class:bloque={a.type === 'bloque'}>
+          <a href={lienChambre('lot', a.lot.id)}>
+            <span class="pictogramme" aria-hidden="true">{a.type === 'bloque' ? '⛔' : a.type === 'phase' ? '➡️' : a.type === 'fin' ? '🏁' : a.occ?.type === 'pesee' ? '⚖️' : a.occ?.type === 'ph' ? '🧪' : '👀'}</span>
+            <span class="texte">
+              {#if a.type === 'bloque'}
+                <span><strong>{a.lot.nom}</strong> : ne pas sécher</span>
+                <span class="petit">Cuire en saucisses fraîches dans les 24 h, ou jeter.</span>
+              {:else if a.type === 'phase'}
+                <span>{a.lot.nom} : commencer <strong>{a.phase}</strong></span>
+                <span class="petit discret">Prévu à partir d'aujourd'hui</span>
+              {:else if a.type === 'fin'}
+                <span>{a.lot.nom} : <strong>fin du lot</strong></span>
+                <span class="petit discret">{t(a.lot.recette.fin.texte)}</span>
+              {:else if a.occ}
+                <span>{a.lot.nom} : <strong>{t(a.occ.controle.titre)}</strong></span>
+                <span class="petit discret">{quandLisible(a.occ.quand, a.occ.exacte, chambre.maintenant)}</span>
+              {/if}
+            </span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/each}
       {#each dues as e (e.tache)}
         <li class="tache">
           {#if TACHES[e.tache].lien}
@@ -135,6 +184,19 @@
           <button class="fait" onclick={() => chambre.fait(e.tache)} aria-label="{TACHES[e.tache].titre} : fait"><Check size={20} /> Fait</button>
         </li>
       {/each}
+      {#if sauvegardeDue}
+        <li>
+          <a href="#/reglages/donnees">
+            <span class="pictogramme" aria-hidden="true">💾</span>
+            <span class="texte"
+              ><span><strong>Sauvegarder mes données</strong></span><span class="petit discret"
+                >Une fois par mois : tes lots, bocaux et réglages ne sont que dans ce téléphone</span
+              ></span
+            >
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/if}
       {#each aGouter as b (b.id)}
         <li>
           <a href={lienBocal(b.id)}>
@@ -156,10 +218,28 @@
     </ul>
   {/if}
 
-  {#if suivant}
+  {#if suivant || finissent.length || chambre.stockAFinir.length}
     <h2 class="section-titre">Bientôt</h2>
     <ul class="liste actions">
-      <li>
+      {#each finissent as { l, fin } (l.id)}
+        <li>
+          <a href={lienChambre('lot', l.id)}>
+            <span class="pictogramme" aria-hidden="true">🏁</span>
+            <span class="texte"><span>{l.nom} : <strong>fin</strong></span><span class="petit discret">À partir du {dateCourte(fin)}</span></span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/each}
+      {#each chambre.stockAFinir as a (a.id)}
+        <li>
+          <a href={lienChambre('stock')}>
+            <span class="pictogramme" aria-hidden="true">📦</span>
+            <span class="texte"><span>À finir : <strong>{a.nom}</strong></span><span class="petit discret">{a.limite ? `Avant le ${dateCourte(a.limite)}` : ''}</span></span>
+            <ChevronRight size={18} class="chevron" />
+          </a>
+        </li>
+      {/each}
+      {#if suivant}<li>
         <a href={versSuivant ? lienChambre('mode', versSuivant.id) : lienChambre('reglages')}>
           <span class="pastille-mode" style:--couleur={couleurMode(versSuivant)} aria-hidden="true"></span>
           <span class="texte">
@@ -170,12 +250,22 @@
           </span>
           <ChevronRight size={18} class="chevron" />
         </a>
-      </li>
+      </li>{/if}
     </ul>
   {/if}
 
   <h2 class="section-titre">La chambre</h2>
   <div class="tuiles">
+    <a class="carte tuile" href={lienChambre('lots')}>
+      <FlaskConical size={26} />
+      <strong>Mes lots</strong>
+      <span class="petit discret">{lots.enCours.length ? pluriel(lots.enCours.length, 'en cours', 'en cours') : 'Aucun en cours'}</span>
+    </a>
+    <a class="carte tuile" href={lienChambre('stock')}>
+      <Archive size={26} />
+      <strong>Stock</strong>
+      <span class="petit discret">{pluriel(lots.stock.filter((a) => a.statut === 'en-stock').length, 'produit')}</span>
+    </a>
     <a class="carte tuile" href={lienChambre('calendrier')}>
       <CalendarDays size={26} />
       <strong>Calendrier</strong>
@@ -321,6 +411,15 @@
 
   .changement {
     border-left: 5px solid var(--couleur);
+  }
+
+  .bloque {
+    border-left: 5px solid var(--rouge);
+  }
+
+  .bloque .petit {
+    color: var(--rouge);
+    font-weight: 600;
   }
 
   .pas-encore {
