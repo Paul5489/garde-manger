@@ -102,7 +102,7 @@
       {/each}
       {#if enCours.length && !aGouter.length && !prets.length}
         <li>
-          <a href="#/bocaux">
+          <a href="#/chambre/bocaux">
             <span class="pictogramme" aria-hidden="true">🫙</span>
             <span class="texte">{pluriel(enCours.length, 'bocal en cours', 'bocaux en cours')}</span>
             <ChevronRight size={18} class="chevron" />

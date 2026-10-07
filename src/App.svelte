@@ -7,7 +7,6 @@
   import Ajouter from './ecrans/Ajouter.svelte';
   import Bienvenue from './ecrans/Bienvenue.svelte';
   import Bocal from './ecrans/Bocal.svelte';
-  import Bocaux from './ecrans/Bocaux.svelte';
   import Courses from './ecrans/Courses.svelte';
   import EditionBocal from './ecrans/EditionBocal.svelte';
   import EditionRecette from './ecrans/EditionRecette.svelte';
@@ -38,7 +37,12 @@
     if (!visites.has(o)) visites = new Set([...visites, o]);
   });
 
-  const pageEmpilee = $derived(['fiche', 'reglages', 'cuisine', 'bocal', 'bocal-edition', 'recette-edition'].includes(routeur.route.nom));
+  const pageEmpilee = $derived(
+    ['fiche', 'reglages', 'cuisine', 'bocal', 'bocal-edition', 'recette-edition', 'chambre-page'].includes(routeur.route.nom),
+  );
+  const cheminChambre = $derived(routeur.route.nom === 'chambre-page' ? routeur.route.chemin : []);
+  // Module Chambre : chargé à la première ouverture de l'onglet ou d'une de ses pages.
+  const moduleChambre = () => import('./chambre/module');
   const enCuisine = $derived(routeur.route.nom === 'cuisine');
 
   // Liens internes (#/…) : navigation avec historique pour le bouton Retour.
@@ -73,7 +77,7 @@
         {:else if o === 'ajouter'}<Ajouter />
         {:else if o === 'frigo'}<Frigo />
         {:else if o === 'courses'}<Courses />
-        {:else}<Bocaux />{/if}
+        {:else}{#await moduleChambre() then m}<m.Chambre />{/await}{/if}
       </main>
     {/if}
   {/each}
@@ -92,6 +96,8 @@
     {#key routeur.route.id ?? 'nouvelle'}
       <EditionRecette id={routeur.route.id} />
     {/key}
+  {:else if routeur.route.nom === 'chambre-page'}
+    {#await moduleChambre() then m}<m.PageChambre chemin={cheminChambre} />{/await}
   {:else if routeur.route.nom === 'cuisine'}
     <ModeCuisine id={routeur.route.id} />
   {/if}

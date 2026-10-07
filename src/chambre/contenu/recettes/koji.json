@@ -1,0 +1,347 @@
+[
+  {
+    "id": "kojiriz", "nom": "Koji de riz", "famille": "koji", "mois": [10, 4],
+    "lieu": "chambre", "mode": "koji", "etiquettes": ["spores"], "place": 0.5, "difficulte": 2,
+    "rendement": "Environ 1,3 kg de koji",
+    "base": {"ingredient": "Riz rond", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1.7, "max_j": 2.1},
+    "fin": {"type": "aspect", "texte": "Grains soudés par un duvet blanc serré, odeur sucrée de châtaigne, avant toute trace jaune-vert."},
+    "materiel": ["Couscoussier ou cuit-vapeur", "Grand torchon en coton, bouilli puis essoré", "2 plateaux (inox, bois ou plastique alimentaire)", "Thermomètre de cuisine", "Petite passoire fine pour saupoudrer", "Sonde de l’ITC, protégée par un film"],
+    "ingredients": [
+      {"nom": "Riz rond (type riz à sushi)", "qte": 1000, "unite": "g"},
+      {"nom": "Spores de koji pour riz (tane koji)", "qte": 1, "unite": "g", "note": "Dose du fabricant, souvent 1 à 2 g par kg de riz"},
+      {"nom": "Farine de riz ou de blé, pour répartir les spores", "qte": 5, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Laver et tremper", "texte": "Laver le riz jusqu’à ce que l’eau soit presque claire. Le faire tremper 8 à 12 h dans l’eau froide.", "duree": "8 à 12 h"},
+      {"titre": "Égoutter", "texte": "Égoutter 1 h : le grain est humide, sans eau qui coule.", "duree": "1 h"},
+      {"titre": "Cuisson à la vapeur", "texte": "Cuire 45 à 60 min à la vapeur sur un torchon humide. Le grain est translucide, ferme, et se détache. Écrasé entre deux doigts, il fait une pâte sans coller.", "duree": "45 à 60 min"},
+      {"titre": "Refroidir", "texte": "Étaler le riz sur un plateau propre et le laisser tiédir à 35–38 °C en le retournant. Au-dessus de 40 °C, les spores meurent.", "duree": "15 à 30 min"},
+      {"titre": "Ensemencer", "texte": "Mélanger les spores avec la farine. Saupoudrer la moitié sur le riz, mélanger, puis l’autre moitié, et mélanger encore 1 à 2 min.", "duree": "5 min"},
+      {"titre": "Incuber en ballot", "texte": "Rassembler le riz dans le torchon humide, fermer en ballot, poser sur un plateau dans la chambre en mode Koji, phase 1. Planter la sonde de l’ITC au cœur du riz.", "duree": "18 à 20 h"},
+      {"titre": "Émietter et étaler", "texte": "Vers 18–20 h, ouvrir : odeur de châtaigne, points blancs. Émietter les mottes, étaler sur 2 plateaux en couche de 3 à 4 cm, couvrir du torchon humide. Passer l’IHC en phase 2.", "duree": "10 min"},
+      {"titre": "Tracer des sillons", "texte": "Vers 26–30 h, le riz chauffe tout seul. Remuer, puis tracer des sillons au doigt tous les 3 cm. Garder le riz entre 30 et 35 °C.", "duree": "5 min"},
+      {"titre": "Récolter", "texte": "Entre 40 et 48 h, récolter avant l’apparition de jaune-vert. Émietter et refroidir aussitôt, puis utiliser, mettre au frigo ou congeler.", "duree": "10 min"}
+    ],
+    "controles": [
+      {"j": 0, "titre": "Température à l’ensemencement", "observer": "Température du riz", "normal": "35 à 38 °C", "probleme": "Au-dessus de 40 °C", "action": "Attendre avant de mettre les spores."},
+      {"j": 0.75, "titre": "Émiettage", "observer": "Odeur, aspect, température", "normal": "Odeur de châtaigne ou de pain, points blancs, riz à 30–33 °C", "probleme": "Odeur aigre, alcoolique ou d’ammoniaque ; grains gluants", "action": "Aigre ou gluant : contamination, jeter. Rien de blanc : laisser 4 à 6 h de plus."},
+      {"j": 1.15, "titre": "Sillons", "observer": "Température du riz", "normal": "30 à 35 °C", "probleme": "Au-dessus de 38 °C", "action": "Remuer, étaler plus fin, ouvrir la porte 5 min. Vérifier que le frigo démarre et que le ventilateur tourne."},
+      {"j": 1.5, "titre": "Contrôle du soir", "observer": "Température, surface", "normal": "Riz entre 30 et 35 °C, surface sèche au toucher", "probleme": "Surface mouillée et collante", "action": "Retirer le torchon s’il est trempé, baisser HS à 65 %."},
+      {"j": 1.75, "titre": "Récolte", "observer": "Duvet, odeur, couleur", "normal": "Duvet blanc serré, odeur sucrée", "probleme": "Taches jaune-vert ; noir, rose ou orange", "action": "Jaune-vert : récolter tout de suite. Noir, rose ou orange : jeter."}
+    ],
+    "conservation": [
+      {"mode": "Frigo", "comment": "en sac", "duree": "1 semaine", "jours": 7},
+      {"mode": "Congélateur", "comment": "en portions de 200 à 300 g", "duree": "6 mois", "jours": 180}
+    ],
+    "securite": ["Jamais plus de 40 °C dans le riz.", "Toute couleur autre que blanc ou jaune-vert pâle : jeter.", "Grand nettoyage de la chambre après la campagne."],
+    "liens": ["shiokoji", "shoyukoji", "misoblanc", "misopc", "amazake", "kojipoudre", "vinriz", "garum", "steakkoji"]
+  },
+  {
+    "id": "kojibs", "nom": "Koji blé-soja", "famille": "koji", "mois": [4],
+    "lieu": "chambre", "mode": "koji", "etiquettes": ["spores"], "place": 0.5, "difficulte": 3,
+    "rendement": "Environ 1,6 kg de koji, pour la sauce soja et le hishio",
+    "base": {"ingredient": "Soja jaune sec", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 2, "max_j": 3},
+    "fin": {"type": "aspect", "texte": "Tout est couvert d’un duvet épais qui vire au jaune-vert : pour la sauce soja, c’est le bon moment."},
+    "materiel": ["Autocuiseur ou grande casserole", "Poêle ou four", "Mixeur (à impulsions)", "2 plateaux", "Torchon en coton bouilli", "Thermomètre", "Sonde de l’ITC protégée"],
+    "ingredients": [
+      {"nom": "Soja jaune sec", "qte": 500, "unite": "g"},
+      {"nom": "Blé tendre en grains", "qte": 500, "unite": "g"},
+      {"nom": "Spores de koji pour sauce soja", "qte": 1, "unite": "g", "note": "Dose du fabricant"}
+    ],
+    "etapes": [
+      {"titre": "Tremper le soja", "texte": "Tremper le soja 12 à 16 h dans trois fois son volume d’eau froide.", "duree": "12 à 16 h"},
+      {"titre": "Cuire le soja", "texte": "Cuire 40 min à l’autocuiseur, ou 3 à 4 h à frémissement, jusqu’à l’écraser facilement entre deux doigts. Égoutter.", "duree": "40 min à 4 h"},
+      {"titre": "Torréfier le blé", "texte": "Griller le blé à sec, à la poêle ou au four à 180 °C, 15 à 20 min, jusqu’à brun doré et odeur de noisette. Le concasser grossièrement au mixeur.", "duree": "25 min"},
+      {"titre": "Mélanger", "texte": "Mélanger le soja chaud égoutté et le blé concassé : le blé boit l’humidité du soja. Laisser tiédir à 35 °C.", "duree": "20 min"},
+      {"titre": "Ensemencer et étaler", "texte": "Saupoudrer les spores en deux fois en mélangeant. Étaler sur 2 plateaux en couche de 3 cm, couvrir du torchon humide, chambre en mode Koji, sonde dans le mélange.", "duree": "10 min"},
+      {"titre": "Brasser", "texte": "Vers 18–20 h, puis vers 30 h, émietter et remuer pour casser les mottes et évacuer la chaleur.", "duree": "5 min"},
+      {"titre": "Récolter", "texte": "Entre 48 et 72 h, quand tout est couvert de spores jaune-vert. Passer aussitôt à la sauce soja ou au hishio.", "duree": "10 min"}
+    ],
+    "controles": [
+      {"j": 0.8, "titre": "Premier brassage", "observer": "Odeur, température", "normal": "Odeur de champignon et de noisette, 30 à 35 °C", "probleme": "Odeur aigre ou d’ammoniaque, aspect gluant", "action": "Jeter."},
+      {"j": 1.3, "titre": "Température", "observer": "Température du mélange", "normal": "30 à 35 °C", "probleme": "Au-dessus de 38 °C", "action": "Remuer, étaler plus fin, ouvrir 5 min."},
+      {"j": 2.5, "titre": "Récolte", "observer": "Couleur", "normal": "Jaune-vert uniforme", "probleme": "Noir, rose ou orange", "action": "Jeter."}
+    ],
+    "conservation": [{"mode": "Tout de suite", "comment": "", "duree": "pour la sauce soja et le hishio", "jours": 0}],
+    "securite": ["Grand nettoyage de la chambre après la campagne."],
+    "liens": ["shoyu", "hishio"]
+  },
+  {
+    "id": "shiokoji", "nom": "Shio koji", "famille": "koji", "mois": [10, 4],
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 750 g",
+    "base": {"ingredient": "Koji de riz", "quantite": 300, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Grains tendres, odeur sucrée et salée, goût rond."},
+    "materiel": ["Bocal de 1 L ébouillanté", "Cuillère propre", "Thermoplongeur pour la version express"],
+    "ingredients": [
+      {"nom": "Koji de riz", "qte": 300, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 90, "unite": "g"},
+      {"nom": "Eau", "qte": 360, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Frotter", "texte": "Frotter le koji avec le sel entre les mains pour casser les grains.", "duree": "3 min"},
+      {"titre": "Mouiller", "texte": "Mettre en bocal et couvrir d’eau, qui doit dépasser de 1 cm. Fermer sans serrer.", "duree": "2 min"},
+      {"titre": "Fermenter", "texte": "À température ambiante, remuer une fois par jour pendant 1 à 2 semaines. Ajouter un peu d’eau si les grains émergent.", "duree": "1 à 2 sem."},
+      {"titre": "Version express", "texte": "Ou bien : mêmes ingrédients en bocal fermé, 6 à 10 h dans le bain du thermoplongeur à 60 °C.", "duree": "6 à 10 h"},
+      {"titre": "Finir", "texte": "Mixer si tu veux une pâte lisse. Ranger au frigo.", "duree": "2 min"}
+    ],
+    "controles": [
+      {"j": 1, "repeter_j": 1, "titre": "Remuer", "observer": "Niveau d’eau", "normal": "Grains couverts", "probleme": "Grains secs en surface", "action": "Ajouter un peu d’eau, remuer."},
+      {"j": 7, "titre": "Dégustation", "observer": "Goût", "normal": "Sucré-salé, grains tendres", "probleme": "Odeur de moisi, moisissure colorée", "action": "Jeter."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "6 mois", "jours": 180}],
+    "liens": ["legumessk", "poissonsk"]
+  },
+  {
+    "id": "shoyukoji", "nom": "Shoyu koji", "famille": "koji", "mois": [10, 4],
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 450 g",
+    "base": {"ingredient": "Koji de riz", "quantite": 200, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Grains tendres, goût de sauce soja plus doux et plus rond."},
+    "materiel": ["Bocal de 500 ml ébouillanté", "Cuillère propre"],
+    "ingredients": [
+      {"nom": "Koji de riz", "qte": 200, "unite": "g"},
+      {"nom": "Sauce soja", "qte": 250, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Mélanger", "texte": "Mettre le koji en bocal, couvrir de sauce soja. Fermer sans serrer.", "duree": "2 min"},
+      {"titre": "Fermenter", "texte": "À température ambiante, remuer une fois par jour pendant 1 à 2 semaines. Ajouter de la sauce soja si les grains émergent. Version express : 6 à 10 h à 60 °C au thermoplongeur.", "duree": "1 à 2 sem."},
+      {"titre": "Ranger", "texte": "Au frigo.", "duree": ""}
+    ],
+    "controles": [
+      {"j": 1, "repeter_j": 1, "titre": "Remuer", "observer": "Niveau", "normal": "Grains couverts", "probleme": "Grains secs", "action": "Ajouter de la sauce soja."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "misoblanc", "nom": "Miso blanc", "famille": "koji", "mois": [10, 4],
+    "lieu": "placard", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "Environ 2,3 kg",
+    "base": {"ingredient": "Soja jaune sec", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 30, "max_j": 90},
+    "fin": {"type": "gout", "texte": "Pâte beige, goût doux, sucré et rond."},
+    "materiel": ["Autocuiseur ou grande casserole", "Presse-purée ou mixeur", "Pot en grès ou bocal de 3 L ébouillanté", "Film alimentaire", "Poids (sac de sel ou de riz, environ 250 g)"],
+    "ingredients": [
+      {"nom": "Soja jaune sec", "qte": 500, "unite": "g"},
+      {"nom": "Koji de riz", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 110, "unite": "g", "note": "Dans la pâte"},
+      {"nom": "Sel fin, pour la surface", "qte": 20, "unite": "g"},
+      {"nom": "Eau de cuisson du soja", "qte": 100, "unite": "g", "note": "Selon la texture"}
+    ],
+    "etapes": [
+      {"titre": "Tremper", "texte": "Tremper le soja 18 h dans trois fois son volume d’eau.", "duree": "18 h"},
+      {"titre": "Cuire", "texte": "Cuire jusqu’à l’écraser sans effort entre deux doigts : 30 min à l’autocuiseur ou 3 h à frémissement. Égoutter en gardant l’eau de cuisson.", "duree": "30 min à 3 h"},
+      {"titre": "Écraser", "texte": "Réduire le soja en purée grossière, laisser tiédir sous 40 °C.", "duree": "15 min"},
+      {"titre": "Mélanger", "texte": "Frotter le koji avec les 110 g de sel, ajouter la purée et mélanger. Ajuster avec l’eau de cuisson pour une texture de pâte à modeler.", "duree": "10 min"},
+      {"titre": "Tasser", "texte": "Former des boules et les lancer au fond du pot pour chasser l’air. Tasser, lisser, parsemer les 20 g de sel.", "duree": "10 min"},
+      {"titre": "Couvrir", "texte": "Film au contact, poids, couvercle. Au placard, à température ambiante.", "duree": ""},
+      {"titre": "Attendre", "texte": "Goûter à 1 mois. Prêt entre 1 et 3 mois, puis au frigo.", "duree": "1 à 3 mois"}
+    ],
+    "controles": [
+      {"j": 7, "titre": "Surface", "observer": "Surface sous le film", "normal": "Un peu de liquide brun (tamari)", "probleme": "Moisissure blanche ou colorée", "action": "Blanche : retirer. Colorée : retirer largement autour, ressaler la surface."},
+      {"j": 30, "titre": "Dégustation", "observer": "Goût", "normal": "Doux, sucré, salé", "probleme": "Encore goût de haricot cru", "action": "Attendre 2 à 4 semaines."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "pot fermé", "duree": "6 mois", "jours": 180}],
+    "notes": "Le liquide brun qui remonte est du tamari : à récupérer comme assaisonnement."
+  },
+  {
+    "id": "misopc", "nom": "Miso de pois chiches ou de lentilles", "famille": "koji", "mois": [10],
+    "lieu": "placard", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "Environ 1,7 kg",
+    "base": {"ingredient": "Pois chiches ou lentilles sèches", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 90, "max_j": 180},
+    "fin": {"type": "gout", "texte": "Pâte brun clair, goût rond et profond."},
+    "materiel": ["Autocuiseur ou grande casserole", "Presse-purée ou mixeur", "Pot en grès ou bocal de 2 L ébouillanté", "Film alimentaire", "Poids"],
+    "ingredients": [
+      {"nom": "Pois chiches secs (ou lentilles vertes)", "qte": 500, "unite": "g"},
+      {"nom": "Koji de riz", "qte": 500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 120, "unite": "g", "note": "Dans la pâte"},
+      {"nom": "Sel fin, pour la surface", "qte": 20, "unite": "g"},
+      {"nom": "Eau de cuisson", "qte": 100, "unite": "g", "note": "Selon la texture"}
+    ],
+    "etapes": [
+      {"titre": "Tremper", "texte": "Tremper les pois chiches 12 h (les lentilles n’en ont pas besoin).", "duree": "12 h"},
+      {"titre": "Cuire", "texte": "Cuire jusqu’à tendre, égoutter en gardant l’eau.", "duree": "20 min à 2 h"},
+      {"titre": "Écraser et mélanger", "texte": "Écraser en purée, laisser tiédir sous 40 °C, mélanger avec le koji frotté au sel. Ajuster la texture avec l’eau de cuisson.", "duree": "20 min"},
+      {"titre": "Tasser et couvrir", "texte": "Boules lancées dans le pot, tasser, lisser, sel en surface, film au contact, poids, couvercle.", "duree": "10 min"},
+      {"titre": "Attendre", "texte": "Au placard 3 à 6 mois. Goûter à 3 mois.", "duree": "3 à 6 mois"}
+    ],
+    "controles": [
+      {"j": 14, "titre": "Surface", "observer": "Surface", "normal": "Un peu de liquide", "probleme": "Moisissure", "action": "Retirer largement, ressaler la surface."},
+      {"j": 90, "titre": "Dégustation", "observer": "Goût", "normal": "Rond, salé, profond", "probleme": "Goût de légume cru", "action": "Attendre 1 mois de plus."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "pot fermé", "duree": "1 an", "jours": 365}]
+  },
+  {
+    "id": "hishio", "nom": "Hishio", "famille": "koji", "mois": [4],
+    "lieu": "placard", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Environ 1,1 kg",
+    "base": {"ingredient": "Koji blé-soja", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 30, "max_j": 60},
+    "fin": {"type": "gout", "texte": "Pâte brune et grumeleuse, très savoureuse, entre miso et sauce soja."},
+    "materiel": ["Bocal de 1,5 L ébouillanté", "Cuillère propre"],
+    "ingredients": [
+      {"nom": "Koji blé-soja", "qte": 500, "unite": "g"},
+      {"nom": "Eau", "qte": 500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 120, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Mélanger", "texte": "Dissoudre le sel dans l’eau, verser sur le koji dans le bocal, mélanger.", "duree": "5 min"},
+      {"titre": "Remuer", "texte": "Remuer chaque jour pendant 2 semaines, puis une fois par semaine. Fermer sans serrer.", "duree": "1 à 2 mois"},
+      {"titre": "Ranger", "texte": "Quand le goût te plaît, au frigo.", "duree": ""}
+    ],
+    "controles": [
+      {"j": 1, "repeter_j": 1, "titre": "Remuer", "observer": "Surface", "normal": "Pâte humide", "probleme": "Moisissure en surface", "action": "Retirer, remuer plus souvent."},
+      {"j": 30, "titre": "Dégustation", "observer": "Goût", "normal": "Salé, profond, légèrement sucré", "probleme": "", "action": "Prêt, ou attendre jusqu’à 2 mois."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "pot fermé", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "shoyu", "nom": "Sauce soja", "famille": "koji", "mois": [4],
+    "lieu": "placard", "mode": null, "etiquettes": [], "place": 0, "difficulte": 3,
+    "rendement": "Environ 1,2 L de sauce",
+    "base": {"ingredient": "Koji blé-soja", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 180, "max_j": 365},
+    "fin": {"type": "gout", "texte": "Moromi brun foncé, odeur de sauce soja ; on presse."},
+    "materiel": ["Pot en grès ou bocal large de 3 L", "Grande cuillère en bois", "Torchon fin ou sac à presser", "Poids ou petit pressoir", "Bouteilles ébouillantées", "Thermoplongeur pour pasteuriser"],
+    "ingredients": [
+      {"nom": "Koji blé-soja", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 1200, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 300, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Saumure", "texte": "Dissoudre le sel dans l’eau.", "duree": "5 min"},
+      {"titre": "Moromi", "texte": "Mélanger le koji et la saumure dans le pot. Couvrir d’un tissu et d’un couvercle posé.", "duree": "5 min"},
+      {"titre": "Remuer", "texte": "Remuer chaque jour le premier mois en enfonçant le chapeau qui remonte, puis une fois par semaine. La chaleur de l’été accélère tout.", "duree": "6 à 12 mois"},
+      {"titre": "Presser", "texte": "Verser dans un torchon fin, presser doucement sous un poids pendant 1 à 2 jours. Garder le marc au frigo comme assaisonnement.", "duree": "1 à 2 jours"},
+      {"titre": "Décanter", "texte": "Laisser reposer 2 jours, prélever la sauce claire.", "duree": "2 jours"},
+      {"titre": "Pasteuriser", "texte": "En bocaux fermés, 20 min dans le bain du thermoplongeur à 80 °C. Mettre en bouteilles.", "duree": "30 min"}
+    ],
+    "controles": [
+      {"j": 1, "repeter_j": 1, "titre": "Remuer", "observer": "Chapeau", "normal": "Koji imbibé", "probleme": "Chapeau sec en surface", "action": "L’enfoncer dans la saumure."},
+      {"j": 30, "repeter_j": 7, "titre": "Remuer chaque semaine", "observer": "Surface", "normal": "Voile blanc possible (levures)", "probleme": "Moisissure duveteuse colorée", "action": "Voile blanc : mélanger dedans. Duveteux coloré : retirer largement."},
+      {"j": 180, "titre": "Dégustation", "observer": "Goût", "normal": "Salé, profond, sans goût de grain cru", "probleme": "Goût encore jeune", "action": "Attendre, jusqu’à 12 mois."}
+    ],
+    "conservation": [
+      {"mode": "Placard", "comment": "pasteurisée en bouteille", "duree": "1 an", "jours": 365},
+      {"mode": "Frigo", "comment": "une fois ouverte", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "garum", "nom": "Garum", "famille": "koji", "mois": [5],
+    "lieu": "thermoplongeur", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "Environ 700 ml",
+    "base": {"ingredient": "Viande maigre hachée, ailes de poulet, chutes de poisson ou champignons", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 70, "max_j": 70},
+    "fin": {"type": "temps", "texte": "10 semaines à 60 °C, puis filtration."},
+    "materiel": ["Thermoplongeur", "Glacière avec couvercle percé pour le thermoplongeur", "Bocaux à couvercle vissé ou à joint", "Torchon fin pour filtrer", "Bouteilles"],
+    "ingredients": [
+      {"nom": "Matière (viande maigre hachée, ailes de poulet, chutes de poisson sans arêtes, ou champignons)", "qte": 1000, "unite": "g"},
+      {"nom": "Koji de riz", "qte": 250, "unite": "g"},
+      {"nom": "Eau", "qte": 300, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 190, "unite": "g", "note": "12 % du poids total"}
+    ],
+    "etapes": [
+      {"titre": "Hacher", "texte": "Hacher la matière, mixer le koji grossièrement.", "duree": "10 min"},
+      {"titre": "Mélanger", "texte": "Mélanger matière, koji, eau et sel. Remplir les bocaux aux trois quarts, fermer.", "duree": "10 min"},
+      {"titre": "Mettre au bain", "texte": "Bocaux immergés dans la glacière, thermoplongeur à 60 °C, couvercle posé pour limiter l’évaporation.", "duree": "10 sem."},
+      {"titre": "Secouer", "texte": "Une fois par semaine, secouer les bocaux et compléter l’eau du bain.", "duree": ""},
+      {"titre": "Filtrer", "texte": "Filtrer dans un torchon fin, presser, mettre en bouteilles, ranger au frigo.", "duree": "1 h"}
+    ],
+    "controles": [
+      {"j": 1, "titre": "Bain", "observer": "Température et niveau d’eau", "normal": "60 °C, bocaux couverts d’eau", "probleme": "Bain sous 55 °C", "action": "Vérifier le thermoplongeur et le couvercle."},
+      {"j": 7, "repeter_j": 7, "titre": "Secouer et compléter", "observer": "Niveau du bain", "normal": "Bocaux couverts", "probleme": "Bocal qui fuit", "action": "Remplacer le couvercle ; s’il a pris l’eau du bain, jeter ce bocal."},
+      {"j": 70, "titre": "Dégustation", "observer": "Goût", "normal": "Salé, profond, sans aigreur", "probleme": "Aigre ou putride", "action": "Jeter."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "bouteille", "duree": "1 an", "jours": 365}],
+    "securite": ["Le bain doit rester à 60 °C : s’il est resté sous 50 °C plus de 4 h, jeter.", "Le thermoplongeur est occupé 10 semaines : à faire de mai à mi-juillet."]
+  },
+  {
+    "id": "kojipoudre", "nom": "Koji en poudre", "famille": "koji", "mois": [11, 5],
+    "lieu": "chambre", "mode": "sechage", "technique": "sechage", "etiquettes": ["air_sec"], "place": 0.25, "difficulte": 1,
+    "rendement": "Environ 250 g",
+    "base": {"ingredient": "Koji frais", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "aspect", "texte": "Grains cassants, sans humidité au cœur."},
+    "materiel": ["Grilles", "Mixeur", "Tamis", "Bocal hermétique", "Sachet déshydratant"],
+    "ingredients": [{"nom": "Koji de riz frais ou décongelé", "qte": 500, "unite": "g"}],
+    "etapes": [
+      {"titre": "Étaler", "texte": "Émietter le koji en une couche fine sur les grilles.", "duree": "5 min"},
+      {"titre": "Sécher", "texte": "Mode Séchage, 24 à 48 h, jusqu’à ce que les grains cassent net.", "duree": "1 à 2 jours"},
+      {"titre": "Mixer", "texte": "Mixer finement, tamiser, mettre en bocal avec un sachet déshydratant.", "duree": "5 min"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Placard", "comment": "bocal hermétique", "duree": "1 an", "jours": 365}]
+  },
+  {
+    "id": "amazake", "nom": "Amazake", "famille": "koji", "toute_annee": true,
+    "lieu": "thermoplongeur", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Environ 1,2 kg",
+    "base": {"ingredient": "Koji de riz", "quantite": 300, "unite": "g"},
+    "duree": {"min_j": 0.35, "max_j": 0.5},
+    "fin": {"type": "gout", "texte": "Très sucré, odeur de riz et de fruit."},
+    "materiel": ["Thermoplongeur", "Bocal fermé ou sac", "Mixeur"],
+    "ingredients": [
+      {"nom": "Koji de riz (frais ou décongelé)", "qte": 300, "unite": "g"},
+      {"nom": "Riz rond cuit", "qte": 300, "unite": "g"},
+      {"nom": "Eau", "qte": 600, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Mélanger", "texte": "Mélanger le riz cuit et l’eau, laisser tiédir à 60 °C, ajouter le koji.", "duree": "10 min"},
+      {"titre": "Incuber", "texte": "En bocal fermé ou en sac, 8 à 12 h dans le bain du thermoplongeur à 58–60 °C.", "duree": "8 à 12 h"},
+      {"titre": "Finir", "texte": "Goûter : très sucré. Mixer. Porter 2 min à frémissement pour stopper l’évolution, refroidir, ranger au frigo.", "duree": "10 min"}
+    ],
+    "controles": [{"j": 0.35, "titre": "Dégustation", "observer": "Goût", "normal": "Très sucré", "probleme": "Aigre", "action": "Bain trop froid : jeter et vérifier le thermoplongeur."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "1 semaine", "jours": 7},
+      {"mode": "Congélateur", "comment": "", "duree": "3 mois", "jours": 90}
+    ],
+    "liens": ["painkoji"]
+  },
+  {
+    "id": "legumessk", "nom": "Légumes au shio koji", "famille": "koji", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "500 g",
+    "base": {"ingredient": "Légumes (concombre, chou, carotte, navet)", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 0.5, "max_j": 2},
+    "fin": {"type": "gout", "texte": "Légumes assouplis, assaisonnés à cœur."},
+    "materiel": ["Sac ou boîte"],
+    "ingredients": [
+      {"nom": "Légumes coupés", "qte": 500, "unite": "g"},
+      {"nom": "Shio koji", "qte": 50, "unite": "g", "note": "10 % du poids des légumes"}
+    ],
+    "etapes": [
+      {"titre": "Enrober", "texte": "Enrober les légumes de shio koji, en sac.", "duree": "2 min"},
+      {"titre": "Mariner", "texte": "12 à 48 h au frigo. Rincer légèrement, trancher.", "duree": "12 à 48 h"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "", "duree": "1 semaine", "jours": 7}]
+  },
+  {
+    "id": "poissonsk", "nom": "Poisson et volaille au shio koji", "famille": "koji", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "500 g",
+    "base": {"ingredient": "Poisson ou volaille", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 0.5, "max_j": 2},
+    "fin": {"type": "temps", "texte": "12 h pour le poisson, 24 à 48 h pour la volaille."},
+    "materiel": ["Sac ou boîte"],
+    "ingredients": [
+      {"nom": "Filets de poisson ou morceaux de volaille", "qte": 500, "unite": "g"},
+      {"nom": "Shio koji", "qte": 50, "unite": "g", "note": "10 % du poids"}
+    ],
+    "etapes": [
+      {"titre": "Enrober", "texte": "Enrober de shio koji, en sac au frigo.", "duree": "2 min"},
+      {"titre": "Mariner", "texte": "12 h pour le poisson, 24 à 48 h pour la volaille.", "duree": "12 à 48 h"},
+      {"titre": "Cuire", "texte": "Essuyer l’excédent, qui brûle vite. Cuire à feu moyen.", "duree": ""}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "cru, mariné", "duree": "2 jours", "jours": 2},
+      {"mode": "Congélateur", "comment": "mariné", "duree": "3 mois", "jours": 90}
+    ]
+  }
+]

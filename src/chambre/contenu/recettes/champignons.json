@@ -1,0 +1,80 @@
+[
+  {
+    "id": "pleurotes", "nom": "Pleurotes grises sur marc de café", "famille": "champ", "mois": [11, 12, 1, 2, 3, 5, 6, 7, 8],
+    "lieu": "cuisine", "mode": null, "technique": "culture_champignons", "etiquettes": ["spores", "sensible_spores", "air_humide"], "place": 0.3, "difficulte": 2,
+    "rendement": "2 à 3 récoltes, environ 500 g à 1 kg au total",
+    "base": {"ingredient": "Marc de café frais", "quantite": 2500, "unite": "g"},
+    "duree": {"min_j": 28, "max_j": 56},
+    "fin": {"type": "aspect", "texte": "Récolter quand les bords des chapeaux sont encore légèrement enroulés."},
+    "materiel": ["Sac de culture à filtre, ou seau alimentaire de 5 L percé de trous de 1 cm", "Bac de fructification (boîte plastique percée, perlite humide au fond)", "Vaporisateur", "Alcool à 70 % pour les mains et les surfaces"],
+    "ingredients": [
+      {"nom": "Marc de café du jour (moins de 24 h)", "qte": 2500, "unite": "g", "note": "Ajouté au fil des jours"},
+      {"nom": "Blanc de pleurote grise sur grain", "qte": 250, "unite": "g", "note": "10 % du marc"}
+    ],
+    "etapes": [
+      {"titre": "Démarrer le sac", "texte": "Mains et surfaces désinfectées. Mettre une couche de marc frais dans le sac, émietter une poignée de blanc dessus.", "duree": "5 min"},
+      {"titre": "Ajouter chaque jour", "texte": "Pendant 1 à 2 semaines, ajouter le marc du jour, puis une poignée de blanc, en couches, jusqu’à environ 2,5 kg. Refermer à chaque fois.", "duree": "1 à 2 sem."},
+      {"titre": "Coloniser", "texte": "Dans un placard, dans le noir, à 20–24 °C, jusqu’à ce que tout soit blanc.", "duree": "3 à 4 sem."},
+      {"titre": "Faire pousser", "texte": "Ouvrir des fentes de 5 cm, poser le sac dans le bac de fructification à la lumière indirecte, entre 12 et 18 °C. Vaporiser l’intérieur du bac 2 fois par jour, aérer en même temps.", "duree": "1 à 2 sem."},
+      {"titre": "Récolter", "texte": "Couper la grappe entière à la base quand les bords des chapeaux sont encore enroulés.", "duree": ""},
+      {"titre": "Vagues suivantes", "texte": "Laisser reposer 1 semaine, vaporiser à nouveau : 2 à 3 vagues. Le substrat épuisé part au compost.", "duree": "2 à 4 sem."}
+    ],
+    "controles": [
+      {"j": 30, "titre": "Primordiums", "observer": "Petits boutons", "normal": "Petits boutons gris aux fentes", "probleme": "Rien après 10 jours de fructification", "action": "Plus d’air frais et de lumière, un peu plus froid."},
+      {"j": 35, "titre": "Récolte", "observer": "Chapeaux", "normal": "Bords encore enroulés", "probleme": "Pieds longs, petits chapeaux", "action": "Manque d’air frais : aérer plus souvent."}
+    ],
+    "conservation": [
+      {"mode": "Frigo", "comment": "fraîches, sac papier", "duree": "4 jours", "jours": 4},
+      {"mode": "Placard", "comment": "séchées", "duree": "1 an", "jours": 365}
+    ],
+    "notes": "Un nouveau sac toutes les 6 semaines environ, jamais pendant les semaines de koji. L’été, le bac de fructification va dans la chambre."
+  },
+  {
+    "id": "shiitake", "nom": "Shiitake en kit", "famille": "champ", "mois": [11, 12, 1, 2, 3],
+    "lieu": "cuisine", "mode": null, "etiquettes": ["spores", "air_humide"], "place": 0.3, "difficulte": 1,
+    "rendement": "3 à 4 récoltes",
+    "base": {"ingredient": "Bloc de shiitake prêt à fructifier", "quantite": 1, "unite": "bloc"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "aspect", "texte": "Chapeaux ouverts aux trois quarts, bords encore enroulés."},
+    "materiel": ["Kit shiitake prêt à fructifier", "Bac ou sac de fructification percé", "Vaporisateur", "Bassine pour le trempage"],
+    "ingredients": [{"nom": "Bloc de shiitake prêt à fructifier", "qte": 1, "unite": "bloc"}],
+    "etapes": [
+      {"titre": "Tremper", "texte": "Plonger le bloc 12 à 24 h dans l’eau froide (selon la notice du kit).", "duree": "12 à 24 h"},
+      {"titre": "Faire pousser", "texte": "Dans le bac de fructification, lumière indirecte, 12 à 20 °C. Vaporiser 2 fois par jour.", "duree": "7 à 10 jours"},
+      {"titre": "Récolter", "texte": "Tourner chaque champignon à la base quand le chapeau est ouvert aux trois quarts.", "duree": ""},
+      {"titre": "Repos", "texte": "Laisser sécher le bloc 2 à 3 semaines, puis tremper à nouveau. 3 à 4 récoltes par kit.", "duree": "2 à 3 sem."}
+    ],
+    "controles": [
+      {"j": 5, "titre": "Boutons", "observer": "Petits boutons bruns", "normal": "Boutons qui sortent", "probleme": "Rien après 10 jours", "action": "Choc de froid : 1 nuit au frigo, puis retour au bac."},
+      {"j": 10, "titre": "Récolte", "observer": "Chapeaux", "normal": "Ouverts aux trois quarts", "probleme": "Moisissure verte sur le bloc", "action": "Frotter à l’eau salée ; si elle s’étend, jeter le bloc."}
+    ],
+    "conservation": [
+      {"mode": "Frigo", "comment": "frais, sac papier", "duree": "1 semaine", "jours": 7},
+      {"mode": "Placard", "comment": "séchés", "duree": "1 an", "jours": 365}
+    ],
+    "securite": ["Toujours cuits : les shiitake crus peuvent provoquer une réaction de la peau."]
+  },
+  {
+    "id": "dashi", "nom": "Dashi de champignons", "famille": "champ", "toute_annee": true,
+    "lieu": "thermoplongeur", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "1 L",
+    "base": {"ingredient": "Eau", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 0.05, "max_j": 0.05},
+    "fin": {"type": "temps", "texte": "1 h à 60 °C."},
+    "materiel": ["Thermoplongeur", "Bocal ou sac", "Passoire fine"],
+    "ingredients": [
+      {"nom": "Eau", "qte": 1000, "unite": "g"},
+      {"nom": "Shiitake ou pleurotes séchés", "qte": 25, "unite": "g"},
+      {"nom": "Kombu (facultatif)", "qte": 10, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Infuser", "texte": "Champignons et kombu dans l’eau, en bocal fermé, 1 h au thermoplongeur à 60 °C. Ou 12 h au frigo à froid.", "duree": "1 h"},
+      {"titre": "Filtrer", "texte": "Filtrer, garder les champignons réhydratés pour une autre recette.", "duree": "5 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "4 jours", "jours": 4},
+      {"mode": "Congélateur", "comment": "en portions", "duree": "6 mois", "jours": 180}
+    ]
+  }
+]

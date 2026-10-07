@@ -1,0 +1,995 @@
+{
+  "version": "2026-10-07d",
+  "role_de_l_appli": "L’appli ne pilote aucun appareil. L’Inkbird ITC-308-WIFI (température) et l’IHC-200-WIFI (humidité) régulent la chambre ; l’appli INKBIRD affiche leurs courbes et envoie leurs alarmes. Mon appli dit quelles valeurs entrer, comment, pourquoi, quoi brancher où, et quoi faire en cas d’alarme.",
+  "installation": {
+    "materiel": [
+      {
+        "id": "frigo",
+        "nom": "Frigo Beko BU1101",
+        "role": "Le froid, et un peu de déshumidification : l’eau condense sur la plaque du fond et s’évacue.",
+        "caracteristiques": "128 L, froid statique, classe A+, environ 117 kWh par an, prévu pour une pièce entre 10 et 38 °C au moins (jusqu’à 43 °C selon la fiche Beko), 82 × 59,8 × 54,5 cm.",
+        "a_savoir": [
+          "Thermostat mécanique : au plus froid quand l’ITC le pilote, sur une position moyenne en mode Froid.",
+          "Il évacue sa chaleur par l’arrière : 10 cm d’air derrière et au-dessus."
+        ]
+      },
+      {
+        "id": "itc",
+        "nom": "Inkbird ITC-308-WIFI",
+        "role": "Régule la température avec deux prises : chauffage et froid.",
+        "caracteristiques": "10 A par prise (2 200 W en 230 V), Wi-Fi 2,4 GHz uniquement, appli INKBIRD : courbes, alarmes, réglage à distance.",
+        "a_savoir": [
+          "Réglé en °F à la sortie d’usine : passer CF sur C avant tout le reste.",
+          "Délai du compresseur (PT) réglable de 0 à 30 minutes.",
+          "Juste après un réglage, il compare directement à TS sans tenir compte de HD et CD : il peut chauffer ou lancer le frigo aussitôt."
+        ]
+      },
+      {
+        "id": "ihc",
+        "nom": "Inkbird IHC-200-WIFI",
+        "role": "Régule l’humidité avec deux prises : WORK1 pour humidifier, WORK2 pour déshumidifier.",
+        "caracteristiques": "10 A, Wi-Fi 2,4 GHz uniquement, appli INKBIRD : courbes, alarmes, réglage à distance. HD et DD de 1 à 20 %, PT de 0 à 10 minutes.",
+        "a_savoir": [
+          "Juste après un réglage ou une mise sous tension, il ignore DD : il déshumidifie dès que l’humidité dépasse HS. C’est normal."
+        ]
+      },
+      {
+        "id": "tapis",
+        "nom": "Tapis chauffant LERWAY 21 W",
+        "role": "La chaleur en modes Koji, Biltong, Cave et Tempéré ; antigel en mode Froid.",
+        "caracteristiques": "21 W, 52 × 25 cm, étanche, sans thermostat : c’est l’ITC qui l’allume et l’éteint.",
+        "a_savoir": [
+          "Trop long pour une clayette : à plat sur le fond, bac à légumes retiré, en diagonale si besoin, ou debout contre une paroi latérale.",
+          "Jamais plié, jamais recouvert, jamais contre la plaque du fond."
+        ]
+      },
+      {
+        "id": "ventilateur",
+        "nom": "Ventilateur ELUTENG 120 mm USB",
+        "role": "Brasse l’air : température et humidité égales partout, surfaces qui sèchent, froid mieux réparti.",
+        "caracteristiques": "USB 5 V, 3 vitesses (L, M, H), environ 1 à 2 W.",
+        "a_savoir": [
+          "Il lui faut un chargeur USB 5 V, branché hors de la chambre : seul le câble USB passe par la porte.",
+          "Il tourne en continu, sauf en Pause ; seules la vitesse et l’orientation changent selon le mode.",
+          "Dirigé vers la plaque du fond, il aide le frigo : le froid se répartit plus vite et le compresseur tourne moins longtemps."
+        ]
+      },
+      {
+        "id": "deshumidificateur",
+        "nom": "Déshumidificateur CREATE mini 500 ml",
+        "role": "Retire l’eau de l’air.",
+        "caracteristiques": "Système Peltier, 22 W, jusqu’à 250 ml d’eau par jour quand l’air est chaud et humide, réservoir de 500 ml avec arrêt automatique quand il est plein, fonctionne entre 12 et 40 °C.",
+        "a_savoir": [
+          "Ses 22 W finissent tous en chaleur dans la chambre : un chauffage gratuit en mode chaud, une dépense en double en mode froid, puisque le frigo doit évacuer cette chaleur.",
+          "En dessous de 12 °C, il ne sert presque à rien : débranché en Froid, simple renfort en Cave.",
+          "Réservoir plein : il s’arrête. Le vider au rythme du mode."
+        ]
+      },
+      {
+        "id": "ph_metre",
+        "nom": "pH-mètre pour aliments, écran couleur",
+        "role": "Mesure l’acidité : saucissons (5,3 ou moins en 48 h), lacto et sauces (4,2 ou moins avant une conservation longue), vinaigres.",
+        "caracteristiques": "Testeur de pH électronique pour la fermentation alimentaire.",
+        "a_savoir": [
+          "Étalonner avant chaque séance de saucissons, et au moins une fois par mois : tampon 6,86 (ou 7,00), puis 4,00.",
+          "Sonde toujours humide : quelques gouttes de solution de conservation (KCl) dans le capuchon. Jamais au sec, jamais rangée dans de l’eau distillée.",
+          "Rincer à l’eau distillée entre deux mesures ; après de la viande ou du gras, eau tiède avec une goutte de liquide vaisselle, puis eau distillée. Tamponner sans frotter.",
+          "Aliments solides : sonde pointue piquée au cœur ; sinon, 10 g écrasés dans 10 g d’eau distillée, mesure après 5 minutes.",
+          "Mesurer à température ambiante, vers 20 °C.",
+          "Une sonde lente (plus d’une minute pour se stabiliser) ou qui ne s’étalonne plus est usée : la remplacer."
+        ]
+      }
+    ],
+    "humidificateur": "Aucun pour l’instant. Option : petit humidificateur à ultrasons sur la prise WORK1 de l’IHC.",
+    "prises": [
+      {
+        "prise": "ITC · chauffage",
+        "appareil": "Le tapis. En Séchage, le déshumidificateur à sa place : il chauffe et sèche à la fois."
+      },
+      {
+        "prise": "ITC · froid",
+        "appareil": "Le frigo en modes Koji, Biltong, Froid, Cave et Tempéré. Vide en Séchage et en Pause."
+      },
+      {
+        "prise": "IHC · WORK1 (humidification)",
+        "appareil": "Rien, ou un humidificateur plus tard."
+      },
+      {
+        "prise": "IHC · WORK2 (déshumidification)",
+        "appareil": "Le déshumidificateur en modes Koji, Biltong et Cave. Rien ailleurs : il est sur l’ITC en Séchage, débranché en Froid et en Tempéré."
+      },
+      {
+        "prise": "Prise murale",
+        "appareil": "Le chargeur USB du ventilateur, et les deux Inkbird."
+      }
+    ],
+    "sondes": [
+      "Sonde ITC : au milieu de la chambre, à hauteur des produits, loin du tapis et du déshumidificateur, sans toucher la plaque du fond.",
+      "Mode Koji : sonde ITC plantée au cœur du riz, protégée par un film alimentaire.",
+      "Sonde IHC : à mi-hauteur, loin de la sortie du déshumidificateur et du bac de sel."
+    ],
+    "cables": "Tous les câbles passent par la porte côté charnières, à plat. Une feuille de papier coincée dans la porte fermée doit résister quand on la tire. Ne jamais percer le frigo : des tuyaux de froid passent dans les parois.",
+    "calibrage": [
+      "ITC, une fois par an : sonde dans un verre de glace pilée avec un peu d’eau. Elle doit lire 0 °C ; sinon, corriger avec CA.",
+      "IHC, une fois par an : sonde 24 h dans une boîte fermée avec une coupelle de gros sel à peine humide. Elle doit lire 75 % ; sinon, corriger avec CA."
+    ],
+    "notes": [
+      "Le plus simple pour régler : l’appli INKBIRD, avec les mêmes codes qu’à l’écran. Les touches restent le plan B.",
+      "Les alarmes arrivent aussi sur le téléphone par l’appli INKBIRD : active ses notifications."
+    ]
+  },
+  "mise_en_service": [
+    {
+      "titre": "Wi-Fi et appli INKBIRD",
+      "texte": "Installe l’appli INKBIRD et ajoute les deux contrôleurs (Wi-Fi 2,4 GHz uniquement). Active les notifications d’alarme et nomme-les « Chambre · température » et « Chambre · humidité ».",
+      "si_echec": "S’ils ne trouvent pas le réseau, vérifie que ta box diffuse bien en 2,4 GHz."
+    },
+    {
+      "titre": "Passer l’ITC en °C",
+      "texte": "Il est réglé en °F à la sortie d’usine. Mets CF sur C avant d’entrer la moindre valeur : sinon, 32 voudrait dire 32 °F, soit 0 °C.",
+      "si_echec": ""
+    },
+    {
+      "titre": "Calibrer les sondes",
+      "texte": "ITC : sonde dans un verre de glace pilée avec un peu d’eau, elle doit lire 0 °C. IHC : 24 h dans une boîte fermée avec une coupelle de gros sel à peine humide, elle doit lire 75 %. Corrige l’écart avec CA.",
+      "si_echec": ""
+    },
+    {
+      "titre": "Étalonner le pH-mètre",
+      "texte": "Avec ses solutions tampons : d’abord 6,86 (ou 7,00), puis 4,00. Range la sonde humide, avec quelques gouttes de solution de conservation dans son capuchon.",
+      "si_echec": "S’il n’affiche pas les bonnes valeurs après étalonnage, ou met plus d’une minute à se stabiliser, la sonde est usée : à remplacer avant la première séance de saucissons."
+    },
+    {
+      "titre": "Test du déshumidificateur",
+      "texte": "Branche-le sur une prise, allume-le, débranche-le 10 secondes, puis rebranche-le : il doit repartir seul.",
+      "si_echec": "S’il ne repart pas seul, aucun contrôleur ne peut le piloter : il faut un modèle qui redémarre seul après une coupure (interrupteur mécanique)."
+    },
+    {
+      "titre": "Test du ventilateur",
+      "texte": "Branche-le sur son chargeur, choisis une vitesse, débranche 10 secondes, puis rebranche.",
+      "si_echec": "S’il ne repart pas seul ou change de vitesse, ce n’est pas grave : il reste branché en continu. Il faudra juste le vérifier après une coupure de courant."
+    },
+    {
+      "titre": "Placer le tapis",
+      "texte": "Mesure l’intérieur. Pose-le à plat sur le fond, bac à légumes retiré, en diagonale si besoin ; sinon debout contre une paroi latérale. Jamais plié, jamais recouvert, jamais contre la plaque du fond.",
+      "si_echec": ""
+    },
+    {
+      "titre": "Câbles et joint",
+      "texte": "Fais passer tous les câbles côté charnières, à plat. Coince une feuille de papier dans la porte fermée à plusieurs endroits : elle doit résister quand tu la tires.",
+      "si_echec": "Si elle glisse, déplace les câbles : un joint qui fuit fait givrer la plaque et tourner le compresseur pour rien."
+    },
+    {
+      "titre": "Essai à vide",
+      "texte": "Mode Koji, chambre vide, 3 heures : la chambre doit atteindre 32 °C. Dans l’appli INKBIRD, la courbe doit montrer que le tapis s’arrête de temps en temps.",
+      "si_echec": "S’il n’atteint pas 32 °C ou chauffe sans arrêt, la pièce est trop froide pour le koji : installe la chambre dans une pièce plus chaude."
+    },
+    {
+      "titre": "Mesurer la consommation (option)",
+      "texte": "Avec une prise wattmètre entre le mur et une multiprise qui alimente tout (les deux Inkbird et le chargeur du ventilateur), note les kWh au début et à la fin de chaque campagne, et compare à l’estimation du mode.",
+      "si_echec": ""
+    }
+  ],
+  "menager_le_materiel": [
+    {
+      "regle": "PT à 10 minutes sur l’ITC dès que le frigo est branché.",
+      "pourquoi": "Le compresseur attend au moins 10 minutes avant de redémarrer : les pressions s’équilibrent et il ne démarre jamais plus de 6 fois par heure."
+    },
+    {
+      "regle": "Écart de froid (CD) d’au moins 1,5 °C.",
+      "pourquoi": "Des cycles longs et espacés usent beaucoup moins le compresseur que des démarrages fréquents."
+    },
+    {
+      "regle": "Au moins 3 °C entre le seuil du tapis (TS − HD) et celui du frigo (TS + CD).",
+      "pourquoi": "Le tapis et le frigo ne se relaient jamais en boucle : pas de chaud-froid permanent, moins de démarrages."
+    },
+    {
+      "regle": "Le frigo seulement quand il y a de la chaleur à évacuer : prise froid vide en Séchage et en Pause.",
+      "pourquoi": "En Séchage, le déshumidificateur chauffe : le frigo ne ferait que le combattre. En Koji et en Biltong, il évacue la chaleur du riz ou du déshumidificateur et ne démarre qu’à 36 ou 31 °C, dans ses limites : il est prévu pour une pièce jusqu’à 38 °C au moins."
+    },
+    {
+      "regle": "En Froid, le frigo règle seul avec son propre thermostat, sur une position moyenne ; l’ITC n’est qu’un garde-fou.",
+      "pourquoi": "C’est l’usage prévu par Beko : cycles d’usine, et la plaque du fond dégivre à chaque arrêt. Piloté par l’ITC à 2 °C, il givrerait sans cesse et consommerait plus."
+    },
+    {
+      "regle": "Dans les autres modes, thermostat du frigo au plus froid.",
+      "pourquoi": "L’ITC décide seul. Si la plaque se couvre de plus de 3 mm de glace, dégivrer au prochain nettoyage."
+    },
+    {
+      "regle": "Régler l’ITC frigo débranché, et ne rebrancher le frigo que s’il est arrêté depuis au moins 10 minutes.",
+      "pourquoi": "Juste après un réglage, la version Wi-Fi peut lancer le froid aussitôt, sans attendre le délai PT. Un compresseur qui redémarre juste après s’être arrêté force."
+    },
+    {
+      "regle": "Après un mode chaud, laisser la chambre revenir à la température de la pièce, porte ouverte, avant de brancher le frigo.",
+      "pourquoi": "Il démarre ainsi dans des conditions normales, sans tirer une chambre à 35 °C."
+    },
+    {
+      "regle": "Sonde de l’ITC loin du tapis, du déshumidificateur et de la plaque du fond.",
+      "pourquoi": "Mal placée, elle lit faux et fait démarrer le frigo ou le tapis pour rien."
+    },
+    {
+      "regle": "Déshumidificateur : DD d’au moins 4 %, PT à 3 minutes, réservoir vidé au rythme du mode.",
+      "pourquoi": "Pas de marche-arrêt rapprochés ; plein, il s’arrête."
+    },
+    {
+      "regle": "Frigo dans une pièce entre 10 et 38 °C, de préférence tempérée, avec 10 cm d’air derrière et au-dessus ; grille arrière dépoussiérée une fois par an.",
+      "pourquoi": "Le compresseur évacue sa chaleur par l’arrière : sans air, il chauffe et s’use."
+    },
+    {
+      "regle": "Tapis jamais plié ni recouvert.",
+      "pourquoi": "Plié ou recouvert, il surchauffe."
+    },
+    {
+      "regle": "Câbles côté charnières, joint vérifié ; ne jamais percer le frigo.",
+      "pourquoi": "Un joint qui fuit fait givrer la plaque et tourner le compresseur ; des tuyaux de froid passent dans les parois."
+    }
+  ],
+  "economiser_energie": {
+    "budget": "Environ 100 kWh par an pour toute la chambre avec ces réglages, soit une vingtaine d’euros (estimation pour une pièce à 18–20 °C). Un déshumidificateur laissé en marche en Cave et en Tempéré pourrait à lui seul doubler cette facture.",
+    "regles": [
+      {
+        "regle": "Le déshumidificateur seulement là où il sert : sur l’IHC en Koji, Biltong et Cave, sur la prise chauffage de l’ITC en Séchage, débranché en Froid et en Tempéré.",
+        "pourquoi": "C’est le plus gros poste évitable : 22 W qui finissent en chaleur. En mode froid, le frigo doit ensuite évacuer cette chaleur : on paie deux fois."
+      },
+      {
+        "regle": "En Séchage, le déshumidificateur remplace le tapis.",
+        "pourquoi": "Ses 22 W chauffent la chambre comme le tapis, et sèchent l’air en plus : même dépense, double usage."
+      },
+      {
+        "regle": "En Cave, un bac de gros sel humide tient l’air vers 75 % sans courant ; le déshumidificateur ne démarre qu’au-dessus de 84 %, puis de 80 %.",
+        "pourquoi": "Le sel absorbe l’eau quand l’air dépasse 75 % et en rend quand il descend en dessous. Le déshumidificateur s’arrête toujours au-dessus : ils ne se contrarient jamais."
+      },
+      {
+        "regle": "En Froid, le frigo sur son propre thermostat.",
+        "pourquoi": "La plaque dégivre à chaque cycle. Le givre isole la plaque et fait tourner le compresseur plus longtemps."
+      },
+      {
+        "regle": "Ventilateur dirigé vers la plaque du fond, sauf en Séchage et en Biltong.",
+        "pourquoi": "Le froid se répartit plus vite : cycles du compresseur plus courts, pour 1 à 2 W."
+      },
+      {
+        "regle": "Surveiller depuis l’appli INKBIRD, ouvrir le moins possible.",
+        "pourquoi": "Chaque ouverture fait entrer de l’air à refroidir ou à réchauffer, et de l’humidité."
+      },
+      {
+        "regle": "Une chambre pleine ; sinon, des bouteilles d’eau fermées.",
+        "pourquoi": "La masse stabilise la température et espace les démarrages."
+      },
+      {
+        "regle": "Une campagne seulement à partir d’une demi-chambre.",
+        "pourquoi": "La chambre consomme presque autant à moitié vide que pleine."
+      },
+      {
+        "regle": "En Pause, tout débrancher, Inkbird compris.",
+        "pourquoi": "Même en veille, ils consomment un peu."
+      },
+      {
+        "regle": "Placer la chambre dans une pièce tempérée, loin d’un radiateur, du four et du soleil.",
+        "pourquoi": "Chaque degré d’écart avec la pièce se paie, en froid comme en chaud."
+      },
+      {
+        "regle": "Option : une prise wattmètre en tête de l’installation.",
+        "pourquoi": "Pour comparer la consommation réelle à l’estimation de chaque mode."
+      }
+    ]
+  },
+  "guide_itc": {
+    "appli": "Le plus simple : régler depuis l’appli INKBIRD, avec les mêmes codes. Les touches restent le plan B.",
+    "premier_reglage": "Réglé en °F à la sortie d’usine : commence par CF = C (dernier code du menu), sors, puis entre les autres valeurs.",
+    "entrer": "Tenir SET 2 secondes : TS s’affiche.",
+    "naviguer": "Chaque appui sur SET enregistre la valeur et passe au code suivant : TS, HD, CD, AH, AL, PT, CA, CF.",
+    "modifier": "▲ et ▼ changent la valeur affichée.",
+    "sortir": "Tenir SET 2 secondes. Sans appui pendant 30 secondes, il sort aussi, en enregistrant.",
+    "apres_un_reglage": "Juste après un réglage, l’ITC compare directement à TS, sans HD ni CD : il peut chauffer ou lancer le frigo aussitôt. D’où la règle : régler frigo débranché.",
+    "voyant_froid_clignote": "Le voyant vert (froid) clignote : délai PT en cours, le frigo démarrera ensuite. C’est normal.",
+    "alarme": "Un appui sur une touche coupe le bip ; l’appli INKBIRD envoie aussi une notification."
+  },
+  "guide_ihc": {
+    "appli": "Le plus simple : l’appli INKBIRD, avec les mêmes codes.",
+    "entrer": "Tenir SET 2 secondes : HS s’affiche.",
+    "naviguer": "Chaque appui sur SET enregistre la valeur et passe au code suivant : HS, HD, DD, AH, AL, PT, CA.",
+    "modifier": "▲ et ▼ changent la valeur ; en les maintenant, elle défile vite.",
+    "sortir": "Tenir SET 2 secondes ; sans appui pendant 30 secondes, il sort seul.",
+    "reglage_rapide": "Pour changer seulement HS (en Cave, de 80 à 76 %) : un appui court sur SET, HS clignote, ▲ ▼, puis SET pour valider.",
+    "apres_un_reglage": "Juste après un réglage ou une mise sous tension, il ignore DD : il déshumidifie dès que l’humidité dépasse HS. C’est normal.",
+    "voyant_vert_clignote": "Délai PT du déshumidificateur en cours.",
+    "alarme": "Un appui sur une touche coupe le bip ; l’appli INKBIRD envoie aussi une notification."
+  },
+  "glossaire": {
+    "itc": [
+      {
+        "code": "TS",
+        "nom": "Consigne",
+        "explication": "La température de référence : le tapis s’éteint et le frigo s’arrête quand elle est atteinte."
+      },
+      {
+        "code": "HD",
+        "nom": "Écart de chauffe",
+        "explication": "Le tapis s’allume quand la température descend à TS − HD, et s’éteint quand elle revient à TS."
+      },
+      {
+        "code": "CD",
+        "nom": "Écart de froid",
+        "explication": "Le frigo démarre quand la température monte à TS + CD, et s’arrête quand elle revient à TS. Plus l’écart est grand, moins le compresseur démarre souvent."
+      },
+      {
+        "code": "AH",
+        "nom": "Alarme haute",
+        "explication": "Bip et notification quand la température atteint cette valeur. Ne coupe rien."
+      },
+      {
+        "code": "AL",
+        "nom": "Alarme basse",
+        "explication": "Bip et notification quand la température descend à cette valeur. Ne coupe rien."
+      },
+      {
+        "code": "PT",
+        "nom": "Délai du compresseur",
+        "explication": "Minutes d’attente minimum entre l’arrêt du frigo et son redémarrage (0 à 30)."
+      },
+      {
+        "code": "CA",
+        "nom": "Correction de la sonde",
+        "explication": "Corrige l’écart trouvé au calibrage. 0 si la sonde est juste."
+      },
+      {
+        "code": "CF",
+        "nom": "Unité",
+        "explication": "C pour les degrés Celsius. Réglé sur F à la sortie d’usine."
+      }
+    ],
+    "ihc": [
+      {
+        "code": "HS",
+        "nom": "Consigne",
+        "explication": "L’humidité de référence : le déshumidificateur s’arrête quand elle est atteinte."
+      },
+      {
+        "code": "HD",
+        "nom": "Écart d’humidification",
+        "explication": "La prise WORK1 s’allume quand l’humidité descend à HS − HD. Sans humidificateur, sa valeur ne change rien."
+      },
+      {
+        "code": "DD",
+        "nom": "Écart de déshumidification",
+        "explication": "Le déshumidificateur (WORK2) démarre quand l’humidité monte à HS + DD, et s’arrête quand elle revient à HS."
+      },
+      {
+        "code": "AH",
+        "nom": "Alarme haute",
+        "explication": "Bip et notification quand l’humidité atteint cette valeur."
+      },
+      {
+        "code": "AL",
+        "nom": "Alarme basse",
+        "explication": "Bip et notification quand l’humidité descend à cette valeur."
+      },
+      {
+        "code": "PT",
+        "nom": "Délai du déshumidificateur",
+        "explication": "Minutes d’attente avant de le relancer (0 à 10)."
+      },
+      {
+        "code": "CA",
+        "nom": "Correction de la sonde",
+        "explication": "Corrige l’écart trouvé au calibrage."
+      }
+    ]
+  },
+  "changement_de_mode": [
+    "Débrancher le frigo, le tapis et le déshumidificateur ; sortir les produits.",
+    "Faire le nettoyage prévu pour cette transition.",
+    "Si l’on sort d’un mode chaud : laisser la chambre revenir à la température de la pièce, porte ouverte.",
+    "Régler l’ITC avec les valeurs du nouveau mode, dans l’appli INKBIRD ou aux touches, frigo toujours débranché.",
+    "Régler l’IHC.",
+    "Régler le thermostat du frigo : position moyenne en Froid, au plus froid ailleurs.",
+    "Brancher selon le mode : prise chauffage, prise froid, WORK2 ; vitesse et orientation du ventilateur ; bac de sel en Cave.",
+    "Placer les sondes.",
+    "Laisser tourner 2 à 3 heures à vide et vérifier les courbes dans l’appli INKBIRD.",
+    "Entrer les produits."
+  ],
+  "verification_hebdomadaire": [
+    "Regarder les courbes de la semaine dans l’appli INKBIRD, sans ouvrir.",
+    "Vider le réservoir du déshumidificateur (plus souvent selon le mode).",
+    "En Cave : il doit rester du sel non dissous dans le bac.",
+    "Regarder la glace sur la plaque du fond.",
+    "Vérifier que le ventilateur tourne, à la bonne vitesse.",
+    "Écouter le frigo : il ne doit pas redémarrer toutes les quelques minutes."
+  ],
+  "coupure_de_courant": "Au retour du courant, les Inkbird reprennent avec leurs réglages ; pendant la coupure, l’appli INKBIRD les montre hors ligne. Vérifier que le déshumidificateur et le ventilateur sont repartis. Coupure de plus de 2 heures en mode Froid : contrôler la viande.",
+  "modes": [
+    {
+      "id": "koji",
+      "nom": "Chaud · koji",
+      "couleur": "chaud",
+      "cible": "30 à 36 °C dans le riz ; très humide les 20 premières heures, puis 70 à 78 %",
+      "itc": {
+        "TS": 32,
+        "HD": 2,
+        "CD": 4,
+        "AH": 39,
+        "AL": 26,
+        "PT": 10,
+        "CA": 0,
+        "CF": "C"
+      },
+      "seuils": "Tapis : marche à 30 °C, arrêt à 32 °C. Frigo : marche à 36 °C, arrêt à 32 °C.",
+      "ihc_phases": [
+        {
+          "nom": "Phase 1 · de 0 à 20 h",
+          "HS": 85,
+          "HD": 20,
+          "DD": 10,
+          "AH": 99,
+          "AL": 50,
+          "PT": 3,
+          "CA": 0,
+          "note": "Le torchon humide fait l’humidité ; le déshumidificateur ne démarre presque jamais."
+        },
+        {
+          "nom": "Phase 2 · de 20 h à la récolte",
+          "HS": 70,
+          "HD": 20,
+          "DD": 8,
+          "AH": 95,
+          "AL": 45,
+          "PT": 3,
+          "CA": 0,
+          "note": "Le déshumidificateur évite que le koji se mouille quand il chauffe."
+        }
+      ],
+      "branchements": {
+        "itc_chauffage": "Tapis",
+        "itc_froid": "Frigo",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Déshumidificateur",
+        "prise_murale": "Chargeur USB du ventilateur, et les deux Inkbird"
+      },
+      "thermostat_frigo": "Au plus froid",
+      "ventilateur": {
+        "vitesse": "lente",
+        "orientation": "Vers la plaque du fond, jamais sur les plateaux."
+      },
+      "deshumidificateur": "Sur WORK2. Il démarre rarement en phase 1 ; en phase 2, il évite que le koji se mouille.",
+      "reservoir": {
+        "tous_les_j": 1,
+        "texte": "Chaque jour en phase 2 : le koji rejette beaucoup d’eau."
+      },
+      "sonde_itc": "Plantée au cœur du riz, sous un film.",
+      "pourquoi": [
+        "La sonde est dans le riz : on règle la température du koji, pas celle de l’air.",
+        "CD 4 : le frigo ne démarre qu’à 36 °C et fait des cycles longs, au lieu de s’allumer toutes les quelques minutes quand le koji chauffe.",
+        "6 °C entre l’allumage du tapis (30 °C) et celui du frigo (36 °C) : ils ne se relaient jamais en boucle.",
+        "Démarrer à 36 °C reste dans les limites du frigo : il est prévu pour une pièce jusqu’à 38 °C au moins. Les 20 premières heures, le koji ne chauffe pas encore et le frigo ne démarre pas.",
+        "AH 39 : prévient avant les 40 °C qui tuent le koji.",
+        "Ventilateur lent en continu : il répartit la chaleur du tapis puis le froid, sans dessécher le koji, protégé par son torchon."
+      ],
+      "alarmes": {
+        "temperature_haute": "Riz à 39 °C : ouvrir, remuer, étaler plus fin, vérifier que le frigo démarre et que le ventilateur tourne.",
+        "temperature_basse": "Riz à 26 °C : vérifier le tapis et sa prise. Au démarrage, l’alarme sonne tant que la chambre chauffe : un appui coupe le bip.",
+        "humidite_haute": "Normal en phase 1. En phase 2 : vider le réservoir, vérifier le déshumidificateur.",
+        "humidite_basse": "Mouiller le torchon."
+      },
+      "energie": {
+        "estimation_kwh_jour": "0,3 à 1",
+        "ce_qui_consomme": "Le tapis les 20 premières heures, puis le frigo, qui évacue la chaleur du koji, et le déshumidificateur.",
+        "leviers": [
+          "Une fournée pleine (2 plateaux) plutôt que deux petites.",
+          "Une pièce tempérée : le tapis travaille moins."
+        ]
+      },
+      "passagers": [
+        "Vinaigre de riz, en bocal couvert d’un tissu",
+        "Pâtes à pain, en boîte fermée"
+      ],
+      "notes": [
+        "Grand nettoyage après la campagne : les spores s’installent partout."
+      ]
+    },
+    {
+      "id": "sechage",
+      "nom": "Séchage",
+      "couleur": "sech",
+      "cible": "33 à 35 °C, air le plus sec possible",
+      "itc": {
+        "TS": 35,
+        "HD": 2,
+        "CD": 5,
+        "AH": 40,
+        "AL": 25,
+        "PT": 10,
+        "CA": 0,
+        "CF": "C"
+      },
+      "seuils": "Déshumidificateur, qui sert de chauffage : marche à 33 °C, arrêt à 35 °C. Frigo : débranché.",
+      "ihc_phases": [
+        {
+          "nom": "Tout le séchage · surveillance seule",
+          "HS": 40,
+          "HD": 20,
+          "DD": 5,
+          "AH": 90,
+          "AL": 5,
+          "PT": 3,
+          "CA": 0,
+          "note": "Rien n’est branché sur l’IHC : il suit l’humidité et donne l’alarme."
+        }
+      ],
+      "branchements": {
+        "itc_chauffage": "Déshumidificateur ; le tapis en plus, par une multiprise, seulement si la chambre n’atteint pas 33 °C",
+        "itc_froid": "Rien",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Rien",
+        "prise_murale": "Chargeur USB du ventilateur, et les deux Inkbird"
+      },
+      "thermostat_frigo": "Sans objet : frigo débranché",
+      "ventilateur": {
+        "vitesse": "rapide",
+        "orientation": "À travers les grilles."
+      },
+      "deshumidificateur": "Sur la prise chauffage de l’ITC : il chauffe et sèche à la fois.",
+      "reservoir": {
+        "tous_les_j": 1,
+        "texte": "Chaque jour : plein, il s’arrête, et la chambre ne chauffe plus."
+      },
+      "sonde_itc": "Dans l’air, entre deux grilles.",
+      "pourquoi": [
+        "Le déshumidificateur fait le chauffage : ses 22 W chauffent la chambre aussi bien que le tapis, et sèchent l’air en plus. Même dépense, double usage.",
+        "Branché sur l’IHC, il tournerait sans arrêt et pousserait la chambre vers 40 °C, puisque rien ne refroidit.",
+        "Frigo débranché : toute la chaleur vient du déshumidificateur, il n’y a rien à évacuer.",
+        "AL 25 : si la température tombe, c’est presque toujours le réservoir plein.",
+        "AH 40 : prévient si la chambre chauffe trop, dans une pièce très chaude."
+      ],
+      "alarmes": {
+        "temperature_haute": "40 °C : la pièce est trop chaude, entrouvrir la porte.",
+        "temperature_basse": "25 °C : vider le réservoir du déshumidificateur. S’il est vide et que la chambre plafonne sous 33 °C, ajouter le tapis sur la prise chauffage. Au démarrage, l’alarme sonne tant que la chambre chauffe : un appui coupe le bip.",
+        "humidite_haute": "90 % : réservoir plein, ou trop de produits frais d’un coup.",
+        "humidite_basse": ""
+      },
+      "energie": {
+        "estimation_kwh_jour": "environ 0,4",
+        "ce_qui_consomme": "Le déshumidificateur seul, qui chauffe et sèche.",
+        "leviers": [
+          "Des grilles pleines : la dépense est la même pour une grille ou pour trois.",
+          "Une pièce tempérée."
+        ]
+      },
+      "passagers": [],
+      "notes": [
+        "Test du bocal : 1 semaine en bocal fermé ; s’il se forme de la buée, remettre à sécher."
+      ]
+    },
+    {
+      "id": "biltong",
+      "nom": "Biltong",
+      "couleur": "sech",
+      "cible": "26 à 28 °C, air sec et brassé",
+      "itc": {
+        "TS": 28,
+        "HD": 2,
+        "CD": 3,
+        "AH": 33,
+        "AL": 18,
+        "PT": 10,
+        "CA": 0,
+        "CF": "C"
+      },
+      "seuils": "Tapis : marche à 26 °C, arrêt à 28 °C. Frigo : marche à 31 °C, arrêt à 28 °C.",
+      "ihc_phases": [
+        {
+          "nom": "Tout le séchage",
+          "HS": 50,
+          "HD": 20,
+          "DD": 5,
+          "AH": 80,
+          "AL": 20,
+          "PT": 3,
+          "CA": 0,
+          "note": "Le déshumidificateur tourne beaucoup les premiers jours : c’est voulu."
+        }
+      ],
+      "branchements": {
+        "itc_chauffage": "Tapis",
+        "itc_froid": "Frigo",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Déshumidificateur",
+        "prise_murale": "Chargeur USB du ventilateur, et les deux Inkbird"
+      },
+      "thermostat_frigo": "Au plus froid",
+      "ventilateur": {
+        "vitesse": "rapide",
+        "orientation": "Entre les lanières."
+      },
+      "deshumidificateur": "Sur WORK2.",
+      "reservoir": {
+        "tous_les_j": 1,
+        "texte": "Chaque jour : la viande rejette beaucoup d’eau."
+      },
+      "sonde_itc": "Dans l’air, au milieu des lanières.",
+      "pourquoi": [
+        "Entre 26 et 28 °C, avec un air brassé et sec, la viande sèche sans cuire.",
+        "Le frigo est branché pour évacuer la chaleur du déshumidificateur, qui doit beaucoup tourner : sans lui, la chambre monterait vers 40 °C. En refroidissant, sa plaque retire aussi de l’eau.",
+        "Le frigo ne démarre qu’à 31 °C : dans ses limites, et 5 °C au-dessus de l’allumage du tapis.",
+        "Une semaine par an : la dépense reste petite."
+      ],
+      "alarmes": {
+        "temperature_haute": "33 °C : vérifier que le frigo démarre.",
+        "temperature_basse": "18 °C : vérifier le tapis.",
+        "humidite_haute": "80 % : vider le réservoir, vérifier le déshumidificateur.",
+        "humidite_basse": ""
+      },
+      "energie": {
+        "estimation_kwh_jour": "0,5 à 0,9",
+        "ce_qui_consomme": "Le déshumidificateur, et le frigo qui évacue sa chaleur.",
+        "leviers": [
+          "Une seule séance par an, chambre pleine.",
+          "Lanières de 2 cm au plus : elles sèchent plus vite."
+        ]
+      },
+      "passagers": [],
+      "notes": [
+        "Le biltong est seul dans la chambre ; grand nettoyage juste après."
+      ]
+    },
+    {
+      "id": "froid",
+      "nom": "Froid · maturation",
+      "couleur": "froid",
+      "cible": "2 à 3 °C environ, 75 à 85 %",
+      "itc": {
+        "TS": 1,
+        "HD": 1,
+        "CD": 3,
+        "AH": 5,
+        "AL": 0,
+        "PT": 10,
+        "CA": 0,
+        "CF": "C"
+      },
+      "seuils": "Le frigo règle seul avec son thermostat, vers 2 à 3 °C. L’ITC le coupe s’il descend à 1 °C et le laisse repartir à 4 °C. Tapis : marche à 0 °C, seulement si la pièce gèle.",
+      "ihc_phases": [
+        {
+          "nom": "Toute la campagne · surveillance seule",
+          "HS": 80,
+          "HD": 20,
+          "DD": 10,
+          "AH": 92,
+          "AL": 60,
+          "PT": 3,
+          "CA": 0,
+          "note": "Déshumidificateur débranché : l’IHC sert d’alarme."
+        }
+      ],
+      "branchements": {
+        "itc_chauffage": "Tapis",
+        "itc_froid": "Frigo",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Rien : déshumidificateur débranché",
+        "prise_murale": "Chargeur USB du ventilateur, et les deux Inkbird"
+      },
+      "thermostat_frigo": "Position moyenne, à ajuster la première semaine : un cran plus froid si la chambre dépasse 3,5 °C, un cran moins froid si elle descend sous 1,5 °C. Attendre 24 h entre deux réglages.",
+      "ventilateur": {
+        "vitesse": "moyenne",
+        "orientation": "Vers la plaque du fond : l’air circule ensuite autour de la viande."
+      },
+      "deshumidificateur": "Débranché : sous 12 °C il ne sert à rien, et le froid du frigo sèche déjà l’air.",
+      "reservoir": {
+        "tous_les_j": null,
+        "texte": "Débranché."
+      },
+      "sonde_itc": "Dans l’air, à côté de la viande.",
+      "pourquoi": [
+        "Le frigo travaille comme prévu par Beko : cycles d’usine, et la plaque du fond dégivre à chaque arrêt. Pas de givre, moins de consommation.",
+        "L’ITC n’est qu’un garde-fou : il coupe le frigo à 1 °C pour que la viande ne gèle pas, et le laisse repartir à 4 °C.",
+        "4 °C entre l’allumage du tapis (0 °C) et la reprise du frigo (4 °C) : ils ne se relaient jamais.",
+        "AH 5 : au-dessus, la viande n’est plus en sécurité ; si ça arrive, le thermostat du frigo est trop chaud."
+      ],
+      "alarmes": {
+        "temperature_haute": "5 °C : porte mal fermée, ou thermostat du frigo trop chaud (un cran plus froid). Si ça dure plus de 2 h, sortir la viande au frigo de cuisine.",
+        "temperature_basse": "0 °C : thermostat du frigo trop froid (un cran moins froid), ou pièce qui gèle.",
+        "humidite_haute": "92 % : surface de la viande collante ? Vérifier que le ventilateur tourne.",
+        "humidite_basse": "60 % : normal si la chambre est peu chargée."
+      },
+      "energie": {
+        "estimation_kwh_jour": "0,3 à 0,4",
+        "ce_qui_consomme": "Le frigo, qui tient 2 à 3 °C.",
+        "leviers": [
+          "Pas de givre : le thermostat du frigo dégivre à chaque cycle ; dégivrer au nettoyage si la glace dépasse 3 mm.",
+          "Une pièce fraîche, mais au-dessus de 10 °C : le frigo tourne moins.",
+          "Surveiller depuis l’appli INKBIRD plutôt qu’ouvrir."
+        ]
+      },
+      "passagers": [
+        "Salaisons sous vide",
+        "Saumures en boîte fermée",
+        "Bacon pendant sa pellicule"
+      ],
+      "notes": []
+    },
+    {
+      "id": "cave",
+      "nom": "Cave · charcuterie",
+      "couleur": "cave",
+      "cible": "11,5 à 15 °C ; 80 à 84 % les 3 premières semaines d’une vague, puis 76 à 80 %",
+      "itc": {
+        "TS": 13,
+        "HD": 1.5,
+        "CD": 2,
+        "AH": 16,
+        "AL": 10,
+        "PT": 10,
+        "CA": 0,
+        "CF": "C"
+      },
+      "seuils": "Frigo : marche à 15 °C, arrêt à 13 °C. Tapis : marche à 11,5 °C, arrêt à 13 °C.",
+      "ihc_phases": [
+        {
+          "nom": "3 premières semaines après une entrée",
+          "HS": 80,
+          "HD": 10,
+          "DD": 4,
+          "AH": 90,
+          "AL": 65,
+          "PT": 3,
+          "CA": 0,
+          "note": "La viande fraîche rejette beaucoup d’eau : le bac de sel et le frigo en retirent une partie, le déshumidificateur prend le relais au-dessus de 84 %."
+        },
+        {
+          "nom": "Ensuite",
+          "HS": 76,
+          "HD": 10,
+          "DD": 4,
+          "AH": 88,
+          "AL": 62,
+          "PT": 3,
+          "CA": 0,
+          "note": "Le bac de sel tient l’air vers 75 % ; le déshumidificateur ne démarre qu’au-dessus de 80 %."
+        }
+      ],
+      "branchements": {
+        "itc_chauffage": "Tapis",
+        "itc_froid": "Frigo",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Déshumidificateur",
+        "prise_murale": "Chargeur USB du ventilateur, et les deux Inkbird"
+      },
+      "thermostat_frigo": "Au plus froid",
+      "ventilateur": {
+        "vitesse": "lente",
+        "orientation": "Vers la paroi du fond, jamais directement sur les pièces."
+      },
+      "deshumidificateur": "Sur WORK2, en renfort : à 13 °C, il est au bas de sa plage de fonctionnement et peu efficace.",
+      "bac_de_sel": "Un bac large de gros sel à peine mouillé : il doit toujours rester du sel non dissous. Il absorbe l’eau au-dessus de 75 % et en rend en dessous, sans courant.",
+      "reservoir": {
+        "tous_les_j": 3,
+        "texte": "Tous les 3 jours pendant les 3 premières semaines d’une vague, puis chaque semaine."
+      },
+      "sonde_itc": "Dans l’air, entre les pièces.",
+      "pourquoi": [
+        "Entre 11,5 et 15 °C : la zone d’un séchage lent et sûr.",
+        "CD 2 et PT 10 : peu de démarrages du compresseur.",
+        "3,5 °C entre le tapis et le frigo : ils ne se relaient jamais.",
+        "80 % au début : la viande fraîche sèche sans croûter ; 76 % ensuite.",
+        "Le déshumidificateur s’arrête toujours au-dessus de 75 % : il ne contrarie jamais le bac de sel, et ses 22 W, que le frigo doit ensuite évacuer, ne servent que quand il le faut.",
+        "DD 4 : le déshumidificateur ne fait pas de marche-arrêt rapprochés."
+      ],
+      "alarmes": {
+        "temperature_haute": "16 °C : vérifier le frigo. Au-dessus de 15 °C plusieurs jours, le séchage n’est plus sûr.",
+        "temperature_basse": "10 °C : vérifier le tapis.",
+        "humidite_haute": "Vider le réservoir ; s’il ne reste plus de sel non dissous, en rajouter dans le bac.",
+        "humidite_basse": "Mouiller un peu le bac de sel."
+      },
+      "energie": {
+        "estimation_kwh_jour": "0,1 à 0,4",
+        "ce_qui_consomme": "Le frigo, selon la température de la pièce, et le déshumidificateur au début de chaque vague.",
+        "leviers": [
+          "Le bac de sel fait l’essentiel, sans courant.",
+          "Une pièce entre 12 et 18 °C : le frigo comme le tapis travaillent peu.",
+          "Pesées groupées, une fois par semaine."
+        ]
+      },
+      "passagers": [],
+      "notes": [
+        "Les pièces ne se touchent pas. Une pesée par semaine."
+      ]
+    },
+    {
+      "id": "tempere",
+      "nom": "Tempéré · été",
+      "couleur": "temp",
+      "cible": "18 à 21 °C",
+      "itc": {
+        "TS": 19,
+        "HD": 1,
+        "CD": 2,
+        "AH": 24,
+        "AL": 15,
+        "PT": 10,
+        "CA": 0,
+        "CF": "C"
+      },
+      "seuils": "Frigo : marche à 21 °C, arrêt à 19 °C. Tapis : marche à 18 °C, arrêt à 19 °C.",
+      "ihc_phases": [
+        {
+          "nom": "Tout l’été · surveillance seule",
+          "HS": 75,
+          "HD": 20,
+          "DD": 10,
+          "AH": 90,
+          "AL": 40,
+          "PT": 3,
+          "CA": 0,
+          "note": "Déshumidificateur débranché. Si l’humidité dépasse souvent 90 %, le brancher sur WORK2 : il démarrera à 85 % et s’arrêtera à 75 %."
+        }
+      ],
+      "branchements": {
+        "itc_chauffage": "Tapis",
+        "itc_froid": "Frigo",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Rien : déshumidificateur débranché",
+        "prise_murale": "Chargeur USB du ventilateur, et les deux Inkbird"
+      },
+      "thermostat_frigo": "Au plus froid",
+      "ventilateur": {
+        "vitesse": "lente",
+        "orientation": "Vers la plaque du fond."
+      },
+      "deshumidificateur": "Débranché : bocaux, sacs et bacs sont fermés, l’humidité de l’air leur importe peu, et le froid du frigo sèche déjà l’air.",
+      "reservoir": {
+        "tous_les_j": null,
+        "texte": "Débranché."
+      },
+      "sonde_itc": "Dans l’air, au milieu.",
+      "pourquoi": [
+        "Un été frais pour la lacto, le nuka et les champignons.",
+        "CD 2 et PT 10 : le compresseur travaille contre une cuisine chaude ; des cycles longs le ménagent.",
+        "3 °C entre le tapis et le frigo.",
+        "Déshumidificateur débranché : il chaufferait la chambre et le frigo devrait évacuer cette chaleur, pour des produits qui n’en ont pas besoin."
+      ],
+      "alarmes": {
+        "temperature_haute": "24 °C : vérifier le frigo et l’air derrière lui.",
+        "temperature_basse": "15 °C : vérifier le tapis.",
+        "humidite_haute": "90 % : aérer 5 minutes ; si ça revient souvent, brancher le déshumidificateur sur WORK2.",
+        "humidite_basse": ""
+      },
+      "energie": {
+        "estimation_kwh_jour": "0,1 à 0,2",
+        "ce_qui_consomme": "Le frigo, contre la chaleur de l’été ; davantage pendant une canicule.",
+        "leviers": [
+          "Une pièce fraîche en été : cellier, pièce au nord.",
+          "Aérer seulement le temps nécessaire, matin et soir."
+        ]
+      },
+      "passagers": [
+        "Nukazuke",
+        "Bocaux et sacs de lacto",
+        "Pâtes et levains"
+      ],
+      "notes": [
+        "Ouvrir la porte 1 minute matin et soir : air frais pour les champignons, et le nuka se remue en même temps.",
+        "Champignons dans un bac de fructification fermé et percé, avec de la perlite humide au fond."
+      ]
+    },
+    {
+      "id": "pause",
+      "nom": "Pause",
+      "couleur": "off",
+      "cible": "Chambre éteinte",
+      "itc": null,
+      "seuils": "Tout est débranché, Inkbird compris.",
+      "ihc_phases": [],
+      "branchements": {
+        "itc_chauffage": "Rien",
+        "itc_froid": "Rien",
+        "ihc_work1": "Rien",
+        "ihc_work2": "Rien",
+        "prise_murale": "Rien"
+      },
+      "thermostat_frigo": "Sans objet",
+      "ventilateur": {
+        "vitesse": "arrêt",
+        "orientation": ""
+      },
+      "deshumidificateur": "Débranché, réservoir vidé et séché.",
+      "reservoir": {
+        "tous_les_j": null,
+        "texte": "Vidé et séché."
+      },
+      "sonde_itc": "",
+      "pourquoi": [
+        "Même en veille, les Inkbird consomment un peu : tout se débranche."
+      ],
+      "alarmes": {},
+      "energie": {
+        "estimation_kwh_jour": "0",
+        "ce_qui_consomme": "Rien.",
+        "leviers": []
+      },
+      "passagers": [],
+      "notes": [
+        "Porte entrouverte et calée pour éviter odeurs et moisissures."
+      ]
+    }
+  ],
+  "nettoyage": {
+    "leger": "Tout sortir, laver à l’eau chaude savonneuse, rincer, sécher. Vider le réservoir du déshumidificateur.",
+    "moyen": "Le nettoyage léger, puis alcool à 70 % ou vinaigre blanc sur les parois, les grilles et le joint de porte. Laver le réservoir du déshumidificateur.",
+    "grand": "Le nettoyage moyen, plus les pales du ventilateur, l’extérieur du déshumidificateur et du tapis, et le trou d’évacuation au fond. Dégivrer la plaque du fond si besoin. Sécher 24 h porte ouverte."
+  },
+  "transitions": [
+    {
+      "de": "koji",
+      "vers": "sechage",
+      "nettoyage": null,
+      "note": "Sans nettoyage. Débrancher le frigo et le tapis ; brancher le déshumidificateur sur la prise chauffage de l’ITC ; ventilateur en rapide, à travers les grilles."
+    },
+    {
+      "de": "sechage",
+      "vers": "froid",
+      "nettoyage": "grand",
+      "note": "Les spores du koji ne doivent pas toucher la viande. Laisser la chambre revenir à la température de la pièce avant de brancher le frigo ; thermostat du frigo sur la position moyenne ; déshumidificateur débranché."
+    },
+    {
+      "de": "froid",
+      "vers": "cave",
+      "nettoyage": "leger",
+      "note": "Jus et croûtes de viande. Thermostat du frigo au plus froid ; installer le bac de sel ; déshumidificateur sur WORK2."
+    },
+    {
+      "de": "cave",
+      "vers": "koji",
+      "nettoyage": "moyen",
+      "note": "Les moisissures de charcuterie peuvent tacher le koji. Retirer le bac de sel."
+    },
+    {
+      "de": "sechage",
+      "vers": "biltong",
+      "nettoyage": null,
+      "note": "Laisser la chambre redescendre à la température de la pièce, porte ouverte, avant de brancher le frigo. Tapis sur la prise chauffage, déshumidificateur de retour sur WORK2."
+    },
+    {
+      "de": "biltong",
+      "vers": "pause",
+      "nettoyage": "grand",
+      "note": "La chambre doit être nette avant les champignons. Tout débrancher, Inkbird compris."
+    },
+    {
+      "de": "pause",
+      "vers": "tempere",
+      "nettoyage": null,
+      "note": "Thermostat du frigo au plus froid ; déshumidificateur débranché."
+    },
+    {
+      "de": "tempere",
+      "vers": "koji",
+      "nettoyage": "moyen",
+      "note": "Odeurs de lacto et spores de pleurotes. Déshumidificateur rebranché sur WORK2."
+    }
+  ],
+  "cohabitation": {
+    "etiquettes": {
+      "odeur_forte": "Dégage une odeur qui imprègne (ail, chou, vinaigre, piment, nuka)",
+      "sensible_odeur": "Absorbe les odeurs (viande crue, gras, charcuterie)",
+      "spores": "Libère des spores (koji, champignons en pousse)",
+      "sensible_spores": "Craint les spores étrangères (charcuterie, substrats de champignons)",
+      "air_sec": "Demande un air sec",
+      "air_humide": "Demande un air humide"
+    },
+    "conflits": [
+      [
+        "odeur_forte",
+        "sensible_odeur"
+      ],
+      [
+        "spores",
+        "sensible_spores"
+      ],
+      [
+        "air_sec",
+        "air_humide"
+      ]
+    ],
+    "capacite": 1,
+    "regle": "Deux recettes peuvent partager la chambre si elles demandent le même mode, si aucune paire de leurs étiquettes n’est dans la liste des conflits, et si la somme de leurs places ne dépasse pas 1. Les recettes faites hors de la chambre (cuisine, frigo, placard, thermoplongeur, à l’air) se font en parallèle sans contrainte de mode ; seul le thermoplongeur ne fait qu’une chose à la fois."
+  }
+}

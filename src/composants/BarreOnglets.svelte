@@ -11,7 +11,7 @@
     { id: 'ajouter', libelle: 'Ajouter' },
     { id: 'frigo', libelle: 'Frigo' },
     { id: 'courses', libelle: 'Courses' },
-    { id: 'bocaux', libelle: 'Bocaux' },
+    { id: 'chambre', libelle: 'Chambre' },
   ];
 </script>
 

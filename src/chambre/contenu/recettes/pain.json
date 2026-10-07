@@ -1,0 +1,271 @@
+[
+  {
+    "id": "levainble", "nom": "Levain de blé", "famille": "pain", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Environ 150 g de levain",
+    "base": {"ingredient": "Levain", "quantite": 50, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 7},
+    "fin": {"type": "temps", "texte": "Rafraîchi chaque semaine."},
+    "materiel": ["Bocal de 500 ml avec couvercle posé", "Élastique pour repérer le niveau"],
+    "ingredients": [
+      {"nom": "Levain", "qte": 50, "unite": "g"},
+      {"nom": "Farine T65 ou T80", "qte": 50, "unite": "g"},
+      {"nom": "Eau", "qte": 50, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Démarrer (une seule fois)", "texte": "Mélanger 50 g de farine complète et 50 g d’eau, couvrir. Chaque jour pendant 5 à 7 jours, garder 50 g et rafraîchir avec 50 g de farine et 50 g d’eau, jusqu’à ce qu’il double en 4 à 8 h.", "duree": "5 à 7 jours"},
+      {"titre": "Entretien", "texte": "Une fois par semaine : garder 50 g, ajouter 50 g de farine et 50 g d’eau, laisser 1 h à température ambiante, puis frigo.", "duree": "5 min"},
+      {"titre": "Avant une fournée", "texte": "Deux rafraîchis à 24–26 °C, à 6–8 h d’intervalle. Il doit doubler et sentir le yaourt.", "duree": "12 à 16 h"}
+    ],
+    "controles": [{"j": 7, "repeter_j": 7, "titre": "Rafraîchir le levain", "observer": "Odeur, surface", "normal": "Odeur de yaourt ou de fruit", "probleme": "Liquide gris en surface, odeur d’acétone", "action": "Il a faim : mélanger, rafraîchir deux fois de suite."}],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "tant qu’il est nourri", "jours": 0}],
+    "liens": ["campagne", "painnoix", "painkoji", "painmie", "excedent"]
+  },
+  {
+    "id": "levainseigle", "nom": "Levain de seigle", "famille": "pain", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Environ 150 g de levain",
+    "base": {"ingredient": "Levain de seigle", "quantite": 50, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 7},
+    "fin": {"type": "temps", "texte": "Rafraîchi chaque semaine."},
+    "materiel": ["Bocal de 500 ml"],
+    "ingredients": [
+      {"nom": "Levain de seigle", "qte": 50, "unite": "g"},
+      {"nom": "Farine de seigle T130 ou T170", "qte": 50, "unite": "g"},
+      {"nom": "Eau", "qte": 50, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Démarrer (une seule fois)", "texte": "Comme le levain de blé, avec de la farine de seigle : 5 à 7 jours de rafraîchis quotidiens.", "duree": "5 à 7 jours"},
+      {"titre": "Entretien", "texte": "Une fois par semaine : garder 50 g, ajouter 50 g de seigle et 50 g d’eau, 1 h dehors, puis frigo.", "duree": "5 min"}
+    ],
+    "controles": [{"j": 7, "repeter_j": 7, "titre": "Rafraîchir le levain de seigle", "observer": "Odeur", "normal": "Acidulée, fruitée", "probleme": "Odeur d’acétone", "action": "Rafraîchir deux fois de suite."}],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "tant qu’il est nourri", "jours": 0}]
+  },
+  {
+    "id": "excedent", "nom": "Crackers, crêpes, pancakes", "famille": "pain", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "1 plaque de crackers, ou 10 pancakes",
+    "base": {"ingredient": "Excédent de levain", "quantite": 200, "unite": "g"},
+    "duree": {"min_j": 0.05, "max_j": 0.1},
+    "fin": {"type": "temps", "texte": "Au four ou à la poêle."},
+    "materiel": ["Rouleau", "Plaque et papier cuisson", "Poêle"],
+    "ingredients": [
+      {"nom": "Excédent de levain", "qte": 200, "unite": "g"},
+      {"nom": "Crackers : farine", "qte": 100, "unite": "g"},
+      {"nom": "Crackers : huile d’olive", "qte": 40, "unite": "g"},
+      {"nom": "Crackers : sel", "qte": 4, "unite": "g"},
+      {"nom": "Crackers : graines", "qte": 30, "unite": "g"},
+      {"nom": "Pancakes : œufs", "qte": 2, "unite": "pièces"},
+      {"nom": "Pancakes : lait", "qte": 200, "unite": "g"},
+      {"nom": "Pancakes : farine", "qte": 100, "unite": "g"},
+      {"nom": "Pancakes : sucre", "qte": 20, "unite": "g"},
+      {"nom": "Pancakes : bicarbonate", "qte": 3, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Crackers", "texte": "Mélanger, étaler à 2 mm sur papier cuisson, prédécouper, cuire 20 à 25 min à 170 °C.", "duree": "35 min"},
+      {"titre": "Crêpes ou pancakes", "texte": "Mélanger le levain avec le reste, cuire à la poêle.", "duree": "20 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Placard", "comment": "crackers en boîte", "duree": "2 semaines", "jours": 14},
+      {"mode": "Congélateur", "comment": "crêpes, pancakes", "duree": "3 mois", "jours": 90}
+    ]
+  },
+  {
+    "id": "campagne", "nom": "Pain de campagne au levain", "famille": "pain", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "2 pains d’environ 850 g",
+    "base": {"ingredient": "Farine", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "temps", "texte": "Sur 1 à 2 jours."},
+    "materiel": ["Grand saladier", "Corne", "2 bannetons ou paniers avec torchons farinés", "Cocotte en fonte", "Lame"],
+    "ingredients": [
+      {"nom": "Farine T65", "qte": 850, "unite": "g"},
+      {"nom": "Farine T80 ou de seigle", "qte": 150, "unite": "g"},
+      {"nom": "Eau", "qte": 720, "unite": "g"},
+      {"nom": "Levain actif", "qte": 200, "unite": "g"},
+      {"nom": "Sel", "qte": 20, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Autolyse", "texte": "Mélanger farines et 680 g d’eau, couvrir 1 h.", "duree": "1 h"},
+      {"titre": "Pétrir", "texte": "Ajouter levain, sel et le reste d’eau, pétrir jusqu’à une pâte lisse.", "duree": "10 min"},
+      {"titre": "Pointage", "texte": "4 à 5 h à 24 °C avec 4 rabats dans les 2 premières heures. L’hiver : en cuisine plus longtemps, ou dans l’étuve de secours.", "duree": "4 à 5 h"},
+      {"titre": "Façonner", "texte": "Diviser en deux, bouler serré, mettre en bannetons.", "duree": "15 min"},
+      {"titre": "Apprêt au froid", "texte": "12 à 16 h au frigo.", "duree": "12 à 16 h"},
+      {"titre": "Cuire", "texte": "Cocotte préchauffée à 250 °C : grigner, cuire 25 min couvert puis 20 min découvert à 230 °C.", "duree": "45 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Torchon", "comment": "à température ambiante", "duree": "4 jours", "jours": 4},
+      {"mode": "Congélateur", "comment": "tranché", "duree": "3 mois", "jours": 90}
+    ]
+  },
+  {
+    "id": "painnoix", "nom": "Pain aux noix", "famille": "pain", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "2 pains",
+    "base": {"ingredient": "Farine", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "temps", "texte": "Sur 1 à 2 jours."},
+    "materiel": ["Comme le pain de campagne", "Poêle pour griller les noix"],
+    "ingredients": [
+      {"nom": "Farine T65", "qte": 800, "unite": "g"},
+      {"nom": "Farine de seigle", "qte": 200, "unite": "g"},
+      {"nom": "Eau", "qte": 720, "unite": "g"},
+      {"nom": "Levain actif", "qte": 200, "unite": "g"},
+      {"nom": "Sel", "qte": 20, "unite": "g"},
+      {"nom": "Cerneaux de noix grillés", "qte": 150, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Pâte", "texte": "Comme le pain de campagne. Ajouter les noix grillées en fin de pétrissage.", "duree": "1 h 15"},
+      {"titre": "Pointage, façonnage, apprêt", "texte": "Comme le pain de campagne.", "duree": "1 jour"},
+      {"titre": "Cuire", "texte": "Cocotte à 250 °C, 25 min couvert puis 20 min à 230 °C.", "duree": "45 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Torchon", "comment": "", "duree": "3 jours", "jours": 3},
+      {"mode": "Congélateur", "comment": "tranché", "duree": "3 mois", "jours": 90}
+    ]
+  },
+  {
+    "id": "painkoji", "nom": "Pain au koji ou à l’amazake", "famille": "pain", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "2 pains",
+    "base": {"ingredient": "Farine", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "temps", "texte": "Sur 1 à 2 jours."},
+    "materiel": ["Comme le pain de campagne"],
+    "ingredients": [
+      {"nom": "Farine T65", "qte": 850, "unite": "g"},
+      {"nom": "Farine T80", "qte": 150, "unite": "g"},
+      {"nom": "Eau", "qte": 570, "unite": "g"},
+      {"nom": "Amazake", "qte": 200, "unite": "g", "note": "Ou 30 g de koji en poudre, avec 720 g d’eau"},
+      {"nom": "Levain actif", "qte": 200, "unite": "g"},
+      {"nom": "Sel", "qte": 20, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Pâte", "texte": "Comme le pain de campagne, l’amazake avec l’eau.", "duree": "1 h 15"},
+      {"titre": "Pointage, façonnage, apprêt", "texte": "Comme le pain de campagne ; la pâte lève un peu plus vite.", "duree": "1 jour"},
+      {"titre": "Cuire", "texte": "10 °C de moins que le pain de campagne : la croûte brunit vite.", "duree": "45 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Torchon", "comment": "", "duree": "3 jours", "jours": 3},
+      {"mode": "Congélateur", "comment": "tranché", "duree": "3 mois", "jours": 90}
+    ]
+  },
+  {
+    "id": "focaccia", "nom": "Focaccia", "famille": "pain", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "1 grande plaque",
+    "base": {"ingredient": "Farine", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 3},
+    "fin": {"type": "temps", "texte": "24 à 72 h au frigo, puis cuisson."},
+    "materiel": ["Grande boîte huilée avec couvercle", "Plaque de four"],
+    "ingredients": [
+      {"nom": "Farine T55 ou T65", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 800, "unite": "g"},
+      {"nom": "Levure sèche (ou 150 g de levain)", "qte": 5, "unite": "g"},
+      {"nom": "Sel", "qte": 22, "unite": "g"},
+      {"nom": "Huile d’olive", "qte": 60, "unite": "g", "note": "Plus de quoi huiler la plaque"}
+    ],
+    "etapes": [
+      {"titre": "Mélanger", "texte": "Mélanger le tout, 4 rabats sur 2 h.", "duree": "2 h"},
+      {"titre": "Pousse au froid", "texte": "Boîte huilée fermée, 24 à 72 h au frigo.", "duree": "24 à 72 h"},
+      {"titre": "Étaler", "texte": "Verser sur la plaque huilée, étirer doucement, 2 à 3 h à température ambiante.", "duree": "2 à 3 h"},
+      {"titre": "Cuire", "texte": "Alvéoles au doigt, huile, sel, garniture. 20 à 25 min à 230 °C.", "duree": "25 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Boîte", "comment": "", "duree": "2 jours", "jours": 2},
+      {"mode": "Congélateur", "comment": "", "duree": "2 mois", "jours": 60}
+    ]
+  },
+  {
+    "id": "painmie", "nom": "Pain de mie et brioche au levain", "famille": "pain", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "1 pain de mie ou 1 brioche",
+    "base": {"ingredient": "Farine T45", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "temps", "texte": "Sur 1 à 2 jours."},
+    "materiel": ["Robot pétrisseur", "Moule à cake ou à pain de mie"],
+    "ingredients": [
+      {"nom": "Farine T45", "qte": 500, "unite": "g"},
+      {"nom": "Levain actif", "qte": 150, "unite": "g"},
+      {"nom": "Pain de mie : lait", "qte": 250, "unite": "g"},
+      {"nom": "Pain de mie : beurre", "qte": 40, "unite": "g"},
+      {"nom": "Pain de mie : sucre", "qte": 25, "unite": "g"},
+      {"nom": "Pain de mie : sel", "qte": 9, "unite": "g"},
+      {"nom": "Brioche : œufs (à la place du lait)", "qte": 250, "unite": "g"},
+      {"nom": "Brioche : beurre mou", "qte": 250, "unite": "g"},
+      {"nom": "Brioche : sucre", "qte": 60, "unite": "g"},
+      {"nom": "Brioche : sel", "qte": 10, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Pétrir", "texte": "Pain de mie : tout pétrir 10 min. Brioche : pétrir sans le beurre 10 min, puis l’incorporer petit à petit jusqu’à une pâte lisse qui se décolle.", "duree": "15 à 25 min"},
+      {"titre": "Pointage", "texte": "3 à 4 h à 24 °C, ou une nuit au frigo (indispensable pour la brioche).", "duree": "3 h à 1 nuit"},
+      {"titre": "Façonner", "texte": "Bouler en 3 ou 4 pâtons, les serrer dans le moule.", "duree": "15 min"},
+      {"titre": "Apprêt", "texte": "3 à 6 h à 26 °C, jusqu’à ce que la pâte dépasse le moule : l’hiver, dans l’étuve de secours.", "duree": "3 à 6 h"},
+      {"titre": "Cuire", "texte": "Pain de mie 35 min à 180 °C ; brioche 30 à 35 min à 170 °C, dorée à l’œuf.", "duree": "35 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Sac", "comment": "", "duree": "5 jours", "jours": 5},
+      {"mode": "Congélateur", "comment": "tranché", "duree": "3 mois", "jours": 90}
+    ]
+  },
+  {
+    "id": "pita", "nom": "Pita et naan", "famille": "pain", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "8 pains",
+    "base": {"ingredient": "Farine", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 0.1, "max_j": 0.15},
+    "fin": {"type": "temps", "texte": "En quelques heures."},
+    "materiel": ["Rouleau", "Plaque ou pierre très chaude", "Poêle en fonte pour le naan"],
+    "ingredients": [
+      {"nom": "Farine T55", "qte": 500, "unite": "g"},
+      {"nom": "Eau", "qte": 300, "unite": "g", "note": "Naan : 200 g d’eau et 125 g de yaourt"},
+      {"nom": "Levure sèche", "qte": 7, "unite": "g"},
+      {"nom": "Sel", "qte": 10, "unite": "g"},
+      {"nom": "Huile", "qte": 15, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Pétrir", "texte": "Pétrir 8 min, laisser lever 1 h 30.", "duree": "1 h 40"},
+      {"titre": "Diviser et étaler", "texte": "8 pâtons, étalés à 5 mm.", "duree": "15 min"},
+      {"titre": "Cuire", "texte": "Pita : 4 à 5 min sur plaque très chaude à 250 °C, elle gonfle. Naan : à la poêle très chaude, 1 à 2 min par face.", "duree": "20 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Sac", "comment": "", "duree": "2 jours", "jours": 2},
+      {"mode": "Congélateur", "comment": "", "duree": "3 mois", "jours": 90}
+    ]
+  },
+  {
+    "id": "pizza", "nom": "Pizza napolitaine", "famille": "pain", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "6 pâtons de 270 g",
+    "base": {"ingredient": "Farine 00", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 3},
+    "fin": {"type": "temps", "texte": "24 à 72 h au frigo."},
+    "materiel": ["Boîte à pâtons ou boîtes fermées", "Pierre ou acier à pizza", "Pelle"],
+    "ingredients": [
+      {"nom": "Farine 00 (force W260 à 300)", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 630, "unite": "g"},
+      {"nom": "Sel", "qte": 27, "unite": "g"},
+      {"nom": "Levure fraîche", "qte": 2, "unite": "g", "note": "Ou 1 g de levure sèche"}
+    ],
+    "etapes": [
+      {"titre": "Pétrir", "texte": "Dissoudre la levure dans l’eau, ajouter la farine puis le sel, pétrir 10 à 15 min.", "duree": "15 min"},
+      {"titre": "Pointage", "texte": "2 h à température ambiante, couvert.", "duree": "2 h"},
+      {"titre": "Bouler", "texte": "6 pâtons de 270 g, en boîtes fermées.", "duree": "10 min"},
+      {"titre": "Pousse au froid", "texte": "24 à 72 h au frigo de cuisine (3 à 5 °C).", "duree": "24 à 72 h"},
+      {"titre": "Cuire", "texte": "Sortir 2 à 3 h avant. Étaler à la main, four au maximum avec la pierre préchauffée 45 min.", "duree": "3 h"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "pâte", "duree": "3 jours", "jours": 3},
+      {"mode": "Congélateur", "comment": "pâtons huilés, après 24 h de froid", "duree": "3 mois", "jours": 90}
+    ],
+    "notes": "Décongélation : une nuit au frigo, puis 2 à 3 h à température ambiante."
+  }
+]

@@ -1,7 +1,7 @@
 // Navigation par l'adresse (#/…) : fonctionne hors ligne et sur GitHub Pages sans réglage serveur.
 
-export type Onglet = 'accueil' | 'recherche' | 'ajouter' | 'frigo' | 'courses' | 'bocaux';
-export const ONGLETS: Onglet[] = ['accueil', 'recherche', 'ajouter', 'frigo', 'courses', 'bocaux'];
+export type Onglet = 'accueil' | 'recherche' | 'ajouter' | 'frigo' | 'courses' | 'chambre';
+export const ONGLETS: Onglet[] = ['accueil', 'recherche', 'ajouter', 'frigo', 'courses', 'chambre'];
 
 export type Route =
   | { nom: Onglet }
@@ -10,7 +10,9 @@ export type Route =
   | { nom: 'reglages'; section?: string }
   | { nom: 'bocal'; id: string }
   | { nom: 'bocal-edition'; id?: string; fiche?: string; modele?: string }
-  | { nom: 'recette-edition'; id?: string };
+  | { nom: 'recette-edition'; id?: string }
+  /** Pages de la chambre de fermentation (#/chambre/mode/cave, #/chambre/bocaux…). */
+  | { nom: 'chambre-page'; chemin: string[] };
 
 export function lireRoute(hash: string): Route {
   const chemin = hash.replace(/^#\/?/, '');
@@ -35,6 +37,9 @@ export function lireRoute(hash: string): Route {
     if (reste[0] === 'nouvelle') return { nom: 'recette-edition' };
     if (reste[1] === 'modifier') return { nom: 'recette-edition', id: decodeURIComponent(reste[0]) };
   }
+  if (nom === 'chambre' && reste[0]) return { nom: 'chambre-page', chemin: reste.map(decodeURIComponent) };
+  // Ancien onglet Bocaux (avant la 1.9.0) : la liste des bocaux est maintenant dans la Chambre.
+  if (nom === 'bocaux') return { nom: 'chambre-page', chemin: ['bocaux'] };
   if (nom === 'reglages') return reste[0] ? { nom: 'reglages', section: reste[0] } : { nom: 'reglages' };
   if ((ONGLETS as string[]).includes(nom)) return { nom: nom as Onglet };
   return { nom: 'accueil' };
@@ -62,6 +67,11 @@ export function lienNouveauBocal(depuis: { fiche?: string; modele?: string } = {
 
 export function lienModifierBocal(id: string): string {
   return `#/bocal/${encodeURIComponent(id)}/modifier`;
+}
+
+/** Page de la chambre : lienChambre('mode', 'cave') → « #/chambre/mode/cave ». */
+export function lienChambre(...chemin: string[]): string {
+  return chemin.length ? `#/chambre/${chemin.map(encodeURIComponent).join('/')}` : '#/chambre';
 }
 
 export function lienFiche(id: string, page?: number): string {

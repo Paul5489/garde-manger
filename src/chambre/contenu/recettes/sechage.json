@@ -1,0 +1,108 @@
+[
+  {
+    "id": "noix", "nom": "Noix fraîches", "famille": "sech", "mois": [9, 10],
+    "lieu": "air", "mode": null, "technique": "sechage", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Selon la récolte",
+    "base": {"ingredient": "Noix fraîches en coque", "quantite": 2000, "unite": "g"},
+    "duree": {"min_j": 21, "max_j": 28},
+    "fin": {"type": "aspect", "texte": "La cloison centrale casse net et le cerneau craque."},
+    "materiel": ["Claies ou cagettes à fond ajouré"],
+    "ingredients": [{"nom": "Noix fraîches en coque, sans brou", "qte": 2000, "unite": "g"}],
+    "etapes": [
+      {"titre": "Trier", "texte": "Retirer le brou restant et les noix tachées.", "duree": "15 min"},
+      {"titre": "Étaler", "texte": "En une seule couche sur les claies, dans un endroit sec, aéré et à l’ombre.", "duree": "10 min"},
+      {"titre": "Sécher", "texte": "3 à 4 semaines, en remuant tous les 2 à 3 jours.", "duree": "3 à 4 sem."}
+    ],
+    "controles": [{"j": 3, "repeter_j": 3, "titre": "Remuer les noix", "observer": "Coques", "normal": "Sèches au toucher", "probleme": "Moisissure sur une coque", "action": "Retirer la noix."}],
+    "conservation": [
+      {"mode": "À l’air", "comment": "en coque, au sec", "duree": "1 an", "jours": 365},
+      {"mode": "Frigo", "comment": "cerneaux", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "champseches", "nom": "Champignons séchés", "famille": "sech", "mois": [11, 5],
+    "lieu": "chambre", "mode": "sechage", "technique": "sechage", "etiquettes": ["air_sec"], "place": 0.25, "difficulte": 1,
+    "rendement": "Environ 50 g pour 500 g frais",
+    "base": {"ingredient": "Champignons frais", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "aspect", "texte": "Cassants."},
+    "materiel": ["Grilles", "Bocal hermétique"],
+    "ingredients": [{"nom": "Champignons frais (pleurotes, shiitake, cèpes)", "qte": 500, "unite": "g"}],
+    "etapes": [
+      {"titre": "Trancher", "texte": "Brosser sans laver, trancher à 5 mm.", "duree": "15 min"},
+      {"titre": "Sécher", "texte": "Une couche par grille, mode Séchage, 1 à 2 jours jusqu’à cassant.", "duree": "1 à 2 jours"},
+      {"titre": "Ranger", "texte": "Refroidir, mettre en bocal hermétique.", "duree": ""}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Placard", "comment": "bocal hermétique", "duree": "1 an", "jours": 365}],
+    "liens": ["dashi", "saucisson"]
+  },
+  {
+    "id": "herbes", "nom": "Herbes aromatiques", "famille": "sech", "mois": [6, 7, 8, 9],
+    "lieu": "air", "mode": null, "technique": "sechage", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Selon la cueillette",
+    "base": {"ingredient": "Herbes en bouquets", "quantite": 200, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "aspect", "texte": "Les feuilles s’effritent entre les doigts."},
+    "materiel": ["Ficelle", "Sacs en papier", "Bocaux"],
+    "ingredients": [{"nom": "Thym, romarin, sauge, origan, laurier", "qte": 200, "unite": "g"}],
+    "etapes": [
+      {"titre": "Cueillir", "texte": "Le matin, une fois la rosée sèche, avant la floraison si possible.", "duree": ""},
+      {"titre": "Suspendre", "texte": "Petits bouquets, tête en bas, dans un endroit sec, aéré et à l’ombre.", "duree": "1 à 2 sem."},
+      {"titre": "Ranger", "texte": "Effeuiller, mettre en bocaux à l’abri de la lumière.", "duree": "15 min"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Placard", "comment": "bocal à l’abri de la lumière", "duree": "1 an", "jours": 365}]
+  },
+  {
+    "id": "tisanes", "nom": "Plantes à tisane", "famille": "sech", "mois": [6, 7, 8, 9],
+    "lieu": "air", "mode": null, "technique": "sechage", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Selon la cueillette",
+    "base": {"ingredient": "Fleurs et feuilles", "quantite": 200, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "aspect", "texte": "Feuilles et fleurs craquantes."},
+    "materiel": ["Claies ou tamis", "Bocaux"],
+    "ingredients": [{"nom": "Tilleul (fleurs et bractées), verveine, menthe", "qte": 200, "unite": "g"}],
+    "etapes": [
+      {"titre": "Cueillir", "texte": "Tilleul en juin et juillet, fleurs à peine ouvertes. Verveine et menthe tout l’été.", "duree": ""},
+      {"titre": "Sécher", "texte": "En couche fine sur claies, à l’ombre, endroit sec et aéré.", "duree": "1 à 2 sem."},
+      {"titre": "Ranger", "texte": "En bocaux, à l’abri de la lumière.", "duree": ""}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Placard", "comment": "bocal à l’abri de la lumière", "duree": "1 an", "jours": 365}],
+    "notes": "Tilleul, verveine, menthe."
+  },
+  {
+    "id": "biltong", "nom": "Biltong", "famille": "sech", "mois": [5],
+    "lieu": "chambre", "mode": "biltong", "etiquettes": ["odeur_forte", "air_sec"], "place": 1, "difficulte": 2,
+    "rendement": "Environ 500 g",
+    "base": {"ingredient": "Bœuf (gîte à la noix ou tende de tranche)", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 5, "max_j": 8},
+    "fin": {"type": "perte_poids", "cible": 50, "texte": "Environ 50 % de perte : ferme dehors, encore souple au cœur."},
+    "materiel": ["Couteau bien affûté", "Plat", "Crochets en S ou trombones inox", "Balance"],
+    "ingredients": [
+      {"nom": "Bœuf (gîte à la noix ou tende de tranche), en lanières de 2 cm d’épaisseur dans le sens des fibres", "qte": 1000, "unite": "g"},
+      {"nom": "Vinaigre (cidre ou maison)", "qte": 100, "unite": "g"},
+      {"nom": "Gros sel", "qte": 20, "unite": "g"},
+      {"nom": "Coriandre en grains torréfiée et concassée", "qte": 15, "unite": "g"},
+      {"nom": "Poivre noir concassé", "qte": 5, "unite": "g"},
+      {"nom": "Cassonade", "qte": 10, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Couper", "texte": "Lanières de 2 cm d’épaisseur et 4 à 5 cm de large, dans le sens des fibres.", "duree": "15 min"},
+      {"titre": "Mariner", "texte": "Arroser de vinaigre, puis frotter avec sel, coriandre, poivre et cassonade. 12 à 24 h au frigo, en retournant une fois.", "duree": "12 à 24 h"},
+      {"titre": "Suspendre", "texte": "Égoutter sans rincer, peser, noter la cible (moins 50 %). Suspendre aux crochets sans que les lanières se touchent, chambre en mode Biltong.", "duree": "15 min"},
+      {"titre": "Sécher", "texte": "4 à 7 jours selon l’épaisseur et le goût.", "duree": "4 à 7 jours"}
+    ],
+    "controles": [
+      {"j": 2, "titre": "Surface", "observer": "Surface", "normal": "Sèche et foncée", "probleme": "Collante, odeur aigre", "action": "Vérifier ventilateur et humidité ; si l’odeur est mauvaise, jeter."},
+      {"j": 4, "titre": "Pesée", "observer": "Poids", "normal": "Environ 40 % de perte", "probleme": "", "action": "Retirer si tu l’aimes moelleux, sinon continuer."}
+    ],
+    "conservation": [
+      {"mode": "À l’air", "comment": "sac papier", "duree": "2 semaines", "jours": 14},
+      {"mode": "Frigo", "comment": "sous vide", "duree": "2 mois", "jours": 60},
+      {"mode": "Congélateur", "comment": "", "duree": "6 mois", "jours": 180}
+    ],
+    "securite": ["Viande très fraîche, mains et ustensiles propres.", "Seul dans la chambre ; grand nettoyage juste après."]
+  }
+]

@@ -1,0 +1,335 @@
+{
+  "lacto_sac": {
+    "nom": "Lacto-fermentation en sac sous vide",
+    "principe": "Le légume ou le fruit est pesé, salé à 2 % de son poids (3 % pour les champignons et les piments), puis mis sous vide. Les bactéries lactiques l’acidifient à l’abri de l’air.",
+    "conseils": [
+      "Machine à aspiration : laisser 8 cm libres en haut du sac, garder la zone de soudure propre, couper l’aspiration dès que le liquide approche.",
+      "Pour une sauce, fermenter en morceaux et mixer après."
+    ],
+    "controles": [
+      {
+        "j": 1,
+        "titre": "Démarrage",
+        "observer": "Le sac",
+        "normal": "Le sac commence à gonfler, petites bulles",
+        "probleme": "Rien après 3 jours",
+        "action": "Mettre plus au chaud, entre 18 et 22 °C."
+      },
+      {
+        "j": 2,
+        "repeter_j": 2,
+        "titre": "Dégazage",
+        "observer": "Le sac",
+        "normal": "Gonflé mais souple",
+        "probleme": "Sac tendu comme un ballon",
+        "action": "Couper un coin, chasser le gaz, ressouder sans réaspirer."
+      },
+      {
+        "j": 3,
+        "titre": "Première dégustation",
+        "observer": "Odeur et goût",
+        "normal": "Acidulé, salé, odeur franche de pickle",
+        "probleme": "Odeur de pourri, texture visqueuse",
+        "action": "Jeter."
+      }
+    ],
+    "securite": [
+      "Peser le sel au gramme : 2 % minimum du poids des légumes.",
+      "Jeter en cas d’odeur putride, de moisissure colorée ou duveteuse, ou de texture visqueuse.",
+      "Avant une conservation longue, vérifier au pH-mètre que le jus est à 4,2 ou moins."
+    ]
+  },
+  "lacto_bocal": {
+    "nom": "Lacto-fermentation en bocal",
+    "principe": "Les légumes sont couverts d’une saumure (eau salée à 3 à 5 %) ou de leur propre jus, et maintenus dessous par un poids.",
+    "conseils": [
+      "Saumure à 3 % : 30 g de sel non iodé par litre d’eau. À 5 % : 50 g par litre.",
+      "Laisser 2 à 3 cm de vide sous le couvercle ; ouvrir une fois par jour les premiers jours pour laisser sortir le gaz."
+    ],
+    "controles": [
+      {
+        "j": 1,
+        "titre": "Démarrage",
+        "observer": "La saumure",
+        "normal": "Petites bulles, saumure qui se trouble",
+        "probleme": "Légumes qui dépassent de la saumure",
+        "action": "Ajouter de la saumure, remettre le poids."
+      },
+      {
+        "j": 3,
+        "titre": "Surface",
+        "observer": "La surface",
+        "normal": "Rien, ou un voile blanc plat",
+        "probleme": "Moisissure en relief, verte, noire ou rose",
+        "action": "Voile blanc plat : le retirer, il est sans danger. Moisissure duveteuse ou colorée : jeter."
+      },
+      {
+        "j": 5,
+        "titre": "Dégustation",
+        "observer": "Goût et texture",
+        "normal": "Acidulé, encore ferme",
+        "probleme": "Mou, odeur de pourri",
+        "action": "Jeter."
+      }
+    ],
+    "securite": [
+      "Saumure à 3 % minimum.",
+      "Les légumes restent toujours sous le liquide.",
+      "Jeter en cas de moisissure colorée ou duveteuse, ou d’odeur putride."
+    ]
+  },
+  "salaison_entiere": {
+    "nom": "Salaison et séchage d’une pièce entière",
+    "principe": "La pièce est salée à l’équilibre sous vide au froid, puis séchée en mode Cave jusqu’à la perte de poids visée. Sans nitrite : le sel, le froid, l’hygiène et un séchage complet font la sécurité.",
+    "conseils": [
+      "Peser la pièce crue, puis à l’entrée en Cave : la perte se calcule depuis le poids à l’entrée.",
+      "Dosage sans nitrite : 30 g de sel fin non iodé par kg de viande, soit 3 %.",
+      "Sans nitrite, la chair devient brun-rosé à brun-gris : c’est normal."
+    ],
+    "controles": [
+      {
+        "j": 0,
+        "titre": "Pesée d’entrée",
+        "observer": "Poids de la pièce",
+        "normal": "Poids noté",
+        "probleme": "",
+        "action": "Noter le poids et calculer la cible."
+      },
+      {
+        "j": 7,
+        "repeter_j": 7,
+        "titre": "Pesée",
+        "observer": "Poids, perte en %",
+        "normal": "La perte progresse chaque semaine",
+        "probleme": "La perte stagne alors que les bords sont durs",
+        "action": "Croûtage : remonter HS de 5 %, ou mettre la pièce sous vide 1 à 2 semaines au frigo pour égaliser."
+      },
+      {
+        "j": 7,
+        "repeter_j": 7,
+        "titre": "Surface",
+        "observer": "Moisissures",
+        "normal": "Rien, ou une fleur blanche poudreuse",
+        "probleme": "Taches vertes ou bleues ; noires, roses ou duveteuses",
+        "action": "Vertes ou bleues : frotter au vinaigre. Noires, roses ou duveteuses en profondeur : jeter la pièce."
+      }
+    ],
+    "securite": [
+      "Pas de sel nitrité : la sécurité repose sur le sel à 3 %, le froid pendant tout le salage, l’hygiène et le séchage jusqu’à la perte visée.",
+      "Viande ultra fraîche, achetée le jour même ; découpe sur plan désinfecté, mains lavées ou gants.",
+      "Pièces entières uniquement, jamais roulées ni farcies.",
+      "Le sel doit atteindre le cœur au froid (2 à 4 °C) avant le passage en Cave.",
+      "Chambre à 15 °C maximum pendant le séchage.",
+      "Ne pas consommer avant la perte de poids visée."
+    ]
+  },
+  "saucisson": {
+    "nom": "Saucisson et saucisse sèche",
+    "principe": "Mêlée hachée froide, salée sans nitrite, avec des ferments. Après l’embossage, un étuvage chaud et humide acidifie la chair, puis le séchage en mode Cave l’amène à la perte de poids visée.",
+    "conseils": [
+      "Viande, gras et pièces du hachoir au congélateur 1 h avant : la mêlée doit rester sous 2 °C.",
+      "Goûter le sel sur une boulette poêlée, jamais crue.",
+      "Sans nitrite, la chair devient brun-gris : c’est normal."
+    ],
+    "controles": [
+      {
+        "j": 0,
+        "titre": "Pesée et pH de départ",
+        "observer": "Poids de chaque pièce, pH de la mêlée",
+        "normal": "pH autour de 5,8 à 6",
+        "probleme": "",
+        "action": "Étalonner le pH-mètre (6,86 puis 4,00), mesurer le pH de la mêlée, noter le poids de chaque pièce et faire une petite saucisse témoin pour les mesures suivantes."
+      },
+      {
+        "j": 1,
+        "titre": "Étuvage",
+        "observer": "Couleur, odeur",
+        "normal": "Rouge vif, légère odeur acidulée",
+        "probleme": "Odeur de pourri, chair grise",
+        "action": "Jeter."
+      },
+      {
+        "j": 2,
+        "titre": "Fin de l’étuvage",
+        "observer": "pH",
+        "normal": "pH à 5,3 ou moins : passer en Cave",
+        "probleme": "pH au-dessus de 5,3",
+        "action": "Prolonger l’étuvage, et remesurer à 72 h."
+      },
+      {
+        "j": 3,
+        "titre": "Dernier délai d’acidification",
+        "observer": "pH, si l’étuvage a été prolongé",
+        "normal": "pH à 5,3 ou moins : passer en Cave",
+        "probleme": "pH encore au-dessus de 5,3 à 72 h",
+        "action": "Ne pas sécher : cuire la mêlée en saucisses fraîches dans les 24 h, ou jeter."
+      },
+      {
+        "j": 7,
+        "repeter_j": 7,
+        "titre": "Pesée",
+        "observer": "Poids, perte en %",
+        "normal": "La perte progresse chaque semaine",
+        "probleme": "Bords durs, cœur mou, perte qui stagne",
+        "action": "Croûtage : remonter HS de 5 %, ou mettre sous vide 1 semaine au frigo."
+      },
+      {
+        "j": 7,
+        "repeter_j": 7,
+        "titre": "Surface",
+        "observer": "Moisissures",
+        "normal": "Fleur blanche poudreuse",
+        "probleme": "Noir, rose ou duveteux ; odeur d’ammoniaque",
+        "action": "Jeter la pièce concernée."
+      }
+    ],
+    "securite": [
+      "Sans nitrite, quatre règles font la sécurité et aucune n’est facultative : hygiène et froid (viande ultra fraîche, mêlée sous 2 °C), sel à 28 g par kg minimum, acidification par les ferments (pH à 5,3 ou moins en 48 h, mesuré au pH-mètre), séchage à 15 °C maximum jusqu’à 35 % de perte.",
+      "Mesure du pH : pH-mètre étalonné le jour même (6,86 puis 4,00). Mesurer sur une petite saucisse témoin faite avec la même mêlée, pas sur les saucissons : sonde pointue piquée au cœur, ou 10 g de chair écrasés dans 10 g d’eau distillée, mesure après 5 minutes, à température ambiante.",
+      "pH encore au-dessus de 5,3 après 72 h : ne pas sécher ; cuire en saucisses fraîches ou jeter.",
+      "Ferments obligatoires.",
+      "Ne pas consommer avant la perte de poids visée."
+    ]
+  },
+  "maturation": {
+    "nom": "Maturation de viande",
+    "principe": "Une pièce avec os ou gras de couverture repose à découvert, au froid et dans un air brassé. Sa surface sèche et forme une croûte qu’on retire avant de cuire.",
+    "conseils": [
+      "Ne jamais filmer la pièce ; la poser sur une grille, air tout autour.",
+      "Ouvrir la porte le moins possible."
+    ],
+    "controles": [
+      {
+        "j": 1,
+        "titre": "Surface",
+        "observer": "Toucher de la surface",
+        "normal": "Sèche au toucher",
+        "probleme": "Collante ou humide",
+        "action": "Vérifier que le ventilateur tourne et que l’humidité est sous 85 %."
+      },
+      {
+        "j": 7,
+        "repeter_j": 7,
+        "titre": "Odeur et couleur",
+        "observer": "Odeur, couleur",
+        "normal": "Croûte rouge sombre, odeur de noisette ou de fromage doux",
+        "probleme": "Odeur aigre ou putride, surface gluante",
+        "action": "Jeter."
+      }
+    ],
+    "securite": [
+      "Chambre entre 1 et 3 °C, alarme à 5 °C.",
+      "Parer toute la croûte sèche avant de cuire."
+    ]
+  },
+  "sechage": {
+    "nom": "Séchage",
+    "principe": "Le produit perd son eau dans un air chaud, sec et brassé (mode Séchage) ou à l’air libre.",
+    "conseils": [
+      "Une seule couche par grille, sans chevauchement."
+    ],
+    "controles": [
+      {
+        "j": 1,
+        "titre": "Test de séchage",
+        "observer": "Texture",
+        "normal": "Cassant, sans humidité au cœur",
+        "probleme": "Souple ou frais au toucher",
+        "action": "Continuer le séchage."
+      },
+      {
+        "j": 7,
+        "titre": "Test du bocal",
+        "observer": "Buée dans le bocal",
+        "normal": "Aucune buée",
+        "probleme": "Buée ou grumeaux",
+        "action": "Remettre à sécher."
+      }
+    ],
+    "securite": [
+      "Conserver en bocal hermétique, à l’abri de la lumière et de l’humidité."
+    ]
+  },
+  "vinaigre": {
+    "nom": "Vinaigre",
+    "principe": "Une boisson sucrée fermente d’abord en alcool, puis les bactéries acétiques d’une mère transforment l’alcool en vinaigre.",
+    "conseils": [
+      "Bocal large, couvert d’un tissu serré tenu par un élastique contre les mouches.",
+      "À l’abri de la lumière, 22 à 28 °C."
+    ],
+    "controles": [
+      {
+        "j": 2,
+        "titre": "Fermentation alcoolique",
+        "observer": "Bulles",
+        "normal": "Bulles régulières, odeur de cidre",
+        "probleme": "Moisissure en surface",
+        "action": "Retirer ; si elle revient, jeter."
+      },
+      {
+        "j": 14,
+        "titre": "Ajout de la mère",
+        "observer": "Bulles",
+        "normal": "Plus de bulles : filtrer et ajouter la mère",
+        "probleme": "Encore beaucoup de bulles",
+        "action": "Attendre quelques jours."
+      },
+      {
+        "j": 30,
+        "titre": "Voile de mère",
+        "observer": "Surface",
+        "normal": "Voile gélatineux blanc-beige, odeur de vinaigre",
+        "probleme": "Moisissure duveteuse colorée",
+        "action": "Jeter."
+      },
+      {
+        "j": 45,
+        "titre": "Dégustation",
+        "observer": "Acidité",
+        "normal": "Franchement acide, plus de goût d’alcool",
+        "probleme": "Encore alcoolisé",
+        "action": "Continuer 2 à 4 semaines."
+      }
+    ],
+    "securite": [
+      "Un vinaigre fini est très acide : il se garde des années au placard."
+    ]
+  },
+  "culture_champignons": {
+    "nom": "Culture de champignons",
+    "principe": "Le mycélium colonise un substrat dans le noir, puis forme des champignons quand il reçoit de l’air frais, de la lumière et de l’humidité.",
+    "conseils": [
+      "Jamais de préparation de substrat ni de sac ouvert pendant les semaines de koji."
+    ],
+    "controles": [
+      {
+        "j": 4,
+        "titre": "Départ du mycélium",
+        "observer": "Filaments blancs",
+        "normal": "Filaments blancs autour des grains de blanc",
+        "probleme": "Rien après 10 jours",
+        "action": "Vérifier la température (20 à 24 °C)."
+      },
+      {
+        "j": 14,
+        "titre": "Contaminations",
+        "observer": "Couleurs",
+        "normal": "Blanc qui progresse",
+        "probleme": "Taches vertes, noires ou orange",
+        "action": "Sortir le sac dehors aussitôt, sans l’ouvrir dans la maison."
+      },
+      {
+        "j": 25,
+        "titre": "Fin de colonisation",
+        "observer": "Aspect",
+        "normal": "Substrat entièrement blanc",
+        "probleme": "",
+        "action": "Passer en fructification."
+      }
+    ],
+    "securite": [
+      "Ne manger que des champignons cuits.",
+      "Récolter avant que les chapeaux ne s’aplatissent : moins de spores dans la maison."
+    ]
+  }
+}

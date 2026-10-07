@@ -107,6 +107,8 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
     environment: 'node',
+    // Dates de la chambre et des bocaux : heure de Paris, changements d'heure compris.
+    env: { TZ: 'Europe/Paris' },
     testTimeout: 30000,
   },
 });

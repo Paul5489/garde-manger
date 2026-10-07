@@ -8,6 +8,9 @@
   import { recherche } from '../lib/recherche.svelte';
   import { lienNouveauBocal, routeur } from '../lib/routeur.svelte';
 
+  /** Affiché comme une page de la Chambre (sous une barre avec « Retour »). */
+  let { enPage = false }: { enPage?: boolean } = $props();
+
   let feuille = $state(false);
   let finisOuverts = $state(false);
 
@@ -30,7 +33,7 @@
   }
 </script>
 
-<div class="grand-titre">
+<div class="grand-titre" class:en-page={enPage}>
   <h1>Mes bocaux</h1>
   <button class="bouton-icone" onclick={() => (feuille = true)}><Plus size={24} /> Nouveau</button>
 </div>
@@ -117,6 +120,10 @@
 </Feuille>
 
 <style>
+  .en-page {
+    padding-top: 4px;
+  }
+
   .cartes {
     display: flex;
     flex-direction: column;

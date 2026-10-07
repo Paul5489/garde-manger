@@ -24,6 +24,13 @@
   --u-techniques: #6b5844;
   --u-fermentation: #4f7a3a;
   --u-perso: #7a4170;
+  /* Modes de la chambre de fermentation (couleur de modes.json) */
+  --m-chaud: #a8481a;
+  --m-sech: #855f0c;
+  --m-froid: #2b64a0;
+  --m-cave: #6e4f30;
+  --m-temp: #4a7337;
+  --m-off: #71685f;
   --ombre: 0 1px 2px rgb(60 40 20 / 0.06), 0 4px 16px rgb(60 40 20 / 0.06);
   --rayon: 14px;
   --rayon-petit: 10px;
@@ -59,6 +66,12 @@
     --u-techniques: #b39b7f;
     --u-fermentation: #8cb86c;
     --u-perso: #c58ab6;
+    --m-chaud: #f0a070;
+    --m-sech: #e3c060;
+    --m-froid: #86b8ea;
+    --m-cave: #d0ad86;
+    --m-temp: #9cc47e;
+    --m-off: #968d84;
     --ombre: 0 1px 2px rgb(0 0 0 / 0.3);
   }
 }

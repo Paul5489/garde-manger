@@ -1,7 +1,8 @@
 # Garde-manger — état du projet et consignes pour Claude Code
 
 Application de cuisine **PWA hors ligne** pour l'iPhone 13 de Paul (iOS 26.6) : recettes et techniques,
-mode cuisine avec minuteurs, courses, suivi de fermentations. Nom choisi par Paul : **Garde-manger**.
+mode cuisine avec minuteurs, courses, suivi de fermentations, et (depuis la 1.9.0) le module **Chambre** pour sa
+chambre de fermentation. Nom choisi par Paul : **Garde-manger**.
 
 **Paul n'est pas développeur** : réponds en français, simplement, et dis-lui précisément quoi toucher
 sur son Mac ou son iPhone (noms exacts des boutons). Il préfère une question courte plutôt qu'une supposition.
@@ -16,6 +17,11 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 - **Aucune recette dans Git, dans `dist/`, ni en ligne** (droit d'auteur, usage personnel). Seul le **code** est public.
   Les recettes sont importées dans le téléphone (IndexedDB) depuis `archive_complete.json`.
+  **Seule exception, décidée par Paul le 07/10/2026** : le contenu de la chambre de fermentation
+  (`src/chambre/contenu/` : 83 recettes, modes, techniques, calendrier, matériel), qu'il a écrit avec Claude et qui
+  « n'est pas confidentiel ». Il est embarqué dans l'appli. Vérifié : aucun texte des livres n'y figure, et les
+  garde-fous le comparent toujours aux livres. Le dossier s'appelle `contenu` : un chemin `donnees/` est refusé par
+  `verifier-depot.mjs`.
 - Ne **jamais modifier** `../archive-recettes/` (données sources, lecture seule). Corrections de données = couche
   séparée dans l'appli (ex. `reparerQuantitePro` dans `src/lib/quantites.ts`).
 - Garde-fous automatiques, **ne jamais les contourner** :
@@ -52,7 +58,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 208 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 226 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -88,8 +94,9 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
 - **Routage par hash** (`#/recherche`, `#/fiche/<id>`, `#/fiche/<id>/p272`, `#/cuisine/<id>`, `#/reglages[/frigo]`,
   `#/bocal/<id>`, `#/bocal/<id>/modifier`, `#/bocal/nouveau[/fiche/<id>|/modele/<id>]`) : marche hors ligne
   et sur GitHub Pages sans configuration. `base` Vite = `process.env.BASE_URL` (`/garde-manger/` à la publication).
-- **Onglets** (barre en bas) : Accueil, Recherche, Frigo, Courses, Bocaux (pastilles : articles à acheter ;
-  bocaux à goûter + prêts). Pages empilées : fiche, réglages, mode cuisine, bocal, édition de bocal. Les onglets
+- **Onglets** (barre en bas) : Accueil, Recherche, Ajouter, Frigo, Courses, Chambre (pastilles : articles à acheter ;
+  bocaux à goûter + prêts). L'onglet **Chambre** remplace « Bocaux » depuis la 1.9.0 : la liste des bocaux est la
+  page `#/chambre/bocaux` (l'ancienne adresse `#/bocaux` y mène). Pages empilées : fiche, réglages, mode cuisine, bocal, édition de bocal. Les onglets
   visités restent montés (on retrouve sa place) ; fiche / réglages / mode cuisine sont des pages empilées par-dessus.
 - **Import** dans un Web Worker : lecture → validation → allègement → résumés (`Resume`) + index MiniSearch sérialisé →
   écriture Dexie. Au démarrage on ne charge que le catalogue léger ; les fiches complètes à la demande ; l'index à la 1re recherche.
@@ -173,6 +180,32 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   « Revenir à l'original » (qui les effacerait) ; supprimées = masquées, récupérables. Carte Fermentation :
   `temperature_texte`. Markdown : liens internes `#/…` gardés, tableaux qui défilent de côté.
   Serveur de dev : `http://<IP>:5180/mes-recettes/<fichier>.json` télécharge un fichier de ce dossier.
+- **Chambre de fermentation** (`src/chambre/`, demande de Paul du 07/10/2026, cahier des charges dans son dossier
+  « dossier-chambre » : `PROMPT_CLAUDE_CODE.md`, gardé hors du dépôt). Frigo Beko + Inkbird ITC-308-WIFI
+  (température) et IHC-200-WIFI (humidité), tapis, ventilateur, déshumidificateur, pH-mètre. **L'appli ne pilote
+  rien** : elle dit quelles valeurs entrer, comment, pourquoi, quoi brancher. Module **chargé à la demande**
+  (`import('./chambre/module')` dans App.svelte, ~64 Ko gzip, mis en cache par le service worker).
+  - `contenu/*.json` (lecture seule, version `modes.json` « 2026-10-07d ») ; `donnees.ts` les importe et
+    `verifierContenu()` reprend **toutes** les vérifications de `outils/valider_donnees.py` de Paul (erreur affichée
+    dans l'onglet si une donnée est incohérente ; testé). **Ne jamais changer une valeur de sécurité** (sel,
+    températures, durées, pH, pertes de poids, réglages des contrôleurs) sans l'accord de Paul ; **jamais de nitrite**.
+  - `temps.ts` : « j jours » = même heure d'horloge j jours plus tard, décimales en heures (0,75 = 18 h), changements
+    d'heure compris (tests en `TZ=Europe/Paris`, réglé dans vite.config.ts).
+  - `calendrier.ts` : mode prévu selon le mois et le jour (cycle octobre → septembre qui se répète), périodes,
+    prochains changements, jours de « nettoyage ».
+  - `taches.ts` : mode actif = calendrier, ou **choisi à la main** (`chambre:mode`) jusqu'au retour au calendrier ;
+    réservoir au rythme du mode (Cave : 3 j pendant 21 j après une entrée, puis 7 j ; idem phase IHC 80 → 76 %),
+    vérification hebdomadaire, calibrage annuel, étalonnage mensuel du pH-mètre.
+  - `assistant.ts` : écrans de « Changer de mode » (nettoyage de la transition, refroidir après un mode chaud, ITC
+    puis IHC code par code avec la touche et la valeur, thermostat, branchements, ventilateur, sondes, à vide).
+  - `chambre.svelte.ts` : état gardé dans la table `reglages` (clés `chambre:…` : mode choisi, mise en service,
+    dates des tâches, heure des rappels, dernier changement) → sauvegardé, jamais effacé par un réimport.
+  - Écrans (`chambre/ecrans/`) : `Chambre` (onglet : mode actuel, Aujourd'hui, Bientôt, tuiles), `PageChambre`
+    (pages `#/chambre/…` : `mode/<id>`, `changer[/<id>]`, `mise-en-service`, `reglages`, `infos/<section>`,
+    `bocaux`), `PageMode`, `AssistantMode`, `MiseEnService`, `ReglagesChambre`, `InfosChambre`. Couleurs des modes :
+    `--m-chaud`, `--m-sech`, `--m-froid`, `--m-cave`, `--m-temp`, `--m-off` (app.css).
+  - Mise en service proposée une fois à la première ouverture de l'onglet (localStorage
+    `chambre-mise-en-service-proposee`).
 - **Bocaux** (Dexie **version(3)** : `bocaux`, `journal` (photos en data URL JPEG ~1280 px, chargé bocal par bocal),
   `modelesBocaux`). Un bocal a toujours ≥ 1 étape (`min`/`max` en jours ou heures, facultatifs) ; début de la 1re =
   `debut` du bocal, des suivantes = `debut` posé à « Étape suivante » (sinon estimé). Jour N = jours de calendrier
@@ -252,6 +285,8 @@ src/composants/                   BarreOnglets, BarreHaut, LigneFiche, ListeFich
                                   Feuille (feuille du bas générique, sans champ de saisie : le clavier iOS la cacherait),
                                   Etoiles, FormulaireRealisation, CarnetFiche, FeuilleCourses, SauvegardePerso, Annonce,
                                   LigneFrigo, ReglagesFrigo (placard + synonymes), CarteBocal (avancement + barre)
+src/chambre/                      module Chambre (voir § 5) : contenu/ (données de Paul), donnees, types, temps, calendrier,
+                                  taches, assistant, affichage, chambre.svelte, module (point d'entrée), ecrans/, composants/
 src/ecrans/                       Bienvenue (1er lancement), Accueil, Recherche, Fiche, ModeCuisine, Reglages, Courses,
                                   Frigo, Bocaux (onglet), Bocal (page d'un bocal), EditionBocal (nouveau / modifier),
                                   EditionRecette (#/recette/nouvelle, #/recette/<id>/modifier : coller → ranger → formulaire)
@@ -309,6 +344,15 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
 - 06/10/2026 : livre *Koji Alchemy* : l'epub (Anna's Archive) **n'est pas utilisé** — ne pas y toucher. Paul a fourni
   à la place un résumé en français de 22 recettes Noma + Koji Alchemy fait par Claude chat, qu'il a demandé de mettre
   à la place des anciennes fiches Noma (v1.8.0, fiches seulement dans son téléphone).
+- 07/10/2026 : **chambre de fermentation** (dossier préparé par Paul avec Claude, pH-mètre ajouté le jour même) :
+  onglet Bocaux → **Chambre** (bocaux dedans) ; contenu **embarqué dans l'appli publiée** (« pas confidentiel ») ;
+  livraison **par étapes publiées**. Points tranchés avec Paul : pesées de la coppa, du guanciale, du filet mignon
+  et du magret séché comptées depuis l'entrée en Cave (les pH du saucisson depuis le début) ; étuvage du saucisson
+  prolongeable jusqu'à 72 h, passage en Cave bloqué si pH > 5,3 ; réservoir en Cave 3 j puis 7 j ; contrôles en
+  heures à l'heure exacte (koji, pH à 48 et 72 h), en jours entiers à 8 h (réglable) ; titre « Cuire à la vapeur »
+  du koji de riz → « Cuisson à la vapeur » (identique sinon à une fiche du livre, bloqué par le garde-fou) ;
+  pastille de l'icône = autoriser une fois les notifications (iOS) ; cible de pH : 4,2 pour toutes les lacto
+  (fiche du pH-mètre de modes.json : « lacto et sauces »), aucune pour les vinaigres.
 - 06/10/2026 : recette du **bissap à l'ananas** (bonbons à la menthe à la place de la menthe fraîche) préparée en fichier
   `~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json` (hors dépôt), à ajouter via Mes recettes.
 
@@ -345,6 +389,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.9.0** (07/10/2026) : module **Chambre**, étape 1 : onglet Chambre (à la place de Bocaux), mode actuel selon
+  le calendrier ou choisi à la main, tâches du jour (réservoir, vérification, calibrage, pH-mètre), 7 modes (codes
+  des Inkbird expliqués), assistant « Changer de mode », mise en service, pages d'explication.
 - **1.8.0** (06/10/2026) : fermentation remplacée : anciennes fiches Noma retirées, 22 recettes Noma + Koji Alchemy
   + page de comparaison ajoutées par fichier (`garde-manger-fermentation.json`, à importer sur l'iPhone).
 - **1.7.0** (06/10/2026) : les fiches AFPA sans explications reçoivent la méthode détaillée de La Cuisine de
@@ -363,7 +410,15 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
 
 ## 10. Reste à faire
 
-Toutes les étapes du cahier des charges sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
+**Chambre de fermentation** (ordre de travail de Paul, une version publiée par étape) : ~~1. plan~~ ·
+~~2. réglages, mise en service, assistant (1.9.0)~~ · 3. fiches des 83 recettes (calculateur) et calendrier (mois,
+recettes de saison, étoiles « prévu »), matériel à acheter · 4. lots (copie de la recette, phases, contrôles avec
+`repeter_j`/`fin_j`, pesées et fin estimée, pH et blocage à 72 h), stock · 5. Aujourd'hui complet, pastille de
+l'icône (Badging API), `.ics` des lots et de la chambre (UID stables) · 6. compatibilité · 7. installation expliquée.
+À signaler à Paul : le shoyu a un contrôle « Remuer » chaque jour sans `fin_j` (donc pendant 6 à 12 mois) en plus
+de « Remuer chaque semaine » dès le 30e jour : un `fin_j: 30` manque peut-être.
+
+Toutes les étapes du cahier des charges de Garde-manger sont faites. Il reste à **faire tester sur l'iPhone** (appli installée) :
 00. **Ajouter `garde-manger-fermentation.json`** (v1.8.0 : Ajouter › « Ajouter un fichier de recette ») : sans lui,
    plus aucune fiche de fermentation dans l'appli (le Noma de l'archive est retiré).
 0. Ajout du bissap (`~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json`, id `perso-bissap-ananas`,

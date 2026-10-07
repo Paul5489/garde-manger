@@ -1,0 +1,188 @@
+{
+  "cycle": [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "annee_de_depart": 2026,
+  "note": "Le cycle va d’octobre à septembre et se répète chaque année. Les dates sont des repères, à une semaine près.",
+  "mois": {
+    "10": {
+      "chambre": [
+        {"du": 1, "au": 14, "mode": "pause", "nom": "Mise en route", "detail": "chambre éteinte"},
+        {"du": 15, "au": 31, "mode": "koji", "nom": "Chaud · koji", "detail": "32 °C dans le riz"}
+      ],
+      "rendez_vous": [
+        {"quand": "Avant le 15", "quoi": "Commander les spores de koji pour le riz et le son de riz", "recettes": []},
+        {"quand": "Dès réception", "quoi": "Grosse fournée de koji de riz, puis shio koji, shoyu koji, misos et makgeolli", "recettes": ["kojiriz", "shiokoji", "shoyukoji", "misoblanc", "misopc", "vinriz"]},
+        {"quand": "À la récolte", "quoi": "Noix fraîches sur claies", "recettes": ["noix"]}
+      ],
+      "sorties": [
+        {"quand": "À partir de la 2e année", "quoi": "Pressage de la sauce soja d’avril", "recettes": ["shoyu"]}
+      ]
+    },
+    "11": {
+      "chambre": [
+        {"du": 1, "au": 8, "mode": "sechage", "nom": "Séchage", "detail": "35 °C"},
+        {"du": 9, "au": 9, "mode": "nettoyage", "nom": "Grand nettoyage", "detail": ""},
+        {"du": 10, "au": 30, "mode": "froid", "nom": "Froid · maturation", "detail": "2 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "1 → 8", "quoi": "Séchage : koji en poudre, piments fermentés, champignons", "recettes": ["kojipoudre", "pimentsflocons", "champseches"]},
+        {"quand": "Le 9", "quoi": "Grand nettoyage, puis mode Froid le 10", "recettes": []},
+        {"quand": "Après le koji", "quoi": "Séance choux : choucroute, kimchi, suan cai, cèpes ; démarrer le nukazuke", "recettes": ["choucroute", "kimchi", "suancai", "cepes", "nuka"]},
+        {"quand": "Mi-novembre", "quoi": "Côte de bœuf et faux-filet en maturation", "recettes": ["cote", "fauxfilet"]},
+        {"quand": "Après le 10", "quoi": "Premier sac de pleurotes et kit shiitake", "recettes": ["pleurotes", "shiitake"]},
+        {"quand": "Fin novembre", "quoi": "Semaine du cochon : coppa, guanciale, filets mignons, bacon, jambon blanc, petit salé", "recettes": ["coppa", "guanciale", "filetmignon", "bacon", "jambon", "petitsale"]},
+        {"quand": "Courant novembre", "quoi": "Le makgeolli passe en vinaigre de riz", "recettes": ["vinriz"]}
+      ],
+      "sorties": [
+        {"quand": "Vers le 8", "quoi": "Koji en poudre, piments en flocons, champignons séchés", "recettes": ["kojipoudre", "pimentsflocons", "champseches"]}
+      ]
+    },
+    "12": {
+      "chambre": [
+        {"du": 1, "au": 20, "mode": "froid", "nom": "Froid · maturation", "detail": "2 °C"},
+        {"du": 21, "au": 31, "mode": "cave", "nom": "Cave · charcuterie", "detail": "13 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Vers le 8", "quoi": "Magrets maturés et carré d’agneau", "recettes": ["magretsmatures", "agneau"]},
+        {"quand": "Mi-décembre", "quoi": "Gravlax pour les fêtes", "recettes": ["gravlax"]},
+        {"quand": "Le 19", "quoi": "Magrets à sécher, salés 24 h", "recettes": ["magretseche"]},
+        {"quand": "Le 21", "quoi": "Nettoyage léger, puis vague 1 en Cave : coppa, guanciale, filets mignons, 4 magrets", "recettes": ["coppa", "guanciale", "filetmignon", "magretseche"]}
+      ],
+      "sorties": [
+        {"quand": "Début décembre", "quoi": "Jambon blanc cuit au thermoplongeur", "recettes": ["jambon"]},
+        {"quand": "Vers le 20", "quoi": "Côte de bœuf et faux-filet", "recettes": ["cote", "fauxfilet"]},
+        {"quand": "Vers Noël", "quoi": "Magrets maturés et carré d’agneau", "recettes": ["magretsmatures", "agneau"]}
+      ],
+      "plus_tard": "Avec un générateur de fumée froide : magret fumé, saumon fumé, lard et bacon fumés."
+    },
+    "1": {
+      "chambre": [
+        {"du": 1, "au": 31, "mode": "cave", "nom": "Cave · charcuterie", "detail": "13 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "2 jours avant la séance", "quoi": "Décongeler l’épaule et le gras", "recettes": []},
+        {"quand": "Mi-janvier", "quoi": "1re séance saucisson : rosette, saucissons classiques et aux noix, saucisses sèches", "recettes": ["rosette", "saucisson", "saucisse"]},
+        {"quand": "Courant janvier", "quoi": "Séance racines et agrumes", "recettes": ["sauerruben", "radisnoir", "topinambours", "bruxelles", "citrons"]},
+        {"quand": "Courant janvier", "quoi": "Corned beef au thermoplongeur", "recettes": ["cornedbeef"]}
+      ],
+      "sorties": [
+        {"quand": "Vers le 10", "quoi": "Magrets séchés", "recettes": ["magretseche"]},
+        {"quand": "Vers le 20", "quoi": "Filets mignons séchés", "recettes": ["filetmignon"]},
+        {"quand": "Fin janvier", "quoi": "Guanciale", "recettes": ["guanciale"]},
+        {"quand": "Courant janvier", "quoi": "Miso blanc d’octobre", "recettes": ["misoblanc"]}
+      ],
+      "plus_tard": "Avec un générateur de fumée froide : magret fumé, saumon fumé, lard et bacon fumés."
+    },
+    "2": {
+      "chambre": [
+        {"du": 1, "au": 28, "mode": "cave", "nom": "Cave · charcuterie", "detail": "13 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Fin février", "quoi": "2e séance saucisson : saucissons aux cèpes séchés, saucisses sèches, et 4 magrets", "recettes": ["saucisson", "saucisse", "magretseche"]}
+      ],
+      "sorties": [
+        {"quand": "Début février", "quoi": "Saucisses sèches", "recettes": ["saucisse"]},
+        {"quand": "Fin février", "quoi": "Saucissons de la 1re séance", "recettes": ["saucisson"]},
+        {"quand": "Courant février", "quoi": "Vinaigre de riz", "recettes": ["vinriz"]}
+      ],
+      "plus_tard": "Avec un générateur de fumée froide : magret fumé, saumon fumé, lard et bacon fumés."
+    },
+    "3": {
+      "chambre": [
+        {"du": 1, "au": 31, "mode": "cave", "nom": "Cave · charcuterie", "detail": "13 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Fin mars", "quoi": "Séance cueillette : ail des ours, boutons de pissenlit", "recettes": ["ailours", "pissenlit"]},
+        {"quand": "Avant fin mars", "quoi": "Derniers magrets à sécher, si tu en veux", "recettes": ["magretseche"]},
+        {"quand": "Courant mars", "quoi": "Commander les spores pour sauce soja, le blé et le soja", "recettes": []}
+      ],
+      "sorties": [
+        {"quand": "Mi-mars", "quoi": "Coppa, magrets et saucisses sèches", "recettes": ["coppa", "magretseche", "saucisse"]},
+        {"quand": "Courant mars", "quoi": "Miso de pois chiches ou de lentilles", "recettes": ["misopc"]}
+      ]
+    },
+    "4": {
+      "chambre": [
+        {"du": 1, "au": 14, "mode": "cave", "nom": "Cave · charcuterie", "detail": "13 °C"},
+        {"du": 15, "au": 30, "mode": "koji", "nom": "Chaud · koji", "detail": "32 °C dans le koji"}
+      ],
+      "rendez_vous": [
+        {"quand": "Le 14", "quoi": "Nettoyage moyen", "recettes": []},
+        {"quand": "Dès le 15", "quoi": "Koji blé-soja et un peu de riz : sauce soja, hishio, shio koji, shoyu koji, miso blanc", "recettes": ["kojibs", "kojiriz", "shoyu", "hishio", "shiokoji", "shoyukoji", "misoblanc"]},
+        {"quand": "15 avril → 10 mai", "quoi": "Aucun sac de champignons ouvert", "recettes": []}
+      ],
+      "sorties": [
+        {"quand": "Vers le 14", "quoi": "Saucissons de la 2e séance et rosette", "recettes": ["saucisson", "rosette"]}
+      ]
+    },
+    "5": {
+      "chambre": [
+        {"du": 1, "au": 10, "mode": "sechage", "nom": "Séchage", "detail": "35 °C"},
+        {"du": 11, "au": 17, "mode": "biltong", "nom": "Biltong", "detail": "28 °C"},
+        {"du": 18, "au": 18, "mode": "nettoyage", "nom": "Grand nettoyage", "detail": ""},
+        {"du": 19, "au": 31, "mode": "pause", "nom": "Pause", "detail": "chambre éteinte"}
+      ],
+      "rendez_vous": [
+        {"quand": "1 → 10", "quoi": "Séchage : koji en poudre, poudres de lacto", "recettes": ["kojipoudre", "poudreslacto"]},
+        {"quand": "11 → 17", "quoi": "Biltong, seul dans la chambre", "recettes": ["biltong"]},
+        {"quand": "Le 18", "quoi": "Grand nettoyage", "recettes": []},
+        {"quand": "Courant mai", "quoi": "Garum au thermoplongeur, jusqu’à mi-juillet", "recettes": ["garum"]},
+        {"quand": "Après le 10", "quoi": "Nouveau sac de pleurotes", "recettes": ["pleurotes"]},
+        {"quand": "Courant mai", "quoi": "Séance marché : radis roses, oignons nouveaux, fraises", "recettes": ["radisroses", "pakimchi", "fraises"]}
+      ],
+      "sorties": [
+        {"quand": "Vers le 10", "quoi": "Koji en poudre, poudres de lacto", "recettes": ["kojipoudre", "poudreslacto"]},
+        {"quand": "Vers le 17", "quoi": "Biltong", "recettes": ["biltong"]}
+      ]
+    },
+    "6": {
+      "chambre": [
+        {"du": 1, "au": 30, "mode": "tempere", "nom": "Tempéré", "detail": "19 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Le 1er", "quoi": "Mode Tempéré : nukazuke, champignons, lacto et levains entrent dans la chambre", "recettes": ["nuka"]},
+        {"quand": "Courant juin", "quoi": "Cerises lacto, vinaigre de framboise", "recettes": ["cerises", "vinframboise"]}
+      ],
+      "sorties": [
+        {"quand": "Courant juin", "quoi": "Hishio", "recettes": ["hishio"]},
+        {"quand": "Fin juin", "quoi": "Miso blanc d’avril", "recettes": ["misoblanc"]}
+      ]
+    },
+    "7": {
+      "chambre": [
+        {"du": 1, "au": 31, "mode": "tempere", "nom": "Tempéré", "detail": "19 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Courant juillet", "quoi": "Séance été dans la chambre : cornichons, kimchi de concombre, pâte d’herbes, salsa, fruits", "recettes": ["cornichons", "kimchiconcombre", "pateherbes", "salsa", "fruitsete"]},
+        {"quand": "Courant juillet", "quoi": "Vinaigre de cassis", "recettes": ["vincassis"]}
+      ],
+      "sorties": [
+        {"quand": "Mi-juillet", "quoi": "Garum", "recettes": ["garum"]}
+      ]
+    },
+    "8": {
+      "chambre": [
+        {"du": 1, "au": 31, "mode": "tempere", "nom": "Tempéré", "detail": "19 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Fin août", "quoi": "Séance piments : sriracha, harissa, jalapeños, kosho, piments à sécher", "recettes": ["sriracha", "harissa", "jalapenos", "kosho"]},
+        {"quand": "Courant août", "quoi": "Ketchup, vinaigre de mûres", "recettes": ["ketchup", "vinmures"]}
+      ],
+      "sorties": [
+        {"quand": "Fin août", "quoi": "Vinaigre de framboise", "recettes": ["vinframboise"]}
+      ]
+    },
+    "9": {
+      "chambre": [
+        {"du": 1, "au": 30, "mode": "tempere", "nom": "Tempéré", "detail": "19 °C"}
+      ],
+      "rendez_vous": [
+        {"quand": "Courant septembre", "quoi": "Suite des piments, mirabelles", "recettes": ["fruitsete"]},
+        {"quand": "Courant septembre", "quoi": "Commander les spores de koji pour octobre", "recettes": []},
+        {"quand": "Le 30", "quoi": "Nettoyage moyen avant le koji", "recettes": []}
+      ],
+      "sorties": [
+        {"quand": "Courant septembre", "quoi": "Vinaigre de cassis", "recettes": ["vincassis"]}
+      ]
+    }
+  }
+}

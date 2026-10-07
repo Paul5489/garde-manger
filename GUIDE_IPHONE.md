@@ -6,7 +6,7 @@ Tes recettes ne sont jamais sur Internet : elles sont copiées une seule fois da
 `archive_complete.json` du Mac. Tout le reste (favoris, courses, bocaux…) reste aussi dans le téléphone.
 
 **Sommaire** : 1. Installer · 2. Importer les recettes · 3. Les onglets · 4. Fiche, mode cuisine et minuteurs ·
-5. Favoris, notes et carnet · 5 bis. Ajouter une recette · 5 ter. Modifier · 5 quater. Supprimer · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 9. Sauvegarder ·
+5. Favoris, notes et carnet · 5 bis. Ajouter une recette · 5 ter. Modifier · 5 quater. Supprimer · 6. Courses · 7. Avec ce que j'ai · 8. Mes bocaux · 8 bis. La chambre de fermentation · 9. Sauvegarder ·
 10. Mettre à jour les recettes · 11. Mettre à jour l'application · 12. Hors ligne · 13. En cas de problème
 
 ---
@@ -51,7 +51,8 @@ l'application installée et Safari ne partagent pas leurs données.
   passent). **Filtres** : source, catégorie, temps, type de plat, et **Mes fiches** (favoris, déjà cuisinées).
 - **Frigo** : les recettes possibles avec ce que tu as (partie 7).
 - **Courses** : ta liste de courses (partie 6). Le chiffre sur l'onglet = ce qu'il reste à acheter.
-- **Bocaux** : tes fermentations (partie 8). Le chiffre vert = bocaux à goûter ou prêts.
+- **Chambre** : ta chambre de fermentation (partie 8 bis) et tes bocaux (partie 8). Le chiffre vert = bocaux à
+  goûter ou prêts.
 
 ## 4. Fiche, mode cuisine et minuteurs
 
@@ -164,12 +165,12 @@ ne sont **que dans ton téléphone** : il faut ajouter le fichier une fois.
 **Démarrer un bocal**
 - Depuis une fiche de fermentation : bouton **🫙 Démarrer un bocal** (sel, température, durées et étapes
   sont pré-remplis). Vérifie la date, indique le poids : l'appli calcule le sel à peser.
-- Librement (ton kimchi) : onglet **Bocaux** › **Nouveau** › **Bocal libre**. Coche « Enregistrer aussi comme
+- Librement (ton kimchi) : onglet **Chambre** › **Mes bocaux** › **Nouveau** › **Bocal libre**. Coche « Enregistrer aussi comme
   modèle » pour le refaire en un toucher la prochaine fois (Nouveau › Mes modèles).
 - Plusieurs étapes (vinaigre : fermentation alcoolique puis acétification) : « Ajouter une étape ».
 
 **Suivre**
-- L'onglet Bocaux et l'Accueil affichent « Jour 4 sur 5 à 7 », une barre (la partie verte = la période où c'est
+- Chambre › Mes bocaux et l'Accueil affichent « Jour 4 sur 5 à 7 », une barre (la partie verte = la période où c'est
   prêt) et les listes **À goûter aujourd'hui** et **Prêts**.
 - Sur la page du bocal : **Noter une dégustation** (texte + photo) → il sort de « À goûter aujourd'hui » pour
   la journée.
@@ -183,6 +184,43 @@ ne sont **que dans ton téléphone** : il faut ajouter le fichier une fois.
   le fichier `rappels-….ics` › **Ajouter tout**.
 - Si tu passes à l'étape suivante plus tôt ou plus tard que prévu, rajoute les rappels (les anciens restent dans
   le Calendrier, tu peux les supprimer à la main).
+
+## 8 bis. La chambre de fermentation (onglet Chambre)
+
+L'appli ne pilote rien : ce sont l'**ITC-308** (température) et l'**IHC-200** (humidité) qui régulent la chambre,
+et l'appli **INKBIRD** qui montre leurs courbes et envoie leurs alarmes. Garde-manger te dit quelles valeurs y
+entrer, comment (touche par touche), pourquoi, quoi brancher où, et quoi faire en cas d'alarme. Tout marche hors
+ligne, sans compte, sans rien payer.
+
+**La première fois** : l'onglet **Chambre** ouvre la **Mise en service** (à faire avant le premier koji). Coche
+chaque étape quand elle est faite ; « Si ça ne marche pas » dit quoi faire. Commence par passer l'ITC en °C
+(il sort d'usine en °F). Tu la retrouves ensuite en haut de l'onglet tant qu'elle n'est pas finie, et dans
+⚙️ › Mise en service.
+
+**L'écran Chambre**
+- **Mode actuel** : il suit le calendrier de l'année (Pause, Koji le 15 octobre, Séchage, Froid, Cave…). La carte
+  montre les valeurs principales, les cinq prises, le ventilateur et le thermostat du frigo. Touche-la pour tout voir.
+- **Aujourd'hui** : ce qu'il y a à faire (vider le réservoir du déshumidificateur au rythme du mode, vérification
+  de la semaine, étalonnage du pH-mètre chaque mois, calibrage des sondes chaque année, bocaux à goûter). Touche
+  **Fait** quand c'est fait.
+- Le jour où le calendrier change de mode : **Passer en mode …** lance l'assistant. Si la campagne commence en
+  retard, touche **Pas encore** : la chambre reste dans le mode d'avant jusqu'à ce que tu suives l'assistant.
+- **Bientôt** : le prochain changement de mode prévu.
+
+**Réglages de la chambre** (⚙️ en haut à droite, ou la tuile Réglages)
+- Les **7 modes** : les codes affichés comme sur l'écran du contrôleur (TS, HD, CD…). **Touche un code** : ce
+  qu'il fait et pourquoi cette valeur (par exemple pourquoi PT est à 10). Puis ce qui va se passer, pourquoi ces
+  valeurs, les branchements, le réservoir, les alarmes et l'énergie.
+- **Changer de mode** : l'assistant, écran par écran. Le nettoyage du passage, l'ITC code par code (frigo
+  débranché), l'IHC, le thermostat du frigo, les branchements et le ventilateur à cocher, les sondes, puis 2 à 3 h
+  à vide avant les produits. À la fin, **La chambre est en mode …**. Si ce n'est pas le mode du calendrier,
+  l'appli suit ton choix ; **Suivre le calendrier** la remet sur le calendrier.
+- **Entretien** : vérification de la semaine (liste à cocher), calibrage des sondes, pH-mètre (étalonnage).
+- **Comprendre** : ton matériel, les touches des Inkbird, ménager le matériel (le compresseur), économiser
+  l'énergie, les nettoyages, la coupure de courant.
+
+À venir dans les prochaines mises à jour : les 83 recettes de la chambre, le calendrier de l'année, les lots
+(contrôles, pesées, pH), le stock, le matériel à acheter, les rappels dans le Calendrier et la compatibilité.
 
 ## 9. Sauvegarder mes données personnelles
 

@@ -1,0 +1,54 @@
+[
+  {
+    "echeance": "Tout de suite, pour octobre",
+    "articles": [
+      "Spores de koji pour le riz (tane koji)",
+      "Son de riz pour le nukazuke",
+      "Couscoussier ou cuit-vapeur, 2 plateaux, torchons en coton",
+      "Sonde de température à planter dans le riz",
+      "Chargeur USB 5 V pour le ventilateur (un ancien chargeur de téléphone suffit)",
+      "Sacs sous vide gaufrés, bocaux à joint, poids de fermentation",
+      "Un vinaigre non pasteurisé, comme mère",
+      "Eau distillée ; pour le pH-mètre, solutions tampons 4,00 et 6,86 et solution de conservation, si elles ne sont pas fournies"
+    ]
+  },
+  {
+    "echeance": "Avant mi-novembre",
+    "articles": [
+      "Blanc de pleurote grise sur grain",
+      "Kit shiitake prêt à fructifier",
+      "Bac de fructification et perlite",
+      "Une glacière, pour l’étuve à pâte et le garum"
+    ]
+  },
+  {
+    "echeance": "Avant fin novembre, pour la charcuterie",
+    "articles": [
+      "Hachoir électrique, grille de 6 à 8 mm",
+      "Poussoir vertical à piston, 3 à 5 L",
+      "Sel fin non iodé (environ 1 kg), ferments pour saucisson, dextrose",
+      "Gants jetables et désinfectant alimentaire pour le plan de travail",
+      "Boyaux naturels en trois calibres : 24–28 mm, 40–45 mm, 60–70 mm",
+      "Boyau de bœuf ou film collagène pour la coppa, filet élastique, ficelle",
+      "Balance au 0,1 g",
+      "Seringue à saumure",
+      "Gros sel (environ 2 kg) et un bac large et plat, pour le bac de sel de la Cave"
+    ]
+  },
+  {
+    "echeance": "Avant avril",
+    "articles": [
+      "Spores de koji pour sauce soja",
+      "Blé tendre en grains, soja jaune"
+    ]
+  },
+  {
+    "echeance": "Options",
+    "articles": [
+      "Prise wattmètre, pour mesurer la consommation réelle",
+      "Multiprise, si le Séchage doit un jour brancher aussi le tapis",
+      "Humidificateur à ultrasons, sur la prise WORK1 de l’IHC",
+      "Générateur de fumée froide, pour le fumage plus tard"
+    ]
+  }
+]

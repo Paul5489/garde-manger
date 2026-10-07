@@ -1,0 +1,737 @@
+[
+  {
+    "id": "choucroute", "nom": "Choucroute", "famille": "lacto", "mois": [10, 11, 12, 1, 2],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "2 sacs de 1 kg",
+    "base": {"ingredient": "Chou blanc émincé", "quantite": 2000, "unite": "g"},
+    "duree": {"min_j": 21, "max_j": 42},
+    "fin": {"type": "gout", "texte": "Chou translucide, acidité nette, plus de goût de chou cru."},
+    "materiel": ["Grand saladier", "Couteau ou mandoline", "Balance", "Sacs sous vide gaufrés"],
+    "ingredients": [
+      {"nom": "Chou blanc émincé", "qte": 2000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 40, "unite": "g", "note": "2 %"},
+      {"nom": "Baies de genièvre", "qte": 3, "unite": "g"},
+      {"nom": "Graines de carvi", "qte": 3, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Émincer", "texte": "Retirer les feuilles abîmées et le trognon. Émincer finement, 2 mm.", "duree": "15 min"},
+      {"titre": "Saler et masser", "texte": "Peser, ajouter 2 % de sel et les épices. Masser 5 à 10 min jusqu’à ce que le jus coule.", "duree": "10 min"},
+      {"titre": "Mettre en sac", "texte": "Répartir chou et jus en sacs de 1 kg, aspirer brièvement, souder.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "À plat, en cuisine (16 à 22 °C), à l’abri de la lumière. Dégazer si besoin.", "duree": "3 à 6 sem."},
+      {"titre": "Ranger", "texte": "Quand elle est assez acide, au frigo, à plat.", "duree": ""}
+    ],
+    "controles": [{"j": 21, "titre": "Dégustation", "observer": "Goût, couleur", "normal": "Acide, chou translucide", "probleme": "Encore goût de chou cru", "action": "Continuer 1 à 3 semaines."}],
+    "conservation": [{"mode": "Frigo", "comment": "sac ou bocal", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "kimchi", "nom": "Kimchi de chou chinois", "famille": "lacto", "mois": [10, 11, 12],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 2,
+    "rendement": "Un bocal de 2 L",
+    "base": {"ingredient": "Chou chinois", "quantite": 1500, "unite": "g"},
+    "duree": {"min_j": 2, "max_j": 5},
+    "fin": {"type": "gout", "texte": "Pétillant et acidulé : il passe au frigo et continue doucement."},
+    "materiel": ["Grand saladier", "Gants", "Bocal de 2 L", "Petite casserole"],
+    "ingredients": [
+      {"nom": "Chou chinois", "qte": 1500, "unite": "g"},
+      {"nom": "Gros sel, pour le saumurage", "qte": 100, "unite": "g"},
+      {"nom": "Radis blanc (daikon) en julienne", "qte": 300, "unite": "g"},
+      {"nom": "Oignons verts", "qte": 5, "unite": "pièces"},
+      {"nom": "Ail", "qte": 30, "unite": "g"},
+      {"nom": "Gingembre", "qte": 15, "unite": "g"},
+      {"nom": "Piment coréen (gochugaru)", "qte": 40, "unite": "g"},
+      {"nom": "Sauce poisson", "qte": 30, "unite": "g"},
+      {"nom": "Sucre", "qte": 10, "unite": "g"},
+      {"nom": "Farine de riz", "qte": 15, "unite": "g"},
+      {"nom": "Eau, pour la bouillie", "qte": 150, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Saumurer le chou", "texte": "Couper le chou en quartiers, glisser le gros sel entre les feuilles. Laisser 2 à 4 h en retournant à mi-temps, jusqu’à ce que les côtes plient sans casser.", "duree": "2 à 4 h"},
+      {"titre": "Rincer", "texte": "Rincer trois fois à l’eau froide, égoutter 30 min.", "duree": "30 min"},
+      {"titre": "Bouillie", "texte": "Cuire la farine de riz dans l’eau jusqu’à épaississement, laisser refroidir.", "duree": "5 min"},
+      {"titre": "Pâte", "texte": "Mixer ail et gingembre, mélanger avec la bouillie, la sauce poisson, le sucre et le piment. Ajouter radis et oignons verts.", "duree": "10 min"},
+      {"titre": "Enduire", "texte": "Avec des gants, enduire chaque feuille de pâte. Serrer dans le bocal en chassant l’air, laisser 3 cm de vide.", "duree": "10 min"},
+      {"titre": "Fermenter", "texte": "1 à 2 jours en cuisine, en appuyant chaque jour pour garder le chou sous le jus. Puis au frigo.", "duree": "2 à 5 jours"}
+    ],
+    "controles": [{"j": 2, "titre": "Passage au frigo", "observer": "Goût", "normal": "Pétillant, acidulé", "probleme": "Pas encore acide", "action": "Laisser 1 à 2 jours de plus."}],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "3 mois, puis en cuisine (soupe, riz sauté)", "jours": 90}]
+  },
+  {
+    "id": "suancai", "nom": "Suan cai", "famille": "lacto", "mois": [10, 11, 12, 1, 2],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1,5 L",
+    "base": {"ingredient": "Moutarde brune ou chou chinois", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 14, "max_j": 28},
+    "fin": {"type": "gout", "texte": "Feuilles jaune-vert, acidité franche."},
+    "materiel": ["Bocal de 1,5 L", "Poids de fermentation"],
+    "ingredients": [
+      {"nom": "Moutarde brune ou chou chinois", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 30, "unite": "g", "note": "Saumure à 3 %"}
+    ],
+    "etapes": [
+      {"titre": "Flétrir", "texte": "Laver, laisser flétrir les feuilles 1 journée à l’air.", "duree": "1 jour"},
+      {"titre": "Couper et tasser", "texte": "Couper grossièrement, tasser dans le bocal.", "duree": "10 min"},
+      {"titre": "Saumure", "texte": "Couvrir de saumure à 3 %, poser le poids.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "2 à 4 semaines en cuisine, puis au frigo.", "duree": "2 à 4 sem."}
+    ],
+    "controles": [{"j": 14, "titre": "Dégustation", "observer": "Goût", "normal": "Acide, feuilles souples", "probleme": "Peu acide", "action": "Continuer 1 à 2 semaines."}],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "3 mois", "jours": 90}]
+  },
+  {
+    "id": "cepes", "nom": "Cèpes lacto", "famille": "lacto", "mois": [10, 11],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 2,
+    "rendement": "1 sac de 1 kg",
+    "base": {"ingredient": "Cèpes blanchis", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "ph", "cible": 4.2, "texte": "Acidulé, pH sous 4,2 avant le frigo."},
+    "materiel": ["Grande casserole", "Saladier d’eau glacée", "Sacs sous vide", "pH-mètre"],
+    "ingredients": [
+      {"nom": "Cèpes ou autres champignons fermes", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 30, "unite": "g", "note": "3 %"},
+      {"nom": "Ail", "qte": 3, "unite": "gousses"},
+      {"nom": "Thym ou aneth", "qte": 2, "unite": "brins"},
+      {"nom": "Jus de lacto, pour démarrer", "qte": 30, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Nettoyer et couper", "texte": "Brosser, couper en morceaux de 2 cm.", "duree": "15 min"},
+      {"titre": "Blanchir", "texte": "3 min à l’eau bouillante salée, puis eau glacée. Égoutter et sécher.", "duree": "10 min"},
+      {"titre": "Saler", "texte": "Peser, ajouter 3 % de sel, l’ail, les herbes et le jus de lacto.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "En sac sous vide, 1 à 2 semaines en cuisine. Vérifier le pH avant le frigo.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [{"j": 7, "titre": "pH", "observer": "pH du jus", "normal": "Sous 4,2", "probleme": "Au-dessus de 4,2", "action": "Continuer quelques jours et remesurer."}],
+    "conservation": [{"mode": "Frigo", "comment": "sac", "duree": "2 mois", "jours": 60}],
+    "securite": ["Toujours blanchis avant : les champignons crus ne se fermentent pas sans risque.", "Uniquement des champignons identifiés avec certitude."]
+  },
+  {
+    "id": "kosho", "nom": "Kosho", "famille": "lacto", "mois": [9, 10],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un petit bocal de 300 g",
+    "base": {"ingredient": "Piments verts", "quantite": 200, "unite": "g"},
+    "duree": {"min_j": 10, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Couleur vert olive, arôme rond d’agrume et de piment."},
+    "materiel": ["Gants", "Mortier ou mixeur", "Râpe fine", "Petit bocal", "Film alimentaire"],
+    "ingredients": [
+      {"nom": "Piments verts", "qte": 200, "unite": "g"},
+      {"nom": "Zestes d’agrumes (citron, citron vert, yuzu)", "qte": 60, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 40, "unite": "g", "note": "Environ 15 %"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Avec des gants, épépiner la moitié des piments. Prélever les zestes sans le blanc.", "duree": "15 min"},
+      {"titre": "Piler", "texte": "Piler ou mixer piments, zestes et sel en pâte grossière.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "Tasser dans le bocal, film au contact, couvercle. 1 à 2 semaines en cuisine, puis au frigo.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [{"j": 10, "titre": "Dégustation", "observer": "Goût", "normal": "Rond, salé, parfumé", "probleme": "", "action": "Au frigo."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "bocal", "duree": "6 mois", "jours": 180},
+      {"mode": "Congélateur", "comment": "", "duree": "1 an", "jours": 365}
+    ]
+  },
+  {
+    "id": "sauerruben", "nom": "Sauerrüben", "famille": "lacto", "mois": [11, 12, 1, 2, 3],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "1 sac de 1 kg",
+    "base": {"ingredient": "Navets râpés", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 14, "max_j": 28},
+    "fin": {"type": "gout", "texte": "Acidulé, piquant adouci."},
+    "materiel": ["Râpe à gros trous", "Saladier", "Sacs sous vide"],
+    "ingredients": [
+      {"nom": "Navets râpés", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 20, "unite": "g", "note": "2 %"},
+      {"nom": "Baies de genièvre", "qte": 6, "unite": "pièces"},
+      {"nom": "Poivre noir", "qte": 1, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Râper et saler", "texte": "Râper gros, peser, saler à 2 %, épices, masser jusqu’au jus.", "duree": "15 min"},
+      {"titre": "Fermenter", "texte": "En sac sous vide, 2 à 4 semaines en cuisine, puis au frigo.", "duree": "2 à 4 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "sac", "duree": "4 mois", "jours": 120}],
+    "notes": "Navets râpés fermentés comme une choucroute."
+  },
+  {
+    "id": "radisnoir", "nom": "Radis noir râpé", "famille": "lacto", "mois": [11, 12, 1, 2, 3],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "1 sac de 1 kg",
+    "base": {"ingredient": "Radis noir râpé", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 21},
+    "fin": {"type": "gout", "texte": "Acidulé, piquant adouci."},
+    "materiel": ["Râpe", "Saladier", "Sacs sous vide"],
+    "ingredients": [
+      {"nom": "Radis noir râpé", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 20, "unite": "g", "note": "2 %"},
+      {"nom": "Pomme râpée (facultatif)", "qte": 100, "unite": "g"},
+      {"nom": "Gingembre râpé (facultatif)", "qte": 10, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Râper et saler", "texte": "Râper, peser, saler à 2 %, masser jusqu’au jus.", "duree": "15 min"},
+      {"titre": "Fermenter", "texte": "En sac sous vide, 1 à 3 semaines en cuisine, puis au frigo.", "duree": "1 à 3 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "sac", "duree": "3 mois", "jours": 90}],
+    "notes": "Une forte odeur soufrée au début est normale."
+  },
+  {
+    "id": "topinambours", "nom": "Topinambours", "famille": "lacto", "mois": [11, 12, 1, 2, 3],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1,5 L",
+    "base": {"ingredient": "Topinambours", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Acidulés et croquants."},
+    "materiel": ["Brosse à légumes", "Bocal de 1,5 L", "Poids de fermentation"],
+    "ingredients": [
+      {"nom": "Topinambours en rondelles de 5 mm", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 30, "unite": "g", "note": "Saumure à 3 %"},
+      {"nom": "Ail", "qte": 3, "unite": "gousses"},
+      {"nom": "Thym et laurier", "qte": 1, "unite": "bouquet"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Brosser, couper en rondelles.", "duree": "10 min"},
+      {"titre": "Bocal", "texte": "Tasser avec l’ail et les herbes, couvrir de saumure, poids.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "1 à 2 semaines en cuisine, puis au frigo.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "2 mois", "jours": 60}],
+    "notes": "Beaucoup de bulles les premiers jours : c’est normal."
+  },
+  {
+    "id": "bruxelles", "nom": "Choux de Bruxelles", "famille": "lacto", "mois": [11, 12, 1, 2],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1,5 L",
+    "base": {"ingredient": "Choux de Bruxelles", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 14, "max_j": 28},
+    "fin": {"type": "gout", "texte": "Acides au cœur, encore fermes."},
+    "materiel": ["Bocal de 1,5 L", "Poids de fermentation"],
+    "ingredients": [
+      {"nom": "Choux de Bruxelles coupés en deux", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 35, "unite": "g", "note": "Saumure à 3,5 %"},
+      {"nom": "Ail", "qte": 4, "unite": "gousses"},
+      {"nom": "Piment sec", "qte": 1, "unite": "pièce"},
+      {"nom": "Graines de moutarde", "qte": 5, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Retirer les feuilles abîmées, couper en deux.", "duree": "15 min"},
+      {"titre": "Bocal", "texte": "Tasser avec les aromates, couvrir de saumure, poids.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "2 à 4 semaines en cuisine, puis au frigo.", "duree": "2 à 4 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "3 mois", "jours": 90}]
+  },
+  {
+    "id": "citrons", "nom": "Citrons confits au sel", "famille": "lacto", "mois": [12, 1, 2, 3],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1,5 L",
+    "base": {"ingredient": "Citrons non traités", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 28, "max_j": 35},
+    "fin": {"type": "aspect", "texte": "Écorce translucide et souple."},
+    "materiel": ["Bocal de 1,5 L ébouillanté", "Presse-agrumes"],
+    "ingredients": [
+      {"nom": "Citrons non traités", "qte": 1000, "unite": "g"},
+      {"nom": "Gros sel", "qte": 100, "unite": "g"},
+      {"nom": "Jus de citron en plus", "qte": 4, "unite": "citrons"}
+    ],
+    "etapes": [
+      {"titre": "Couper", "texte": "Laver, couper en croix sans détacher les quartiers.", "duree": "10 min"},
+      {"titre": "Saler", "texte": "Remplir chaque citron de gros sel, tasser dans le bocal en écrasant.", "duree": "10 min"},
+      {"titre": "Couvrir", "texte": "Couvrir de jus de citron, fermer.", "duree": "5 min"},
+      {"titre": "Confire", "texte": "4 semaines en cuisine, en retournant le bocal chaque jour la première semaine. Puis au frigo.", "duree": "4 sem."}
+    ],
+    "controles": [{"j": 1, "repeter_j": 1, "fin_j": 7, "titre": "Retourner le bocal", "observer": "Niveau du jus", "normal": "Citrons couverts", "probleme": "Citrons à l’air", "action": "Ajouter du jus de citron."}],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "1 an", "jours": 365}]
+  },
+  {
+    "id": "ailours", "nom": "Ail des ours", "famille": "lacto", "mois": [3, 4],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "1 petit sac de feuilles et 1 petit bocal de boutons",
+    "base": {"ingredient": "Feuilles d’ail des ours", "quantite": 300, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 21},
+    "fin": {"type": "gout", "texte": "Feuilles en 1 semaine, boutons en 3 semaines."},
+    "materiel": ["Sacs sous vide", "Petit bocal"],
+    "ingredients": [
+      {"nom": "Feuilles d’ail des ours", "qte": 300, "unite": "g"},
+      {"nom": "Sel fin non iodé, pour les feuilles", "qte": 6, "unite": "g", "note": "2 %"},
+      {"nom": "Piment coréen (facultatif)", "qte": 5, "unite": "g"},
+      {"nom": "Boutons floraux d’ail des ours", "qte": 100, "unite": "g"},
+      {"nom": "Saumure à 5 % pour les boutons", "qte": 150, "unite": "g", "note": "150 g d’eau + 8 g de sel"}
+    ],
+    "etapes": [
+      {"titre": "Feuilles", "texte": "Laver, sécher, couper grossièrement, saler à 2 %, masser, mettre en sac. 1 semaine en cuisine.", "duree": "1 sem."},
+      {"titre": "Boutons", "texte": "Rincer les boutons, les couvrir de saumure à 5 % en bocal. 3 semaines en cuisine.", "duree": "3 sem."},
+      {"titre": "Ranger", "texte": "Au frigo.", "duree": ""}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "feuilles en sac", "duree": "2 mois", "jours": 60},
+      {"mode": "Frigo", "comment": "boutons en bocal", "duree": "6 mois", "jours": 180}
+    ],
+    "securite": ["Ne pas confondre avec le muguet ou le colchique, toxiques : une feuille froissée d’ail des ours sent l’ail."]
+  },
+  {
+    "id": "pissenlit", "nom": "Câpres de pissenlit", "famille": "lacto", "mois": [3, 4],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Un petit bocal",
+    "base": {"ingredient": "Boutons de pissenlit fermés", "quantite": 200, "unite": "g"},
+    "duree": {"min_j": 21, "max_j": 21},
+    "fin": {"type": "temps", "texte": "3 semaines."},
+    "materiel": ["Petit bocal", "Petit poids"],
+    "ingredients": [
+      {"nom": "Boutons de pissenlit bien fermés", "qte": 200, "unite": "g"},
+      {"nom": "Eau", "qte": 250, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 13, "unite": "g", "note": "Saumure à 5 %"},
+      {"nom": "Ail", "qte": 1, "unite": "gousse"}
+    ],
+    "etapes": [
+      {"titre": "Cueillir", "texte": "Boutons bien fermés, loin des routes et des passages de chiens. Rincer.", "duree": ""},
+      {"titre": "Bocal", "texte": "Couvrir de saumure avec l’ail, petit poids.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "3 semaines en cuisine, puis au frigo.", "duree": "3 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "asperges", "nom": "Asperges", "famille": "lacto", "mois": [4, 5],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1 L",
+    "base": {"ingredient": "Asperges vertes", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 5, "max_j": 7},
+    "fin": {"type": "gout", "texte": "Acidulées, encore croquantes."},
+    "materiel": ["Bocal haut de 1 L", "Poids"],
+    "ingredients": [
+      {"nom": "Asperges vertes", "qte": 500, "unite": "g"},
+      {"nom": "Eau", "qte": 500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 15, "unite": "g", "note": "Saumure à 3 %"},
+      {"nom": "Ail", "qte": 2, "unite": "gousses"},
+      {"nom": "Aneth", "qte": 2, "unite": "brins"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Couper les asperges à la hauteur du bocal moins 3 cm, garder les parties tendres.", "duree": "10 min"},
+      {"titre": "Bocal", "texte": "Ranger debout avec ail et aneth, couvrir de saumure, poids.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "5 à 7 jours en cuisine, puis au frigo.", "duree": "5 à 7 jours"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "1 mois", "jours": 30}]
+  },
+  {
+    "id": "radisroses", "nom": "Radis roses", "famille": "lacto", "mois": [4, 5, 6],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1 L",
+    "base": {"ingredient": "Radis roses", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 3, "max_j": 7},
+    "fin": {"type": "gout", "texte": "Acidulés ; la saumure devient rose."},
+    "materiel": ["Bocal de 1 L", "Poids"],
+    "ingredients": [
+      {"nom": "Radis roses, entiers ou coupés en deux", "qte": 500, "unite": "g"},
+      {"nom": "Eau", "qte": 500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 15, "unite": "g", "note": "Saumure à 3 %"},
+      {"nom": "Ail", "qte": 1, "unite": "gousse"},
+      {"nom": "Graines de coriandre", "qte": 2, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Bocal", "texte": "Tasser les radis avec l’ail et la coriandre, couvrir de saumure, poids.", "duree": "10 min"},
+      {"titre": "Fermenter", "texte": "3 à 7 jours en cuisine (dans la chambre à partir de juin), puis au frigo.", "duree": "3 à 7 jours"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "1 mois", "jours": 30}]
+  },
+  {
+    "id": "pakimchi", "nom": "Kimchi d’oignons nouveaux", "famille": "lacto", "mois": [5, 6],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 750 ml",
+    "base": {"ingredient": "Oignons nouveaux (cébettes)", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "gout", "texte": "Pétillant, acidulé."},
+    "materiel": ["Gants", "Saladier", "Bocal"],
+    "ingredients": [
+      {"nom": "Oignons nouveaux", "qte": 500, "unite": "g"},
+      {"nom": "Sauce poisson", "qte": 40, "unite": "g"},
+      {"nom": "Piment coréen (gochugaru)", "qte": 25, "unite": "g"},
+      {"nom": "Ail", "qte": 15, "unite": "g"},
+      {"nom": "Gingembre", "qte": 5, "unite": "g"},
+      {"nom": "Sucre", "qte": 5, "unite": "g"},
+      {"nom": "Graines de sésame", "qte": 5, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Laver, sécher, enrober de sauce poisson 20 min.", "duree": "20 min"},
+      {"titre": "Assaisonner", "texte": "Ajouter le reste, masser doucement, rouler en petits paquets, tasser dans le bocal.", "duree": "10 min"},
+      {"titre": "Fermenter", "texte": "1 à 2 jours en cuisine, puis au frigo.", "duree": "1 à 2 jours"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "1 mois", "jours": 30}]
+  },
+  {
+    "id": "fraises", "nom": "Fraises lacto", "famille": "lacto", "mois": [5, 6],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "1 sac de 1 kg, fruits et jus",
+    "base": {"ingredient": "Fraises équeutées", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 3, "max_j": 7},
+    "fin": {"type": "gout", "texte": "Acidulées, légèrement pétillantes, jus abondant."},
+    "materiel": ["Sacs sous vide", "Balance"],
+    "ingredients": [
+      {"nom": "Fraises équeutées", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 20, "unite": "g", "note": "2 %"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Rincer rapidement, sécher, équeuter, peser.", "duree": "10 min"},
+      {"titre": "Saler et emballer", "texte": "Mélanger avec 2 % de sel, sac sous vide à plat.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "3 à 7 jours vers 20 °C, puis au frigo. Utiliser fruits et jus en dessert, en vinaigrette ou en sauce.", "duree": "3 à 7 jours"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "sac", "duree": "1 mois", "jours": 30},
+      {"mode": "Congélateur", "comment": "avec leur jus", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "cerises", "nom": "Cerises lacto", "famille": "lacto", "mois": [6, 7],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_sac", "etiquettes": [], "place": 0.1, "difficulte": 1,
+    "rendement": "1 sac de 1 kg",
+    "base": {"ingredient": "Cerises dénoyautées", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 5, "max_j": 7},
+    "fin": {"type": "gout", "texte": "Acidulées, jus rouge sombre."},
+    "materiel": ["Dénoyauteur", "Sacs sous vide"],
+    "ingredients": [
+      {"nom": "Cerises dénoyautées", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 20, "unite": "g", "note": "2 %"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Dénoyauter, peser, saler à 2 %.", "duree": "20 min"},
+      {"titre": "Fermenter", "texte": "En sac sous vide, environ 1 semaine dans la chambre à 19 °C, puis au frigo.", "duree": "5 à 7 jours"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "sac", "duree": "2 mois", "jours": 60},
+      {"mode": "Congélateur", "comment": "avec leur jus", "duree": "6 mois", "jours": 180}
+    ],
+    "notes": "Avec la charcuterie, le magret, le gibier."
+  },
+  {
+    "id": "kimchiconcombre", "nom": "Kimchi de concombre", "famille": "lacto", "mois": [6, 7, 8, 9],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0.1, "difficulte": 2,
+    "rendement": "Un bocal de 1,5 L",
+    "base": {"ingredient": "Petits concombres", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "gout", "texte": "Pétillant et acidulé : au frigo."},
+    "materiel": ["Gants", "Bocal de 1,5 L"],
+    "ingredients": [
+      {"nom": "Petits concombres", "qte": 1000, "unite": "g"},
+      {"nom": "Gros sel, pour dégorger", "qte": 30, "unite": "g"},
+      {"nom": "Ciboulette", "qte": 50, "unite": "g"},
+      {"nom": "Carotte en julienne", "qte": 50, "unite": "g"},
+      {"nom": "Ail", "qte": 15, "unite": "g"},
+      {"nom": "Piment coréen (gochugaru)", "qte": 15, "unite": "g"},
+      {"nom": "Sauce poisson", "qte": 20, "unite": "g"},
+      {"nom": "Sucre", "qte": 5, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Inciser et dégorger", "texte": "Couper en tronçons de 6 cm, inciser en croix sans séparer. Saler 30 min, rincer, égoutter.", "duree": "40 min"},
+      {"titre": "Farcir", "texte": "Mélanger la farce, en remplir chaque incision.", "duree": "15 min"},
+      {"titre": "Fermenter", "texte": "Bocal 1 à 2 jours dans la chambre, puis au frigo.", "duree": "1 à 2 jours"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "3 semaines", "jours": 21}]
+  },
+  {
+    "id": "pateherbes", "nom": "Pâte d’herbes fermentée", "famille": "lacto", "mois": [6, 7, 8, 9],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0.05, "difficulte": 1,
+    "rendement": "Un bocal de 350 g",
+    "base": {"ingredient": "Herbes (basilic, coriandre, persil)", "quantite": 300, "unite": "g"},
+    "duree": {"min_j": 3, "max_j": 7},
+    "fin": {"type": "gout", "texte": "Acidulée, parfum vif."},
+    "materiel": ["Mixeur", "Petit bocal", "Film alimentaire", "Petit poids", "Bac à glaçons"],
+    "ingredients": [
+      {"nom": "Herbes (basilic, coriandre, persil)", "qte": 300, "unite": "g"},
+      {"nom": "Piment vert", "qte": 2, "unite": "pièces"},
+      {"nom": "Ail", "qte": 3, "unite": "gousses"},
+      {"nom": "Sel fin non iodé", "qte": 9, "unite": "g", "note": "3 %"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Laver et bien sécher les herbes.", "duree": "15 min"},
+      {"titre": "Hacher", "texte": "Hacher grossièrement au mixeur avec ail, piment et sel.", "duree": "2 min"},
+      {"titre": "Fermenter", "texte": "Tasser dans le bocal, film au contact, poids. 3 à 7 jours dans la chambre, puis au frigo ou en glaçons au congélateur.", "duree": "3 à 7 jours"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "bocal", "duree": "1 mois", "jours": 30},
+      {"mode": "Congélateur", "comment": "en glaçons", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "cornichons", "nom": "Cornichons à la russe", "famille": "lacto", "mois": [7, 8],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0.15, "difficulte": 1,
+    "rendement": "Un bocal de 2 L",
+    "base": {"ingredient": "Petits concombres à cornichons", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 21},
+    "fin": {"type": "gout", "texte": "1 semaine : demi-sel, encore vert. 3 semaines : acides et olive à cœur."},
+    "materiel": ["Bocal de 2 L", "Poids de fermentation", "Brosse"],
+    "ingredients": [
+      {"nom": "Petits concombres très frais", "qte": 1000, "unite": "g"},
+      {"nom": "Eau", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 50, "unite": "g", "note": "Saumure à 5 %"},
+      {"nom": "Ail", "qte": 4, "unite": "gousses"},
+      {"nom": "Ombelles d’aneth", "qte": 2, "unite": "pièces"},
+      {"nom": "Feuilles de raifort, de vigne, de cassis ou de chêne", "qte": 3, "unite": "pièces", "note": "Leurs tanins gardent le croquant"},
+      {"nom": "Graines de coriandre", "qte": 3, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Brosser, couper une fine tranche côté fleur, tremper 1 h dans l’eau glacée.", "duree": "1 h"},
+      {"titre": "Bocal", "texte": "Feuilles au fond, cornichons serrés debout, aromates, saumure à couvrir, poids.", "duree": "10 min"},
+      {"titre": "Fermenter", "texte": "Dans la chambre à 19 °C, 1 à 3 semaines selon le goût, puis au frigo.", "duree": "1 à 3 sem."}
+    ],
+    "controles": [{"j": 7, "titre": "Dégustation", "observer": "Goût, couleur", "normal": "Demi-sel, encore verts", "probleme": "", "action": "Au frigo, ou continuer jusqu’à 3 semaines."}],
+    "conservation": [{"mode": "Frigo", "comment": "bocal en saumure", "duree": "3 mois", "jours": 90}]
+  },
+  {
+    "id": "fruitsete", "nom": "Prunes, pêches, mirabelles", "famille": "lacto", "mois": [7, 8, 9],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_sac", "etiquettes": [], "place": 0.1, "difficulte": 1,
+    "rendement": "1 sac de 1 kg",
+    "base": {"ingredient": "Fruits dénoyautés", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 5, "max_j": 7},
+    "fin": {"type": "gout", "texte": "Acidulés, jus parfumé."},
+    "materiel": ["Sacs sous vide"],
+    "ingredients": [
+      {"nom": "Prunes, pêches ou mirabelles dénoyautées (pêches en quartiers)", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 20, "unite": "g", "note": "2 %"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Dénoyauter, peser, saler à 2 %.", "duree": "15 min"},
+      {"titre": "Fermenter", "texte": "En sac sous vide, 5 à 7 jours dans la chambre, puis au frigo.", "duree": "5 à 7 jours"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "sac", "duree": "2 mois", "jours": 60},
+      {"mode": "Congélateur", "comment": "avec leur jus", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "salsa", "nom": "Salsa fermentée", "famille": "lacto", "mois": [7, 8, 9],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0.1, "difficulte": 1,
+    "rendement": "Un bocal de 1,5 L",
+    "base": {"ingredient": "Tomates mûres", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 2, "max_j": 3},
+    "fin": {"type": "gout", "texte": "Pétillante et acidulée."},
+    "materiel": ["Couteau", "Bocal de 1,5 L"],
+    "ingredients": [
+      {"nom": "Tomates mûres", "qte": 1000, "unite": "g"},
+      {"nom": "Oignon", "qte": 150, "unite": "g"},
+      {"nom": "Piments", "qte": 2, "unite": "pièces"},
+      {"nom": "Ail", "qte": 2, "unite": "gousses"},
+      {"nom": "Coriandre fraîche", "qte": 1, "unite": "bouquet"},
+      {"nom": "Sel fin non iodé", "qte": 25, "unite": "g", "note": "2 % du poids total"},
+      {"nom": "Jus de lacto, pour démarrer", "qte": 30, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Couper", "texte": "Tout couper en petits dés, mélanger avec le sel et le jus de lacto.", "duree": "20 min"},
+      {"titre": "Fermenter", "texte": "Tasser en bocal, laisser 3 cm de vide. 2 à 3 jours dans la chambre en remuant chaque jour, puis au frigo.", "duree": "2 à 3 jours"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal", "duree": "1 mois", "jours": 30}]
+  },
+  {
+    "id": "ketchup", "nom": "Ketchup fermenté", "famille": "lacto", "mois": [8, 9],
+    "lieu": "chambre", "mode": "tempere", "technique": "lacto_bocal", "etiquettes": [], "place": 0.05, "difficulte": 1,
+    "rendement": "Un bocal de 500 g",
+    "base": {"ingredient": "Concentré de tomate", "quantite": 400, "unite": "g"},
+    "duree": {"min_j": 3, "max_j": 5},
+    "fin": {"type": "gout", "texte": "Acidulé et rond."},
+    "materiel": ["Bocal de 500 ml", "pH-mètre pour la pasteurisation", "Thermoplongeur (option)"],
+    "ingredients": [
+      {"nom": "Concentré de tomate (ou tomates réduites)", "qte": 400, "unite": "g"},
+      {"nom": "Jus de lacto (starter)", "qte": 60, "unite": "g"},
+      {"nom": "Miel ou sucre roux", "qte": 40, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 8, "unite": "g"},
+      {"nom": "Oignon en poudre", "qte": 5, "unite": "g"},
+      {"nom": "Ail en poudre", "qte": 3, "unite": "g"},
+      {"nom": "Piment de la Jamaïque, girofle, cannelle", "qte": 1, "unite": "pincée"}
+    ],
+    "etapes": [
+      {"titre": "Mélanger", "texte": "Tout mélanger, détendre avec un peu d’eau si besoin.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "En bocal, couvercle posé, 3 à 5 jours dans la chambre. Puis au frigo.", "duree": "3 à 5 jours"},
+      {"titre": "Pasteuriser (option)", "texte": "Si le pH est sous 4,2 : bocaux fermés 20 min à 85 °C au thermoplongeur, pour une garde au placard.", "duree": "30 min"}
+    ],
+    "controles": [{"j": 3, "titre": "pH", "observer": "pH", "normal": "Sous 4,2 pour pasteuriser", "probleme": "Au-dessus de 4,2", "action": "Garder au frigo, ne pas pasteuriser pour le placard."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "bocal", "duree": "2 mois", "jours": 60},
+      {"mode": "Placard", "comment": "pasteurisé, pH sous 4,2", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "sriracha", "nom": "Sriracha", "famille": "lacto", "mois": [8, 9, 10],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Environ 900 ml",
+    "base": {"ingredient": "Piments rouges", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Acidulée, piquant arrondi : on mixe."},
+    "materiel": ["Gants", "Sacs sous vide", "Mixeur", "Tamis (option)", "Bouteilles", "pH-mètre", "Thermoplongeur (option)"],
+    "ingredients": [
+      {"nom": "Piments rouges équeutés", "qte": 1000, "unite": "g"},
+      {"nom": "Ail", "qte": 60, "unite": "g"},
+      {"nom": "Sucre roux", "qte": 30, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 30, "unite": "g", "note": "3 %"},
+      {"nom": "Vinaigre (au mixage, option)", "qte": 60, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Hacher", "texte": "Avec des gants, hacher grossièrement piments et ail : des morceaux, pas une purée, à cause de la machine à aspiration.", "duree": "15 min"},
+      {"titre": "Fermenter", "texte": "Mélanger avec le sucre et le sel, sac sous vide. 1 à 2 semaines entre 18 et 24 °C.", "duree": "1 à 2 sem."},
+      {"titre": "Mixer", "texte": "Mixer finement avec le vinaigre, passer au tamis si tu la veux lisse.", "duree": "10 min"},
+      {"titre": "Mettre en bouteille", "texte": "Au frigo. Ou, si le pH est sous 4,2, pasteuriser 20 min à 85 °C pour le placard.", "duree": "30 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "bouteille", "duree": "6 mois", "jours": 180},
+      {"mode": "Placard", "comment": "pasteurisée, pH sous 4,2", "duree": "1 an", "jours": 365}
+    ],
+    "notes": "En août et septembre, la chambre à 19 °C donne un goût plus fin."
+  },
+  {
+    "id": "harissa", "nom": "Harissa fermentée", "famille": "lacto", "mois": [8, 9, 10],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 500 g",
+    "base": {"ingredient": "Piments rouges frais", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Acidulée, épicée."},
+    "materiel": ["Gants", "Sacs sous vide", "Poêle", "Mixeur", "Bocal"],
+    "ingredients": [
+      {"nom": "Piments rouges frais", "qte": 500, "unite": "g"},
+      {"nom": "Piments secs réhydratés", "qte": 20, "unite": "g"},
+      {"nom": "Ail", "qte": 40, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 15, "unite": "g", "note": "3 %"},
+      {"nom": "Carvi, coriandre et cumin, torréfiés et moulus", "qte": 13, "unite": "g"},
+      {"nom": "Huile d’olive", "qte": 50, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Hacher", "texte": "Hacher grossièrement piments et ail, saler à 3 %.", "duree": "15 min"},
+      {"titre": "Fermenter", "texte": "En sac sous vide, 1 à 2 semaines.", "duree": "1 à 2 sem."},
+      {"titre": "Mixer", "texte": "Mixer avec les épices et l’huile. En bocal, sous une fine couche d’huile, au frigo.", "duree": "10 min"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal, sous une couche d’huile", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "jalapenos", "nom": "Jalapeños en rondelles", "famille": "lacto", "mois": [8, 9, 10],
+    "lieu": "cuisine", "mode": null, "technique": "lacto_bocal", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "Un bocal de 1 L",
+    "base": {"ingredient": "Jalapeños", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "gout", "texte": "Acidulés, encore croquants."},
+    "materiel": ["Gants", "Bocal de 1 L", "Poids"],
+    "ingredients": [
+      {"nom": "Jalapeños en rondelles de 5 mm", "qte": 500, "unite": "g"},
+      {"nom": "Eau", "qte": 500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 18, "unite": "g", "note": "Saumure à 3,5 %"},
+      {"nom": "Ail", "qte": 3, "unite": "gousses"},
+      {"nom": "Origan séché", "qte": 2, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Couper", "texte": "Avec des gants, couper en rondelles.", "duree": "10 min"},
+      {"titre": "Bocal", "texte": "Tasser avec ail et origan, couvrir de saumure, poids.", "duree": "5 min"},
+      {"titre": "Fermenter", "texte": "1 à 2 semaines, puis au frigo.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bocal en saumure", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "pimentsflocons", "nom": "Piments fermentés en flocons", "famille": "lacto", "mois": [11],
+    "lieu": "chambre", "mode": "sechage", "technique": "sechage", "etiquettes": ["air_sec", "odeur_forte"], "place": 0.25, "difficulte": 1,
+    "rendement": "Environ 80 g",
+    "base": {"ingredient": "Piments fermentés égouttés", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 2},
+    "fin": {"type": "aspect", "texte": "Cassants."},
+    "materiel": ["Gants", "Grilles", "Mixeur", "Masque (poussière piquante)", "Bocal hermétique"],
+    "ingredients": [{"nom": "Piments fermentés en septembre, égouttés", "qte": 500, "unite": "g"}],
+    "etapes": [
+      {"titre": "Étaler", "texte": "Couper en deux, épépiner si tu veux moins fort, étaler en une couche.", "duree": "15 min"},
+      {"titre": "Sécher", "texte": "Mode Séchage, 24 à 48 h, jusqu’à cassant.", "duree": "1 à 2 jours"},
+      {"titre": "Concasser", "texte": "Mixer par à-coups avec un masque, mettre en bocal.", "duree": "5 min"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Placard", "comment": "bocal hermétique", "duree": "1 an", "jours": 365}]
+  },
+  {
+    "id": "poudreslacto", "nom": "Poudres de lacto", "famille": "lacto", "mois": [5],
+    "lieu": "chambre", "mode": "sechage", "technique": "sechage", "etiquettes": ["air_sec", "odeur_forte"], "place": 0.25, "difficulte": 1,
+    "rendement": "Environ 60 g",
+    "base": {"ingredient": "Restes de choucroute ou de kimchi essorés", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 1, "max_j": 3},
+    "fin": {"type": "aspect", "texte": "Cassant, se réduit en poudre."},
+    "materiel": ["Grilles avec papier cuisson percé", "Mixeur", "Tamis", "Bocal hermétique", "Sachet déshydratant"],
+    "ingredients": [{"nom": "Restes de choucroute ou de kimchi bien essorés", "qte": 500, "unite": "g"}],
+    "etapes": [
+      {"titre": "Étaler", "texte": "Essorer fort, étaler très finement.", "duree": "10 min"},
+      {"titre": "Sécher", "texte": "Mode Séchage, 1 à 3 jours, jusqu’à cassant.", "duree": "1 à 3 jours"},
+      {"titre": "Mixer", "texte": "Mixer, tamiser, en bocal avec un sachet déshydratant.", "duree": "5 min"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Placard", "comment": "bocal hermétique", "duree": "6 mois", "jours": 180}]
+  },
+  {
+    "id": "pleurotslacto", "nom": "Pleurotes lacto", "famille": "lacto", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "technique": "lacto_sac", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "rendement": "1 petit sac",
+    "base": {"ingredient": "Pleurotes blanchies", "quantite": 500, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "ph", "cible": 4.2, "texte": "Acidulées, pH sous 4,2 avant le frigo."},
+    "materiel": ["Casserole", "Eau glacée", "Sacs sous vide", "pH-mètre"],
+    "ingredients": [
+      {"nom": "Pleurotes", "qte": 500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 15, "unite": "g", "note": "3 %"},
+      {"nom": "Ail", "qte": 2, "unite": "gousses"},
+      {"nom": "Thym", "qte": 2, "unite": "brins"}
+    ],
+    "etapes": [
+      {"titre": "Blanchir", "texte": "Effilocher, blanchir 2 min, refroidir à l’eau glacée, sécher.", "duree": "10 min"},
+      {"titre": "Fermenter", "texte": "Saler à 3 %, ail, thym, sac sous vide, 1 à 2 semaines. Vérifier le pH avant le frigo.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [{"j": 7, "titre": "pH", "observer": "pH du jus", "normal": "Sous 4,2", "probleme": "Au-dessus", "action": "Continuer et remesurer."}],
+    "conservation": [{"mode": "Frigo", "comment": "sac", "duree": "2 mois", "jours": 60}],
+    "securite": ["Toujours blanchies avant."]
+  },
+  {
+    "id": "nuka", "nom": "Nukazuke", "famille": "lacto", "toute_annee": true,
+    "lieu": "cuisine", "mode": null, "etiquettes": ["odeur_forte"], "place": 0.15, "difficulte": 2,
+    "rendement": "Un bac de 3 L",
+    "base": {"ingredient": "Son de riz", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 10},
+    "fin": {"type": "odeur", "texte": "Le bac sent bon l’acidulé, comme du pain ou de la bière : il est prêt à recevoir des légumes."},
+    "materiel": ["Bac en plastique alimentaire ou pot en grès de 3 L avec couvercle", "Poêle"],
+    "ingredients": [
+      {"nom": "Son de riz", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 130, "unite": "g"},
+      {"nom": "Eau", "qte": 1000, "unite": "g", "note": "Environ, selon la texture"},
+      {"nom": "Kombu", "qte": 10, "unite": "cm"},
+      {"nom": "Piments secs", "qte": 2, "unite": "pièces"},
+      {"nom": "Gingembre en tranches", "qte": 20, "unite": "g"},
+      {"nom": "Ail", "qte": 2, "unite": "gousses"},
+      {"nom": "Épluchures et feuilles de chou, pour le démarrage", "qte": 200, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Torréfier le son", "texte": "Griller le son à sec 5 min à la poêle, laisser refroidir.", "duree": "10 min"},
+      {"titre": "Mélanger", "texte": "Dissoudre le sel dans l’eau tiède, mélanger au son jusqu’à une texture de sable mouillé. Enfouir kombu, piments, gingembre et ail.", "duree": "10 min"},
+      {"titre": "Démarrer", "texte": "Enfouir des épluchures, les changer chaque jour pendant 7 à 10 jours. Remuer jusqu’au fond chaque jour.", "duree": "7 à 10 jours"},
+      {"titre": "Utiliser", "texte": "Enfouir les légumes entiers ou en gros morceaux : concombre 6 à 12 h, radis et navet 12 à 24 h, chou 1 jour, carotte 1 à 2 jours. Rincer, trancher.", "duree": "6 h à 2 jours"},
+      {"titre": "Entretenir", "texte": "Remuer chaque jour. Si le bac devient trop mouillé, ajouter du son avec 10 % de son poids en sel. En été, dans la chambre à 19 °C ; si tu pars, au frigo.", "duree": ""}
+    ],
+    "controles": [
+      {"j": 1, "repeter_j": 1, "titre": "Remuer le nuka", "observer": "Odeur, texture", "normal": "Odeur acidulée agréable, texture de sable mouillé", "probleme": "Odeur de pied ou de levure forte ; trop mouillé", "action": "Ajouter du son et du sel, remuer plus souvent."},
+      {"j": 3, "titre": "Surface", "observer": "Surface", "normal": "Rien, ou un voile blanc", "probleme": "Moisissure colorée", "action": "Voile blanc : le mélanger dedans. Coloré : retirer largement autour."}
+    ],
+    "conservation": [{"mode": "Frigo", "comment": "légumes sortis du bac", "duree": "3 jours", "jours": 3}],
+    "notes": "Le bac se garde des années s’il est remué chaque jour. Au frigo, un brassage tous les 3 à 4 jours suffit."
+  },
+  {
+    "id": "juslacto", "nom": "Jus de lacto", "famille": "lacto", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Selon les ouvertures",
+    "base": {"ingredient": "Jus ou saumure de fermentation", "quantite": 250, "unite": "g"},
+    "duree": {"min_j": 0, "max_j": 0},
+    "fin": {"type": "temps", "texte": "Récupéré à chaque ouverture."},
+    "materiel": ["Petite passoire", "Bouteille"],
+    "ingredients": [{"nom": "Jus ou saumure d’une fermentation réussie", "qte": 250, "unite": "g"}],
+    "etapes": [
+      {"titre": "Récupérer", "texte": "À chaque ouverture d’un sac ou d’un bocal réussi, filtrer le jus en bouteille.", "duree": "2 min"},
+      {"titre": "Utiliser", "texte": "1 à 2 cuillerées pour démarrer plus vite une nouvelle fermentation (ketchup, salsa, champignons), ou en vinaigrette et en marinade.", "duree": ""}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "bouteille", "duree": "3 mois", "jours": 90}]
+  }
+]

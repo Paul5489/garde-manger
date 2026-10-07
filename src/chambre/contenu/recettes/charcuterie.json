@@ -1,0 +1,482 @@
+[
+  {
+    "id": "cote", "nom": "Côte de bœuf maturée", "famille": "charc", "mois": [11],
+    "lieu": "chambre", "mode": "froid", "technique": "maturation", "etiquettes": ["sensible_odeur"], "place": 0.25, "difficulte": 1,
+    "rendement": "Environ 1,8 kg après parage",
+    "base": {"ingredient": "Côte de bœuf avec os", "quantite": 2500, "unite": "g"},
+    "duree": {"min_j": 28, "max_j": 35},
+    "fin": {"type": "temps", "texte": "4 à 5 semaines, puis parage de la croûte."},
+    "materiel": ["Grille", "Plateau pour les gouttes", "Couteau bien affûté", "Balance"],
+    "ingredients": [{"nom": "Côte de bœuf avec os et gras de couverture (2 à 3 côtes)", "qte": 2500, "unite": "g"}],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Ne pas laver. Sécher au papier, peser et noter le poids.", "duree": "5 min"},
+      {"titre": "Installer", "texte": "Sur une grille, os en bas, sans film, au milieu de la chambre en mode Froid, ventilateur en continu.", "duree": "5 min"},
+      {"titre": "Maturer", "texte": "4 à 5 semaines, sans toucher, porte ouverte le moins possible.", "duree": "4 à 5 sem."},
+      {"titre": "Parer", "texte": "Retirer la croûte sèche sur 0,5 à 1 cm, découper en côtes.", "duree": "20 min"}
+    ],
+    "controles": [{"j": 28, "titre": "Fin possible", "observer": "Croûte, odeur", "normal": "Croûte dure, odeur de noisette", "probleme": "", "action": "Parer et cuire, ou continuer 1 semaine."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "à cuire sous 3 jours", "jours": 3},
+      {"mode": "Congélateur", "comment": "sous vide, en portions", "duree": "6 mois", "jours": 180}
+    ],
+    "notes": "Entrée mi-novembre, sortie vers le 20 décembre."
+  },
+  {
+    "id": "fauxfilet", "nom": "Faux-filet maturé", "famille": "charc", "mois": [11],
+    "lieu": "chambre", "mode": "froid", "technique": "maturation", "etiquettes": ["sensible_odeur"], "place": 0.25, "difficulte": 1,
+    "rendement": "Environ 1,8 kg après parage",
+    "base": {"ingredient": "Pièce de faux-filet avec gras", "quantite": 2500, "unite": "g"},
+    "duree": {"min_j": 28, "max_j": 42},
+    "fin": {"type": "temps", "texte": "4 à 6 semaines, puis parage."},
+    "materiel": ["Grille", "Plateau", "Couteau bien affûté", "Balance"],
+    "ingredients": [{"nom": "Pièce de faux-filet (contre-filet) avec son gras de couverture", "qte": 2500, "unite": "g"}],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Sécher au papier, peser et noter le poids.", "duree": "5 min"},
+      {"titre": "Installer", "texte": "Sur une grille, gras en haut, sans film, mode Froid, ventilateur en continu.", "duree": "5 min"},
+      {"titre": "Maturer", "texte": "4 à 6 semaines.", "duree": "4 à 6 sem."},
+      {"titre": "Parer", "texte": "Retirer la croûte, découper en pavés ou en tranches épaisses.", "duree": "20 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "à cuire sous 3 jours", "jours": 3},
+      {"mode": "Congélateur", "comment": "sous vide, en portions", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "coppa", "nom": "Coppa", "famille": "charc", "mois": [11],
+    "lieu": "chambre", "mode": "cave", "technique": "salaison_entiere", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.15, "difficulte": 2,
+    "phases": [
+      {"nom": "Salage sous vide", "mode": "froid", "min_j": 21, "max_j": 21},
+      {"nom": "Séchage", "mode": "cave", "min_j": 56, "max_j": 84}
+    ],
+    "rendement": "Environ 1 kg",
+    "base": {"ingredient": "Échine de porc désossée", "quantite": 1500, "unite": "g"},
+    "duree": {"min_j": 77, "max_j": 105},
+    "fin": {"type": "perte_poids", "cible": 35, "texte": "35 % de perte depuis l’entrée en Cave."},
+    "materiel": ["Balance au 0,1 g", "Sacs sous vide", "Boyau de bœuf ou film collagène, ou filet élastique", "Ficelle de boucher", "Aiguille pour piquer les bulles"],
+    "ingredients": [
+      {"nom": "Échine de porc désossée, parée", "qte": 1500, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 45, "unite": "g", "note": "30 g/kg"},
+      {"nom": "Sucre", "qte": 5, "unite": "g"},
+      {"nom": "Poivre noir concassé", "qte": 5, "unite": "g"},
+      {"nom": "Ail en poudre", "qte": 3, "unite": "g"},
+      {"nom": "Piment d’Espelette", "qte": 3, "unite": "g"},
+      {"nom": "Baies de genièvre écrasées", "qte": 3, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Parer", "texte": "Retirer nerfs et gras qui pend, donner une forme régulière. Peser.", "duree": "15 min"},
+      {"titre": "Saler", "texte": "Calculer les doses sur le poids exact, mélanger sel et épices, frotter toute la pièce.", "duree": "10 min"},
+      {"titre": "Salage sous vide", "texte": "Sac sous vide, 3 semaines en mode Froid ou au frigo, en massant et retournant le sac tous les 2 jours.", "duree": "3 sem."},
+      {"titre": "Embosser", "texte": "Rincer rapidement, sécher, frotter de poivre et de piment. Embosser dans le boyau ou le film, ou ficeler serré dans un filet. Piquer les bulles.", "duree": "30 min"},
+      {"titre": "Peser et suspendre", "texte": "Peser, noter le poids d’entrée et la cible (moins 35 %). Suspendre en mode Cave.", "duree": "5 min"},
+      {"titre": "Sécher", "texte": "8 à 12 semaines, une pesée par semaine.", "duree": "8 à 12 sem."},
+      {"titre": "Égaliser (option)", "texte": "À la sortie, 2 semaines sous vide au frigo : l’humidité se répartit et la texture devient homogène.", "duree": "2 sem."}
+    ],
+    "controles": [{"j": 21, "titre": "Fin du salage", "observer": "Fermeté", "normal": "Ferme au toucher partout", "probleme": "Zones molles", "action": "Prolonger le salage de quelques jours."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "entière sous vide", "duree": "4 mois", "jours": 120},
+      {"mode": "Frigo", "comment": "tranchée sous vide", "duree": "2 semaines", "jours": 14}
+    ],
+    "notes": "Salée fin novembre, en Cave le 21 décembre, sortie vers mi-mars."
+  },
+  {
+    "id": "guanciale", "nom": "Guanciale", "famille": "charc", "mois": [11],
+    "lieu": "chambre", "mode": "cave", "technique": "salaison_entiere", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.1, "difficulte": 1,
+    "phases": [
+      {"nom": "Salage sous vide", "mode": "froid", "min_j": 14, "max_j": 14},
+      {"nom": "Séchage", "mode": "cave", "min_j": 28, "max_j": 42}
+    ],
+    "rendement": "Environ 700 g",
+    "base": {"ingredient": "Joue de porc parée", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 42, "max_j": 56},
+    "fin": {"type": "perte_poids", "cible": 30, "texte": "30 % de perte depuis l’entrée en Cave."},
+    "materiel": ["Balance", "Sacs sous vide", "Ficelle", "Couteau"],
+    "ingredients": [
+      {"nom": "Joue de porc parée", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 30, "unite": "g", "note": "30 g/kg"},
+      {"nom": "Sucre", "qte": 5, "unite": "g"},
+      {"nom": "Poivre noir concassé", "qte": 5, "unite": "g"},
+      {"nom": "Ail écrasé", "qte": 2, "unite": "gousses"},
+      {"nom": "Thym et romarin", "qte": 2, "unite": "brins"}
+    ],
+    "etapes": [
+      {"titre": "Parer", "texte": "Retirer glandes et chair spongieuse. Peser.", "duree": "15 min"},
+      {"titre": "Saler", "texte": "Frotter avec le mélange, sac sous vide, 2 semaines en mode Froid en retournant tous les 2 jours.", "duree": "2 sem."},
+      {"titre": "Préparer au séchage", "texte": "Rincer, sécher, poivrer généreusement. Percer un coin, passer une ficelle.", "duree": "10 min"},
+      {"titre": "Sécher", "texte": "Peser, noter la cible (moins 30 %), suspendre en Cave 4 à 6 semaines.", "duree": "4 à 6 sem."}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "sous vide", "duree": "3 mois", "jours": 90},
+      {"mode": "Congélateur", "comment": "en portions", "duree": "6 mois", "jours": 180}
+    ],
+    "notes": "Pour la carbonara et l’amatriciana, toujours cuit."
+  },
+  {
+    "id": "filetmignon", "nom": "Filet mignon séché", "famille": "charc", "mois": [11, 12],
+    "lieu": "chambre", "mode": "cave", "technique": "salaison_entiere", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.05, "difficulte": 1,
+    "phases": [
+      {"nom": "Salage sous vide", "mode": "froid", "min_j": 7, "max_j": 7},
+      {"nom": "Séchage", "mode": "cave", "min_j": 21, "max_j": 28}
+    ],
+    "rendement": "Environ 400 g",
+    "base": {"ingredient": "Filet mignon de porc paré", "quantite": 600, "unite": "g"},
+    "duree": {"min_j": 28, "max_j": 35},
+    "fin": {"type": "perte_poids", "cible": 35, "texte": "35 % de perte."},
+    "materiel": ["Balance au 0,1 g", "Sacs sous vide", "Boyau collagène ou torchon fin", "Ficelle"],
+    "ingredients": [
+      {"nom": "Filet mignon de porc paré", "qte": 600, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 18, "unite": "g", "note": "30 g/kg"},
+      {"nom": "Sucre", "qte": 2, "unite": "g"},
+      {"nom": "Poivre noir concassé", "qte": 2, "unite": "g"},
+      {"nom": "Herbes de Provence ou paprika fumé", "qte": 2, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Parer", "texte": "Retirer la membrane argentée, replier la pointe fine pour une épaisseur régulière. Peser.", "duree": "10 min"},
+      {"titre": "Saler", "texte": "Frotter, sac sous vide, 1 semaine en mode Froid.", "duree": "1 sem."},
+      {"titre": "Habiller", "texte": "Rincer, sécher, enrober d’épices, mettre dans un boyau collagène ou rouler dans un torchon fin, ficeler.", "duree": "15 min"},
+      {"titre": "Sécher", "texte": "Peser, noter la cible (moins 35 %), Cave 3 à 4 semaines.", "duree": "3 à 4 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "sous vide", "duree": "3 mois", "jours": 90}],
+    "notes": "Un seul filet mignon par demi-porc : en acheter 1 ou 2 de plus."
+  },
+  {
+    "id": "bacon", "nom": "Bacon salé à sec", "famille": "charc", "mois": [11],
+    "lieu": "chambre", "mode": "froid", "etiquettes": ["sensible_odeur"], "place": 0.1, "difficulte": 1,
+    "rendement": "Environ 950 g",
+    "base": {"ingredient": "Poitrine de porc", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 8, "max_j": 8},
+    "fin": {"type": "temps", "texte": "7 jours de sel, puis 24 h à l’air."},
+    "materiel": ["Balance", "Sacs sous vide", "Grille", "Grand couteau"],
+    "ingredients": [
+      {"nom": "Poitrine de porc, sans couenne ou avec", "qte": 1000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 25, "unite": "g", "note": "25 g/kg"},
+      {"nom": "Cassonade", "qte": 15, "unite": "g"},
+      {"nom": "Poivre noir moulu", "qte": 4, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Saler", "texte": "Frotter avec le mélange, sac sous vide.", "duree": "5 min"},
+      {"titre": "Attendre", "texte": "7 jours en mode Froid, retourner le sac chaque jour.", "duree": "7 jours"},
+      {"titre": "Former la pellicule", "texte": "Rincer, sécher, 24 h sur grille à découvert dans la chambre.", "duree": "24 h"},
+      {"titre": "Trancher", "texte": "Trancher fin, mettre en portions sous vide.", "duree": "20 min"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "sous vide", "duree": "2 semaines", "jours": 14},
+      {"mode": "Congélateur", "comment": "en tranches", "duree": "6 mois", "jours": 180}
+    ],
+    "securite": ["Le bacon se mange cuit."],
+    "notes": "Plus tard : fumage à froid juste après la pellicule."
+  },
+  {
+    "id": "petitsale", "nom": "Petit salé", "famille": "charc", "mois": [11, 12, 1, 2],
+    "lieu": "chambre", "mode": "froid", "etiquettes": ["sensible_odeur"], "place": 0.15, "difficulte": 1,
+    "rendement": "1,5 kg",
+    "base": {"ingredient": "Poitrine, échine ou jarret de porc", "quantite": 1500, "unite": "g"},
+    "duree": {"min_j": 2, "max_j": 3},
+    "fin": {"type": "temps", "texte": "2 à 3 jours de saumure, puis cuisson."},
+    "materiel": ["Boîte avec couvercle", "Casserole", "Fouet"],
+    "ingredients": [
+      {"nom": "Poitrine, échine ou jarret, en morceaux de 4 à 5 cm", "qte": 1500, "unite": "g"},
+      {"nom": "Eau", "qte": 2000, "unite": "g"},
+      {"nom": "Gros sel", "qte": 160, "unite": "g", "note": "Saumure à 8 %"},
+      {"nom": "Sucre", "qte": 20, "unite": "g"},
+      {"nom": "Laurier, thym, poivre en grains, clous de girofle", "qte": 1, "unite": "bouquet"}
+    ],
+    "etapes": [
+      {"titre": "Saumure", "texte": "Porter l’eau à frémissement avec sels, sucre et aromates, laisser refroidir complètement.", "duree": "1 h"},
+      {"titre": "Saumurer", "texte": "Immerger la viande dans la boîte fermée, 2 à 3 jours en mode Froid ou au frigo.", "duree": "2 à 3 jours"},
+      {"titre": "Cuire", "texte": "Rincer, cuire 2 h à frémissement, avec des lentilles ou du chou.", "duree": "2 h"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "cuit", "duree": "4 jours", "jours": 4},
+      {"mode": "Congélateur", "comment": "", "duree": "3 mois", "jours": 90}
+    ],
+    "notes": "Sans nitrite, la viande cuite reste grise : c’est normal."
+  },
+  {
+    "id": "jambon", "nom": "Jambon blanc", "famille": "charc", "mois": [11, 12, 1],
+    "lieu": "chambre", "mode": "froid", "etiquettes": ["sensible_odeur"], "place": 0.3, "difficulte": 2,
+    "rendement": "Environ 2,2 kg",
+    "base": {"ingredient": "Demi-jambon désossé (noix et sous-noix)", "quantite": 2500, "unite": "g"},
+    "duree": {"min_j": 5, "max_j": 6},
+    "fin": {"type": "temperature_coeur", "cible": 66, "texte": "66 °C à cœur pendant 30 min, puis refroidissement rapide."},
+    "materiel": ["Seringue à saumure", "Grande boîte avec couvercle", "Ficelle ou moule à jambon", "Sacs sous vide", "Thermoplongeur", "Thermomètre à sonde"],
+    "ingredients": [
+      {"nom": "Demi-jambon désossé", "qte": 2500, "unite": "g"},
+      {"nom": "Eau", "qte": 2000, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 180, "unite": "g", "note": "Saumure à 9 %"},
+      {"nom": "Sucre", "qte": 30, "unite": "g"},
+      {"nom": "Laurier, thym, 10 grains de poivre, 5 baies de genièvre", "qte": 1, "unite": "bouquet"}
+    ],
+    "etapes": [
+      {"titre": "Saumure", "texte": "Porter l’eau à frémissement avec le sel, le sucre et les aromates. Refroidir complètement, puis filtrer.", "duree": "1 h"},
+      {"titre": "Injecter", "texte": "Injecter 10 % du poids de la pièce en saumure (250 ml), en de nombreux points, surtout près de l’os retiré.", "duree": "15 min"},
+      {"titre": "Saumurer", "texte": "Immerger dans le reste de saumure, 4 jours en mode Froid, en retournant chaque jour.", "duree": "4 jours"},
+      {"titre": "Mettre en forme", "texte": "Rincer, égoutter, ficeler serré ou mettre en moule, puis sous vide.", "duree": "20 min"},
+      {"titre": "Cuire", "texte": "Thermoplongeur à 67 °C jusqu’à 66 °C à cœur, puis 30 min de plus : 8 à 12 h selon l’épaisseur.", "duree": "8 à 12 h"},
+      {"titre": "Refroidir", "texte": "1 h dans l’eau glacée, puis 24 h au frigo avant de trancher.", "duree": "25 h"}
+    ],
+    "controles": [{"j": 4, "titre": "Fin de saumure", "observer": "Goût d’une fine tranche prise au centre, poêlée", "normal": "Salé de façon égale jusqu’au centre", "probleme": "Fade au centre", "action": "Prolonger la saumure d’un jour."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "entier sous vide, à 4 °C maximum", "duree": "1 semaine", "jours": 7},
+      {"mode": "Congélateur", "comment": "en tranches", "duree": "2 mois", "jours": 60}
+    ],
+    "notes": "Sans nitrite, il est beige-gris : c’est normal. Si la chambre manque de place fin novembre, le jambon attend au congélateur jusqu’en janvier."
+  },
+  {
+    "id": "magretsmatures", "nom": "Magrets maturés", "famille": "charc", "mois": [12],
+    "lieu": "chambre", "mode": "froid", "technique": "maturation", "etiquettes": ["sensible_odeur"], "place": 0.15, "difficulte": 1,
+    "rendement": "4 magrets",
+    "base": {"ingredient": "Magrets", "quantite": 1600, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "temps", "texte": "1 à 2 semaines."},
+    "materiel": ["Grille", "Plateau"],
+    "ingredients": [{"nom": "Magrets de canard gras (4)", "qte": 1600, "unite": "g"}],
+    "etapes": [
+      {"titre": "Installer", "texte": "Sécher au papier, poser peau vers le haut sur une grille, sans film, mode Froid.", "duree": "5 min"},
+      {"titre": "Maturer", "texte": "1 à 2 semaines. Parer les bords secs avant de cuire.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "à cuire sous 2 jours", "jours": 2},
+      {"mode": "Congélateur", "comment": "sous vide", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "agneau", "nom": "Carré d’agneau maturé", "famille": "charc", "mois": [12],
+    "lieu": "chambre", "mode": "froid", "technique": "maturation", "etiquettes": ["sensible_odeur"], "place": 0.1, "difficulte": 1,
+    "rendement": "1 carré",
+    "base": {"ingredient": "Carré d’agneau", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 7, "max_j": 14},
+    "fin": {"type": "temps", "texte": "1 à 2 semaines."},
+    "materiel": ["Grille", "Plateau"],
+    "ingredients": [{"nom": "Carré d’agneau (8 côtes)", "qte": 1000, "unite": "g"}],
+    "etapes": [
+      {"titre": "Installer", "texte": "Sécher au papier, poser sur une grille, sans film, mode Froid.", "duree": "5 min"},
+      {"titre": "Maturer", "texte": "1 à 2 semaines, parer les surfaces sèches avant de cuire.", "duree": "1 à 2 sem."}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "à cuire sous 2 jours", "jours": 2},
+      {"mode": "Congélateur", "comment": "sous vide", "duree": "6 mois", "jours": 180}
+    ]
+  },
+  {
+    "id": "magretseche", "nom": "Magret séché", "famille": "charc", "mois": [12, 1, 2, 3],
+    "lieu": "chambre", "mode": "cave", "technique": "salaison_entiere", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.1, "difficulte": 1,
+    "phases": [
+      {"nom": "Sel", "mode": null, "lieu": "frigo", "min_j": 1, "max_j": 1},
+      {"nom": "Séchage", "mode": "cave", "min_j": 14, "max_j": 21}
+    ],
+    "rendement": "Environ 550 g pour 2 magrets",
+    "base": {"ingredient": "Magrets", "quantite": 800, "unite": "g"},
+    "duree": {"min_j": 15, "max_j": 22},
+    "fin": {"type": "perte_poids", "cible": 30, "texte": "30 % de perte."},
+    "materiel": ["Plat", "Étamine ou torchon fin", "Ficelle", "Balance"],
+    "ingredients": [
+      {"nom": "Magrets de canard gras (2)", "qte": 800, "unite": "g"},
+      {"nom": "Gros sel", "qte": 500, "unite": "g"},
+      {"nom": "Poivre noir moulu", "qte": 4, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Préparer", "texte": "Retirer l’excédent de gras sur les bords.", "duree": "5 min"},
+      {"titre": "Saler", "texte": "Recouvrir entièrement de gros sel dans un plat, 24 h au frigo (18 h si petits, 36 h si très épais).", "duree": "24 h"},
+      {"titre": "Habiller", "texte": "Rincer, sécher, poivrer côté chair, envelopper dans l’étamine, ficeler.", "duree": "10 min"},
+      {"titre": "Sécher", "texte": "Peser, noter la cible (moins 30 %), Cave 2 à 3 semaines.", "duree": "2 à 3 sem."}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "entier sous vide", "duree": "3 mois", "jours": 90},
+      {"mode": "Frigo", "comment": "tranché", "duree": "1 semaine", "jours": 7}
+    ]
+  },
+  {
+    "id": "saucisson", "nom": "Saucisson sec", "famille": "charc", "mois": [1, 2],
+    "lieu": "chambre", "mode": "cave", "technique": "saucisson", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.3, "difficulte": 3,
+    "phases": [
+      {"nom": "Étuvage", "mode": null, "lieu": "cuisine", "min_j": 1, "max_j": 2},
+      {"nom": "Séchage", "mode": "cave", "min_j": 28, "max_j": 42}
+    ],
+    "rendement": "6 à 8 saucissons, environ 1,3 kg secs",
+    "base": {"ingredient": "Mêlée (maigre + gras)", "quantite": 2000, "unite": "g"},
+    "duree": {"min_j": 30, "max_j": 44},
+    "fin": {"type": "perte_poids", "cible": 35, "texte": "35 % de perte."},
+    "materiel": ["Hachoir, grille de 6 à 8 mm", "Poussoir vertical", "Balance au 0,1 g", "pH-mètre", "Boyaux naturels de 40 à 45 mm (environ 3 m)", "Ficelle", "Aiguille", "Grande boîte fermée pour l’étuvage"],
+    "ingredients": [
+      {"nom": "Épaule de porc (maigre)", "qte": 1400, "unite": "g"},
+      {"nom": "Gras de dos ferme", "qte": 600, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 56, "unite": "g", "note": "28 g/kg"},
+      {"nom": "Dextrose", "qte": 6, "unite": "g"},
+      {"nom": "Sucre", "qte": 4, "unite": "g"},
+      {"nom": "Poivre noir concassé", "qte": 8, "unite": "g"},
+      {"nom": "Poivre noir en grains", "qte": 2, "unite": "g"},
+      {"nom": "Ail frais écrasé", "qte": 6, "unite": "g"},
+      {"nom": "Ferments pour saucisson", "qte": 0.5, "unite": "g", "note": "Dose du fabricant, dilués dans 20 g d’eau"},
+      {"nom": "Variante noix : cerneaux concassés", "qte": 120, "unite": "g", "note": "Facultatif"},
+      {"nom": "Variante cèpes : cèpes séchés réhydratés et hachés", "qte": 30, "unite": "g", "note": "Facultatif, poids sec"}
+    ],
+    "etapes": [
+      {"titre": "Tout refroidir", "texte": "Viande, gras, grille et couteau du hachoir au congélateur 1 h. Dessaler les boyaux 1 h dans l’eau tiède, rincer l’intérieur.", "duree": "1 h"},
+      {"titre": "Hacher", "texte": "Hacher le maigre à la grille de 8 mm, le gras en petits dés ou à la même grille. Peser la mêlée.", "duree": "20 min"},
+      {"titre": "Assaisonner", "texte": "Ajouter sels, sucres, épices, ferments dilués et, si tu veux, les noix ou les cèpes. Malaxer 3 à 5 min, jusqu’à ce que la mêlée colle aux doigts, pas plus.", "duree": "10 min"},
+      {"titre": "Goûter", "texte": "Poêler une petite boulette pour vérifier l’assaisonnement. Ne jamais goûter cru. Mesurer le pH.", "duree": "5 min"},
+      {"titre": "Embosser", "texte": "Remplir les boyaux au poussoir sans laisser d’air, ficeler tous les 25 à 30 cm, piquer les bulles.", "duree": "40 min"},
+      {"titre": "Peser", "texte": "Peser chaque saucisson, noter son poids et sa cible (moins 35 %).", "duree": "10 min"},
+      {"titre": "Étuver", "texte": "24 à 48 h à 20–24 °C dans une boîte fermée avec un bol d’eau, jusqu’à pH 5,3 ou moins.", "duree": "24 à 48 h"},
+      {"titre": "Sécher", "texte": "Suspendre en mode Cave, sans que les pièces se touchent. 4 à 6 semaines, une pesée par semaine.", "duree": "4 à 6 sem."}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "À l’air", "comment": "entier, au frais", "duree": "1 mois", "jours": 30},
+      {"mode": "Frigo", "comment": "sous vide", "duree": "3 mois", "jours": 90}
+    ],
+    "notes": "Classique et aux noix à la séance de janvier, aux cèpes séchés à celle de février."
+  },
+  {
+    "id": "saucisse", "nom": "Saucisse sèche", "famille": "charc", "mois": [1, 2],
+    "lieu": "chambre", "mode": "cave", "technique": "saucisson", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.1, "difficulte": 2,
+    "phases": [
+      {"nom": "Étuvage", "mode": null, "lieu": "cuisine", "min_j": 1, "max_j": 2},
+      {"nom": "Séchage", "mode": "cave", "min_j": 14, "max_j": 21}
+    ],
+    "rendement": "Environ 700 g secs",
+    "base": {"ingredient": "Mêlée (maigre + gras)", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 15, "max_j": 23},
+    "fin": {"type": "perte_poids", "cible": 30, "texte": "30 % de perte."},
+    "materiel": ["Hachoir", "Poussoir", "Boyaux de mouton ou menu de porc de 24 à 28 mm (environ 5 m)", "Balance au 0,1 g", "pH-mètre", "Ficelle"],
+    "ingredients": [
+      {"nom": "Épaule de porc", "qte": 700, "unite": "g"},
+      {"nom": "Gras de dos", "qte": 300, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 28, "unite": "g", "note": "28 g/kg"},
+      {"nom": "Dextrose", "qte": 3, "unite": "g"},
+      {"nom": "Sucre", "qte": 2, "unite": "g"},
+      {"nom": "Poivre noir", "qte": 5, "unite": "g"},
+      {"nom": "Ail", "qte": 3, "unite": "g"},
+      {"nom": "Ferments", "qte": 0.25, "unite": "g", "note": "Dose du fabricant"}
+    ],
+    "etapes": [
+      {"titre": "Préparer la mêlée", "texte": "Même méthode que le saucisson sec, souvent avec la même mêlée.", "duree": "40 min"},
+      {"titre": "Embosser", "texte": "Remplir les boyaux fins, former des boucles ou des fers à cheval, peser.", "duree": "30 min"},
+      {"titre": "Étuver", "texte": "24 à 48 h jusqu’à pH 5,3 ou moins.", "duree": "24 à 48 h"},
+      {"titre": "Sécher", "texte": "Cave 2 à 3 semaines jusqu’à 30 % de perte.", "duree": "2 à 3 sem."}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "sous vide", "duree": "3 mois", "jours": 90}]
+  },
+  {
+    "id": "rosette", "nom": "Rosette", "famille": "charc", "mois": [1],
+    "lieu": "chambre", "mode": "cave", "technique": "saucisson", "etiquettes": ["sensible_odeur", "sensible_spores"], "place": 0.15, "difficulte": 3,
+    "phases": [
+      {"nom": "Étuvage", "mode": null, "lieu": "cuisine", "min_j": 2, "max_j": 2},
+      {"nom": "Séchage", "mode": "cave", "min_j": 60, "max_j": 90}
+    ],
+    "rendement": "1 rosette d’environ 1 kg sèche",
+    "base": {"ingredient": "Mêlée (maigre + gras)", "quantite": 1500, "unite": "g"},
+    "duree": {"min_j": 62, "max_j": 92},
+    "fin": {"type": "perte_poids", "cible": 35, "texte": "35 % de perte."},
+    "materiel": ["Hachoir, grille de 6 mm", "Poussoir", "Gros boyau de 60 à 70 mm (fuseau ou collagène)", "Balance au 0,1 g", "pH-mètre", "Ficelle et filet"],
+    "ingredients": [
+      {"nom": "Épaule de porc", "qte": 1125, "unite": "g"},
+      {"nom": "Gras de dos", "qte": 375, "unite": "g"},
+      {"nom": "Sel fin non iodé", "qte": 42, "unite": "g", "note": "28 g/kg"},
+      {"nom": "Dextrose", "qte": 5, "unite": "g"},
+      {"nom": "Sucre", "qte": 3, "unite": "g"},
+      {"nom": "Poivre noir", "qte": 6, "unite": "g"},
+      {"nom": "Ail", "qte": 5, "unite": "g"},
+      {"nom": "Vin rouge", "qte": 30, "unite": "g"},
+      {"nom": "Ferments", "qte": 0.4, "unite": "g", "note": "Dose du fabricant"}
+    ],
+    "etapes": [
+      {"titre": "Préparer la mêlée", "texte": "Méthode du saucisson sec, hachage plus fin à 6 mm, avec le vin.", "duree": "40 min"},
+      {"titre": "Embosser", "texte": "Remplir le gros boyau très serré, ficeler et mettre en filet, piquer les bulles, peser.", "duree": "20 min"},
+      {"titre": "Étuver", "texte": "48 h, jusqu’à pH 5,3 ou moins.", "duree": "48 h"},
+      {"titre": "Sécher", "texte": "Cave 2 à 3 mois jusqu’à 35 % de perte. Surveiller le croûtage.", "duree": "2 à 3 mois"}
+    ],
+    "controles": [{"j": 21, "titre": "Croûtage", "observer": "Fermeté des bords et du centre", "normal": "Fermeté régulière", "probleme": "Bords durs, centre mou", "action": "Remonter HS de 5 %, ou 1 semaine sous vide au frigo."}],
+    "conservation": [{"mode": "Frigo", "comment": "sous vide", "duree": "3 mois", "jours": 90}],
+    "notes": "Dernière entrée possible fin janvier pour sortir avant mi-avril. Sans nitrite, c’est la pièce la plus délicate à cause de son gros diamètre : ne la sèche que si son pH est à 5,3 ou moins en 48 h, et surveille le croûtage."
+  },
+  {
+    "id": "cornedbeef", "nom": "Corned beef ou pastrami", "famille": "charc", "mois": [1, 2],
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 2,
+    "rendement": "Environ 1,2 kg",
+    "base": {"ingredient": "Poitrine de bœuf", "quantite": 1500, "unite": "g"},
+    "duree": {"min_j": 9, "max_j": 12},
+    "fin": {"type": "temps", "texte": "7 à 10 jours de saumure, puis 36 à 48 h de cuisson."},
+    "materiel": ["Grande boîte avec couvercle", "Sacs sous vide", "Thermoplongeur"],
+    "ingredients": [
+      {"nom": "Poitrine de bœuf", "qte": 1500, "unite": "g"},
+      {"nom": "Eau", "qte": 2000, "unite": "g"},
+      {"nom": "Gros sel", "qte": 200, "unite": "g", "note": "Saumure à 10 %"},
+      {"nom": "Cassonade", "qte": 80, "unite": "g"},
+      {"nom": "Coriandre en grains, graines de moutarde", "qte": 20, "unite": "g"},
+      {"nom": "Poivre, laurier, girofle, cannelle, piment", "qte": 1, "unite": "bouquet"},
+      {"nom": "Pour le pastrami : coriandre et poivre concassés", "qte": 30, "unite": "g", "note": "Facultatif"}
+    ],
+    "etapes": [
+      {"titre": "Saumure", "texte": "Porter à frémissement eau, sels, sucre et épices. Refroidir complètement.", "duree": "1 h"},
+      {"titre": "Saumurer", "texte": "Immerger la poitrine, 7 à 10 jours au frigo en retournant tous les 2 jours.", "duree": "7 à 10 jours"},
+      {"titre": "Dessaler", "texte": "Rincer, tremper 1 h dans l’eau froide.", "duree": "1 h"},
+      {"titre": "Cuire", "texte": "Sous vide, 36 à 48 h au thermoplongeur à 64 °C.", "duree": "36 à 48 h"},
+      {"titre": "Pastrami (option)", "texte": "Avant la cuisson, croûte de coriandre et poivre, puis 3 h au four à 110 °C (ou fumage quand tu seras équipé), puis le thermoplongeur.", "duree": "3 h"}
+    ],
+    "controles": [],
+    "conservation": [
+      {"mode": "Frigo", "comment": "cuit, sous vide, à 4 °C maximum", "duree": "1 semaine", "jours": 7},
+      {"mode": "Congélateur", "comment": "en tranches", "duree": "3 mois", "jours": 90}
+    ],
+    "notes": "Sans nitrite, il reste gris, comme un corned beef à l’ancienne : c’est normal."
+  },
+  {
+    "id": "gravlax", "nom": "Gravlax", "famille": "charc", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "Environ 900 g",
+    "base": {"ingredient": "Filet de saumon avec peau", "quantite": 1000, "unite": "g"},
+    "duree": {"min_j": 2, "max_j": 2},
+    "fin": {"type": "temps", "texte": "48 h."},
+    "materiel": ["Plat", "Film ou sac sous vide", "Poids", "Couteau à trancher"],
+    "ingredients": [
+      {"nom": "Filet de saumon avec peau, congelé 7 jours avant", "qte": 1000, "unite": "g"},
+      {"nom": "Gros sel", "qte": 50, "unite": "g"},
+      {"nom": "Sucre", "qte": 50, "unite": "g"},
+      {"nom": "Aneth", "qte": 1, "unite": "bouquet"},
+      {"nom": "Poivre concassé", "qte": 5, "unite": "g"},
+      {"nom": "Zeste de citron", "qte": 1, "unite": "citron"}
+    ],
+    "etapes": [
+      {"titre": "Congeler", "texte": "Congeler le saumon 7 jours, puis le décongeler 24 h au frigo.", "duree": "8 jours"},
+      {"titre": "Saler", "texte": "Mélanger sel, sucre, poivre et zeste, couvrir la chair, ajouter l’aneth.", "duree": "5 min"},
+      {"titre": "Presser", "texte": "Sous vide ou filmé, sous un poids, 48 h au frigo, en retournant toutes les 12 h.", "duree": "48 h"},
+      {"titre": "Trancher", "texte": "Rincer, sécher, trancher finement.", "duree": "15 min"}
+    ],
+    "controles": [{"j": 0.5, "repeter_j": 0.5, "fin_j": 2, "titre": "Retourner", "observer": "Jus", "normal": "Le saumon rend du jus", "probleme": "", "action": "Retourner la pièce."}],
+    "conservation": [
+      {"mode": "Frigo", "comment": "", "duree": "5 jours", "jours": 5},
+      {"mode": "Congélateur", "comment": "tranché sous vide", "duree": "2 mois", "jours": 60}
+    ],
+    "securite": ["Saumon congelé 7 jours avant, contre les parasites."]
+  },
+  {
+    "id": "steakkoji", "nom": "Steak maturé au koji", "famille": "charc", "toute_annee": true,
+    "lieu": "frigo", "mode": null, "etiquettes": [], "place": 0, "difficulte": 1,
+    "rendement": "2 steaks",
+    "base": {"ingredient": "Steaks épais (entrecôte, faux-filet)", "quantite": 600, "unite": "g"},
+    "duree": {"min_j": 2, "max_j": 3},
+    "fin": {"type": "temps", "texte": "2 à 3 jours."},
+    "materiel": ["Grille", "Plateau"],
+    "ingredients": [
+      {"nom": "Steaks de 3 à 4 cm d’épaisseur", "qte": 600, "unite": "g"},
+      {"nom": "Koji en poudre (ou 60 g de shio koji)", "qte": 30, "unite": "g"}
+    ],
+    "etapes": [
+      {"titre": "Enrober", "texte": "Enrober les steaks de koji en poudre.", "duree": "2 min"},
+      {"titre": "Maturer", "texte": "Sur une grille, à découvert au frigo, 2 à 3 jours.", "duree": "2 à 3 jours"},
+      {"titre": "Cuire", "texte": "Essuyer l’excédent. Cuire à feu moyen : la surface brunit vite.", "duree": "10 min"}
+    ],
+    "controles": [],
+    "conservation": [{"mode": "Frigo", "comment": "", "duree": "à cuire aussitôt", "jours": 0}]
+  }
+]
