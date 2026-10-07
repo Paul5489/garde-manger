@@ -7,6 +7,7 @@
   import type { IdMode } from '../types';
   import AssistantMode from './AssistantMode.svelte';
   import CalendrierChambre from './CalendrierChambre.svelte';
+  import CompatibiliteChambre from './CompatibiliteChambre.svelte';
   import FicheChambre from './FicheChambre.svelte';
   import MaterielChambre from './MaterielChambre.svelte';
   import RecettesChambre from './RecettesChambre.svelte';
@@ -34,6 +35,7 @@
     if (page === 'materiel') return 'Matériel';
     if (page === 'lot') return arg === 'nouveau' ? 'Nouveau lot' : (lots.lot(arg)?.nom ?? 'Lot');
     if (page === 'lots') return 'Mes lots';
+    if (page === 'compatibilite') return 'Compatibilité';
     if (page === 'stock') return 'Stock';
     return 'Chambre';
   });
@@ -63,6 +65,7 @@
     {:else if page === 'lot' && arg === 'nouveau' && chemin[2]}<NouveauLot recetteId={chemin[2]} />
     {:else if page === 'lot' && arg}<PageLot id={arg} />
     {:else if page === 'lots'}<LotsChambre />
+    {:else if page === 'compatibilite' && arg}<CompatibiliteChambre id={arg} mois={chemin[2]} />
     {:else if page === 'stock'}<StockChambre />
     {:else}<p class="vide">Page introuvable.</p>{/if}
   {/key}

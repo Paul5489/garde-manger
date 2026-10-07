@@ -6,6 +6,7 @@
   import { lienChambre } from '../../lib/routeur.svelte';
   import { couleurMode, t } from '../affichage';
   import { chambre } from '../chambre.svelte';
+  import { prevoir } from '../prevoir';
   import { lots } from '../lots.svelte';
   import { CONTENU, MODES_PAR_ID, NOMS_FAMILLES, NOMS_LIEUX, recette } from '../donnees';
   import {
@@ -104,7 +105,10 @@
       </ol>
     {/if}
 
-    <a class="bouton plein demarrer" href={lienChambre('lot', 'nouveau', r.id)}>Démarrer un lot</a>
+    <div class="boutons-fiche">
+      <a class="bouton demarrer" href={lienChambre('lot', 'nouveau', r.id)}>Démarrer un lot</a>
+      <a class="bouton secondaire" href={lienChambre('compatibilite', r.id)}>Ce qui va avec</a>
+    </div>
     {#each lotsDeLaRecette as l (l.id)}
       <a class="lot-en-cours" href={lienChambre('lot', l.id)}>Lot en cours depuis le {dateCourte(l.entree)} <ChevronRight size={16} /></a>
     {/each}
@@ -114,7 +118,7 @@
         <span class="petit discret">Prévue en :</span>
         {#each r.mois as m (m)}
           {@const prevue = chambre.estPrevue(r.id, m)}
-          <button class="puce" class:active={prevue} aria-pressed={prevue} onclick={() => chambre.basculerEtoile(r.id, m)}>
+          <button class="puce" class:active={prevue} aria-pressed={prevue} onclick={() => prevoir(r.id, m)}>
             <Star size={15} fill={prevue ? 'currentColor' : 'none'} />
             {NomMois(m)}
           </button>
@@ -317,8 +321,15 @@
     font-size: 15px;
   }
 
-  .demarrer {
+  .boutons-fiche {
+    display: flex;
+    gap: 8px;
     margin-top: 12px;
+  }
+
+  .boutons-fiche .bouton {
+    flex: 1;
+    padding: 0 12px;
   }
 
   .lot-en-cours {

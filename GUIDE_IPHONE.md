@@ -276,7 +276,13 @@ Calendrier qui le fait, avec une alarme à l'heure de chaque rappel)
 ce qu'il y a à faire aujourd'hui. Pour l'avoir aussi sur l'**icône** de l'appli : ⚙️ › Pastille sur l'icône ›
 **Autoriser la pastille** (l'iPhone demande d'autoriser les notifications ; aucune n'est envoyée).
 
-À venir : la compatibilité (ce qui peut partager la chambre).
+**Compatibilité** : quand tu mets une ★ à une recette (calendrier ou fiche), l'appli propose **Ce qui va avec**
+(aussi : bouton « Ce qui va avec » sur la fiche, ou l'icône à gauche de l'étoile dans le calendrier). Trois listes
+pour le mois choisi :
+1. ce qui peut **partager la chambre** (même mode, pas de conflit, assez de place, lots déjà en cours compris) ;
+2. ce qui se fait **en parallèle, hors de la chambre** (cuisine, frigo, placard…) ;
+3. ce qui est **incompatible**, avec la raison : « mode différent », « odeur forte et viande », « spores et
+   charcuterie », « chambre pleine », « thermoplongeur déjà pris » (le garum le prend 10 semaines).
 
 ## 9. Sauvegarder mes données personnelles
 

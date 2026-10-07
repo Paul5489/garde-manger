@@ -1,10 +1,11 @@
 <script lang="ts">
   // Calendrier de la chambre : un écran par mois (octobre → septembre), ouvert sur le mois en cours.
   // Bandeau à l'échelle des jours (modes, rendez-vous, sorties), recettes de saison avec étoile « prévu ».
-  import { ChevronLeft, ChevronRight, Star } from '@lucide/svelte';
+  import { ChevronLeft, ChevronRight, Combine, Star } from '@lucide/svelte';
   import { lienChambre, routeur } from '../../lib/routeur.svelte';
   import { couleurMode, t } from '../affichage';
   import { chambre } from '../chambre.svelte';
+  import { prevoir } from '../prevoir';
   import { CONTENU, MODES_PAR_ID, NOMS_FAMILLES, NOMS_LIEUX, recette } from '../donnees';
   import { NomMois, repereDuMois } from '../recettes';
   import type { EntreeCalendrier, Famille, IdMode } from '../types';
@@ -134,14 +135,14 @@
       {#each prevues as r (r.id)}
         <li class="ligne">
           <a href={lienChambre('recette', r.id)}><strong>{r.nom}</strong></a>
-          <button class="etoile active" onclick={() => chambre.basculerEtoile(r.id, m)} aria-label="Retirer {r.nom} du programme"><Star size={20} fill="currentColor" /></button>
+          <button class="etoile active" onclick={() => prevoir(r.id, m)} aria-label="Retirer {r.nom} du programme"><Star size={20} fill="currentColor" /></button>
         </li>
       {/each}
     </ul>
   {/if}
 
   <h2 class="section-titre">Recettes de saison ({deSaison.length})</h2>
-  <p class="petit discret aide">★ : prévue ce mois-ci, pour composer ton programme.</p>
+  <p class="petit discret aide">★ pour la prévoir ce mois-ci (ton programme) ; l'icône à sa gauche : ce qui va avec.</p>
   {#each groupes as [f, liste] (f)}
     <h3 class="famille">{NOMS_FAMILLES[f]}</h3>
     <ul class="liste">
@@ -157,7 +158,8 @@
               {#if rep}<span class="repere" class:dernier={rep === 'dernier-mois'}>{rep === 'ce-mois' ? 'À faire ce mois-ci' : 'Dernier mois'}</span>{/if}
             </span>
           </a>
-          <button class="etoile" class:active={prevue} aria-pressed={prevue} onclick={() => chambre.basculerEtoile(r.id, m)} aria-label="{r.nom} prévue en {NomMois(m).toLowerCase()}">
+          <a class="va-avec" href={lienChambre('compatibilite', r.id, String(m))} aria-label="Ce qui va avec {r.nom}"><Combine size={19} /></a>
+          <button class="etoile" class:active={prevue} aria-pressed={prevue} onclick={() => prevoir(r.id, m)} aria-label="{r.nom} prévue en {NomMois(m).toLowerCase()}">
             <Star size={20} fill={prevue ? 'currentColor' : 'none'} />
           </button>
         </li>
@@ -374,6 +376,15 @@
   .repere.dernier {
     background: var(--ambre-doux);
     color: var(--ambre);
+  }
+
+  .ligne a.va-avec {
+    flex: none;
+    width: 44px;
+    min-height: 52px;
+    padding: 0;
+    align-items: center;
+    color: var(--texte-3);
   }
 
   .etoile {

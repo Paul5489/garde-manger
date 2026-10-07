@@ -223,10 +223,13 @@ class Chambre {
     return this.etoiles.includes(`${id}@${mois}`);
   }
 
-  async basculerEtoile(id: string, mois: number) {
+  /** Prévoir une recette pour un mois (ou l'enlever du programme). Renvoie vrai si elle vient d'être prévue. */
+  async basculerEtoile(id: string, mois: number): Promise<boolean> {
     const cle = `${id}@${mois}`;
-    this.etoiles = this.etoiles.includes(cle) ? this.etoiles.filter((x) => x !== cle) : [...this.etoiles, cle];
+    const ajout = !this.etoiles.includes(cle);
+    this.etoiles = ajout ? [...this.etoiles, cle] : this.etoiles.filter((x) => x !== cle);
     await this.#ecrire(CLES.etoiles, this.etoiles);
+    return ajout;
   }
 
   async cocherAchat(article: string, coche: boolean) {

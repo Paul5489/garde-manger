@@ -82,7 +82,7 @@
         {:else if o === 'ajouter'}<Ajouter />
         {:else if o === 'frigo'}<Frigo />
         {:else if o === 'courses'}<Courses />
-        {:else}{#await moduleChambre() then m}<m.Chambre />{/await}{/if}
+        {:else}{#await moduleChambre()}<p class="vide">Chargement…</p>{:then m}<m.Chambre />{/await}{/if}
       </main>
     {/if}
   {/each}
@@ -102,7 +102,11 @@
       <EditionRecette id={routeur.route.id} />
     {/key}
   {:else if routeur.route.nom === 'chambre-page'}
-    {#await moduleChambre() then m}<m.PageChambre chemin={cheminChambre} />{/await}
+    {#await moduleChambre()}
+      <div class="ecran attente-chambre"><p class="vide">Chargement…</p></div>
+    {:then m}
+      <m.PageChambre chemin={cheminChambre} />
+    {/await}
   {:else if routeur.route.nom === 'cuisine'}
     <ModeCuisine id={routeur.route.id} />
   {/if}
@@ -127,5 +131,10 @@
 
   .attente {
     height: 100%;
+  }
+
+  .attente-chambre {
+    z-index: 10;
+    padding-top: var(--haut);
   }
 </style>

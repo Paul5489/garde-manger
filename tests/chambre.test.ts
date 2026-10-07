@@ -10,6 +10,7 @@ import {
   modePrevu,
   prochainsChangements,
 } from '../src/chambre/calendrier';
+import { compatibilite, conflits, modesDeLaRecette, usageThermoplongeur } from '../src/chambre/compatibilite';
 import { CONTENU, mode, recette, verifierContenu, type Contenu } from '../src/chambre/donnees';
 import { evenementsChambre, evenementsLot, evenementsStock, fichierIcsChambre, regleRepetition } from '../src/chambre/ics';
 import {
@@ -456,5 +457,59 @@ describe('rappels pour le Calendrier (.ics)', () => {
       ['📦 À finir dans 7 jours : Coppa', d(6, 22, 8)],
       ['📦 Date limite : Coppa', d(6, 29, 8)],
     ]);
+  });
+});
+
+describe('compatibilité', () => {
+  const r = (id: string) => recette(id)!;
+  const ids = (l: { id: string }[]) => l.map((x) => x.id);
+
+  it('novembre, côte de bœuf maturée : Froid partagé, choux et pleurotes en parallèle, séchage écarté', () => {
+    const c = compatibilite(r('cote'), 11);
+    expect(c.modes).toEqual(['froid']);
+    for (const id of ['fauxfilet', 'bacon', 'jambon', 'coppa', 'guanciale', 'filetmignon', 'petitsale']) expect(ids(c.partage), id).toContain(id);
+    for (const id of ['choucroute', 'kimchi', 'suancai', 'cepes', 'pleurotes']) expect(ids(c.parallele), id).toContain(id);
+    for (const id of ['kojipoudre', 'champseches', 'pimentsflocons']) {
+      const inc = c.incompatibles.find((i) => i.recette.id === id);
+      expect(inc?.raisons, id).toEqual(['mode différent']);
+    }
+    expect(c.avertissements).toEqual([]);
+  });
+
+  it('raisons en clair : odeur forte et viande, spores et charcuterie, chambre pleine, thermoplongeur', () => {
+    const viande = { ...r('cote'), etiquettes: ['sensible_odeur', 'sensible_spores'] };
+    const odeur = { ...r('cote'), id: 'test-odeur', etiquettes: ['odeur_forte'] };
+    const spores = { ...r('cote'), id: 'test-spores', etiquettes: ['spores'] };
+    expect(conflits(viande, odeur)).toEqual(['odeur forte et viande']);
+    expect(conflits(spores, viande)).toEqual(['spores et charcuterie']);
+    // Chambre pleine : un lot de jambon (0,3) déjà en Froid, plus une recette qui prend 0,8.
+    const jambon = nouveauLot(structuredClone(r('jambon')), undefined, { entree: d(11, 12, 10), quantiteBase: 2500 }, 'j');
+    const grosse = { ...r('cote'), place: 0.8 };
+    const c = compatibilite(grosse, 11, [jambon], d(11, 15));
+    expect(c.occupation.froid).toBe(0.3);
+    expect(c.avertissements).toEqual(['Chambre pleine en mode Froid · maturation.']);
+    expect(c.incompatibles.find((i) => i.recette.id === 'fauxfilet')?.raisons).toEqual(['chambre pleine']);
+    // Thermoplongeur : le garum le prend 10 semaines.
+    expect(usageThermoplongeur(r('garum'))).toBe(70);
+    expect(usageThermoplongeur(r('jambon'))).toBe(0.5);
+    expect(usageThermoplongeur(r('ketchup'))).toBeUndefined(); // pasteurisation en option
+    const garum = nouveauLot(structuredClone(r('garum')), undefined, { entree: d(10, 20, 10), quantiteBase: 1000 }, 'g');
+    const avecGarum = compatibilite(r('cote'), 11, [garum], d(11, 15));
+    expect(avecGarum.thermoPris?.id).toBe('g');
+    expect(avecGarum.incompatibles.find((i) => i.recette.id === 'jambon')?.raisons).toEqual(['thermoplongeur déjà pris']);
+  });
+
+  it('une recette hors de la chambre laisse la chambre à ce qui y est prévu ce mois-là', () => {
+    const c = compatibilite(r('choucroute'), 11);
+    expect(c.modes).toEqual([]);
+    expect(ids(c.partage)).toContain('cote');
+    expect(ids(c.partage)).toContain('kojipoudre');
+    expect(ids(c.parallele)).toContain('kimchi');
+  });
+
+  it('modes d’une recette à phases', () => {
+    expect(modesDeLaRecette(r('coppa'))).toEqual(['froid', 'cave']);
+    expect(modesDeLaRecette(r('saucisson'))).toEqual(['cave']);
+    expect(modesDeLaRecette(r('kimchi'))).toEqual([]);
   });
 });
