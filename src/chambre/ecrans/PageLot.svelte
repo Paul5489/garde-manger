@@ -9,6 +9,9 @@
   import CourbePerte from '../composants/CourbePerte.svelte';
   import FeuilleRappels from '../composants/FeuilleRappels.svelte';
   import { evenementsLot, sequenceDuLot } from '../ics';
+  import ValeursReglage from '../composants/ValeursReglage.svelte';
+  import { phaseIhcCave, VAGUE_CAVE_J } from '../taches';
+  import { apres } from '../temps';
   import LigneControle from '../composants/LigneControle.svelte';
   import { MODES_PAR_ID, NOMS_LIEUX } from '../donnees';
   import {
@@ -23,6 +26,9 @@
     perteDePoids,
     PH_SAUCISSON,
     poidsDemande,
+    reglagesAFaire,
+    reglagesDuLot,
+    type ReglageDuLot,
   } from '../lots';
   import { lots } from '../lots.svelte';
   import { dureeLisible } from '../recettes';
@@ -52,6 +58,15 @@
   const jour = $derived(lot ? joursCalendaires(lot.entree, maintenant) : 0);
 
   let faitsOuverts = $state(false);
+  // Réglages de la chambre, étape par étape (dates prises dans le lot).
+  const reglages = $derived(lot ? reglagesDuLot(lot, chambre.heureRappels) : []);
+  const reglagesDus = $derived(lot ? new Set(reglagesAFaire(lot, maintenant, chambre.heureRappels).map((g) => g.cle)) : new Set<string>());
+
+  /** Cave, passage à 76 % : une autre pièce entrée depuis moins de 3 semaines fait garder 80 %. */
+  function garder80(g: ReglageDuLot): Date | undefined {
+    if (g.etape.mode !== 'cave' || g.etape.ihc_phase !== 1) return undefined;
+    return phaseIhcCave(maintenant, chambre.debutVague) === 0 ? apres(chambre.debutVague, VAGUE_CAVE_J) : undefined;
+  }
   let feuilleRappels = $state(false);
   const rappels = $derived(lot && feuilleRappels ? evenementsLot(lot, maintenant, chambre.heureRappels) : []);
   const nomFichier = $derived(
@@ -164,6 +179,8 @@
 
     {#if ph?.bloque}
       <p class="alerte-rouge" role="alert">{MESSAGE_PH_BLOQUE}</p>
+    {:else if ph?.jeter}
+      <p class="alerte-rouge" role="alert">{ph.message}</p>
     {/if}
 
     {#if securite.length && (r.famille === 'charc' || saucisson)}
@@ -216,12 +233,64 @@
       {/if}
     {/if}
 
+    {#if reglages.length}
+      <h2 class="titre-section">Réglages de la chambre</h2>
+      <p class="petit discret resume">{t(r.reglages?.resume)}</p>
+      <ol class="reglages">
+        {#each reglages as g (g.cle)}
+          {@const m = g.etape.mode ? MODES_PAR_ID.get(g.etape.mode) : undefined}
+          {@const du = reglagesDus.has(g.cle)}
+          {@const garde = garder80(g)}
+          <li class="carte" class:du class:fait={!!g.coche} style:--couleur={couleurMode(m)}>
+            <p class="quand">
+              {g.quand ? quandLisible(g.quand, g.exacte, maintenant) : `Étape « ${g.etape.etape_recette} »`} · {t(g.etape.quand)}
+              {#if g.coche}<span class="etiquette">fait</span>{/if}
+            </p>
+            <h3>{du ? 'Réglage à faire : ' : ''}{t(g.etape.titre)}</h3>
+            {#if m}<p class="mode-reglage">Mode {m.nom}{m.ihc_phases.length > 1 && g.etape.ihc_phase !== null ? ` · IHC : ${m.ihc_phases[g.etape.ihc_phase].nom.toLowerCase()}` : ''}</p>{/if}
+            {#if g.etape.actions.length}
+              <ul>
+                {#each g.etape.actions as a (a)}<li>{t(a)}</li>{/each}
+              </ul>
+            {/if}
+            {#if du && m}
+              {#if garde}
+                <p class="raison">Une autre pièce est entrée en Cave depuis moins de 3 semaines : garde 80 % jusqu'au {dateCourte(garde)}.</p>
+              {:else if chambre.actif.id !== m.id}
+                <p class="raison">La chambre est en {chambre.actif.mode?.nom ?? 'nettoyage'} : il faut changer de mode.</p>
+                <a class="bouton plein" href={lienChambre('changer', m.id)}>Passer en mode {m.nom}</a>
+              {:else}
+                <p class="petit discret">Même mode ({m.nom}) : rien à changer de mode, vérifie les valeurs.</p>
+              {/if}
+              <ValeursReglage mode={m.id} phase={g.etape.ihc_phase} />
+              {#if !g.entree}
+                <button class="bouton secondaire plein fait-bouton" onclick={() => lots.cocher(lot.id, g.cle, { etat: 'ok' })}>C'est réglé</button>
+              {:else}
+                <p class="petit discret">Se coche tout seul quand tu commences « {phases[g.phase]?.nom} » (plus haut).</p>
+              {/if}
+            {:else if m}
+              <details>
+                <summary>Toutes les valeurs</summary>
+                <ValeursReglage mode={m.id} phase={g.etape.ihc_phase} />
+              </details>
+            {/if}
+            {#if g.coche && !g.entree}
+              <button class="lien-bouton" onclick={() => lots.cocher(lot.id, g.cle, null)}>Annuler</button>
+            {/if}
+          </li>
+        {/each}
+      </ol>
+    {/if}
+
     {#if saucisson || ph?.cible}
       <h2 class="titre-section">pH</h2>
       <div class="carte bloc">
-        {#if ph?.cible}<p>Cible : <strong>{ph.cible.texte}</strong></p>{/if}
-        {#if !saucisson}<p class="petit discret">Facultatif : note une mesure quand tu veux.</p>{/if}
-        {#if ph?.message && !ph.bloque}<p class="raison">{ph.message}</p>{/if}
+        {#if ph?.cible}
+          <p>{ph.cible.valeur === null ? '' : 'Seuil : '}<strong>{t(ph.cible.texte)}</strong></p>
+          {#if ph.cible.pret}<p class="petit discret">Prêt : souvent {t(ph.cible.pret)}.</p>{/if}
+          {#if ph.cible.note}<p class="petit discret">{t(ph.cible.note)}</p>{/if}
+        {/if}
+        {#if ph?.message && !ph.bloque && !ph.jeter}<p class:raison={!ph.atteinte} class:atteinte={ph.atteinte}>{ph.message}</p>{/if}
         {#if lot.ph.length}
           <ul class="mesures">
             {#each [...lot.ph].sort((a, b) => a.le.localeCompare(b.le)) as m (m.le)}
@@ -346,6 +415,9 @@
               </li>
             {/each}
           </ul>
+          {#if r.congelation && r.congelation.possible !== 'oui'}
+            <p class="petit discret">Congélateur : {r.congelation.possible === 'non' ? 'non' : 'inutile'} — {t(r.congelation.texte)}</p>
+          {/if}
           <label class="ligne-champ">
             <span>Quantité</span>
             <input class="champ" type="text" bind:value={quantite} placeholder="ex. 1,2 kg, 6 pièces" />
@@ -447,6 +519,72 @@
   .raison {
     color: var(--ambre);
     font-weight: 600;
+  }
+
+  .atteinte {
+    color: var(--vert);
+    font-weight: 600;
+  }
+
+  .resume {
+    margin: -4px 4px 10px;
+  }
+
+  .reglages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reglages > li {
+    padding: 12px 14px;
+    border-left: 5px solid var(--couleur, var(--surface-3));
+  }
+
+  .reglages > li.du {
+    box-shadow: 0 0 0 2px var(--accent), var(--ombre);
+  }
+
+  .reglages > li.fait {
+    opacity: 0.75;
+  }
+
+  .reglages .quand {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .reglages h3 {
+    font-size: 17px;
+    margin: 2px 0 4px;
+  }
+
+  .reglages ul {
+    margin: 4px 0 8px;
+    padding-left: 1.1em;
+  }
+
+  .mode-reglage {
+    margin: 0;
+    font-size: 15px;
+    color: var(--couleur);
+    font-weight: 600;
+  }
+
+  .reglages details summary {
+    min-height: 36px;
+    color: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .fait-bouton {
+    margin-top: 10px;
   }
 
   .titre-section {

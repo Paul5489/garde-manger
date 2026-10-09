@@ -1,9 +1,22 @@
 // Lots de la chambre : calendrier des phases et des contrôles, perte de poids, pH, stock.
 // Un lot garde une copie de sa recette et de sa technique : ses dates ne changent pas si les données changent.
 
-import { cibleDuPh, controlesDeLaRecette, phaseCave, type CiblePh, type ControleRecette } from './recettes';
+import { nombre } from '../lib/format';
+import { cibleDuPh, controlesDeLaRecette, delaiPhJeter, phaseCave, PH_JETER, type CiblePh, type ControleRecette } from './recettes';
 import { aHeure, apres, joursCalendaires } from './temps';
-import type { ArticleStock, Conservation, Controle, ControleCoche, IdMode, Lot, MesurePh, RecetteChambre, Technique } from './types';
+import type {
+  ArticleStock,
+  Congelation,
+  Conservation,
+  Controle,
+  ControleCoche,
+  EtapeReglage,
+  IdMode,
+  Lot,
+  MesurePh,
+  RecetteChambre,
+  Technique,
+} from './types';
 
 const JOUR = 86_400_000;
 
@@ -227,11 +240,17 @@ export function perteDePoids(lot: Lot): Perte | undefined {
 export const PH_SAUCISSON = 5.3;
 export const MESSAGE_PH_BLOQUE = 'Ne pas sécher : cuire en saucisses fraîches dans les 24 h, ou jeter.';
 
+export const MESSAGE_PH_JETER = 'Jeter, sans goûter.';
+
 export interface EtatPh {
   cible?: CiblePh;
   derniere?: MesurePh;
   /** Saucisson : pH encore au-dessus de 5,3 à 72 h. */
   bloque: boolean;
+  /** Lacto : pH encore au-dessus de 4,6 après le délai de fermentation (7 jours, 5 pour les kimchis). */
+  jeter: boolean;
+  /** Dernière mesure à la cible ou en dessous. */
+  atteinte: boolean;
   peutPasserEnCave: boolean;
   message?: string;
 }
@@ -242,20 +261,31 @@ export function etatPh(lot: Lot): EtatPh {
   const mesures = [...lot.ph].sort(parDate);
   const derniere = mesures.at(-1);
   const cible = cibleDuPh(lot.recette);
-  if (lot.recette.technique !== 'saucisson') return { cible, derniere, bloque: false, peutPasserEnCave: true };
+  if (lot.recette.technique !== 'saucisson') {
+    const base = { cible, derniere, bloque: false, jeter: false, atteinte: false, peutPasserEnCave: true };
+    if (!derniere || !cible || cible.valeur === null) return base;
+    const jours = (new Date(derniere.le).getTime() - new Date(lot.entree).getTime()) / JOUR;
+    if (derniere.valeur > PH_JETER && jours >= delaiPhJeter(lot.recette))
+      return { ...base, jeter: true, message: `pH encore au-dessus de 4,6 après ${delaiPhJeter(lot.recette)} jours : ${MESSAGE_PH_JETER.toLowerCase()}` };
+    if (derniere.valeur > cible.valeur)
+      return { ...base, message: `Au-dessus de ${nombre(cible.valeur)} : pas encore, laisse fermenter et remesure.` };
+    return { ...base, atteinte: true, message: `${nombre(cible.valeur)} ou moins : c'est bon${lot.recette.ph?.quand ? ` (${lot.recette.ph.quand})` : ''}.` };
+  }
   const a72 = mesures.filter((m) => m.moment === '72h').at(-1);
-  if (a72 && a72.valeur > PH_SAUCISSON) return { cible, derniere, bloque: true, peutPasserEnCave: false, message: MESSAGE_PH_BLOQUE };
+  const base = { cible, derniere, jeter: false };
+  if (a72 && a72.valeur > PH_SAUCISSON) return { ...base, bloque: true, atteinte: false, peutPasserEnCave: false, message: MESSAGE_PH_BLOQUE };
   const apresDepart = mesures.filter((m) => m.moment !== 'depart').at(-1);
-  if (!apresDepart) return { cible, derniere, bloque: false, peutPasserEnCave: false, message: 'Mesure le pH à 48 h : 5,3 ou moins pour passer en Cave.' };
+  if (!apresDepart)
+    return { ...base, bloque: false, atteinte: false, peutPasserEnCave: false, message: 'Mesure le pH à 48 h : 5,3 ou moins pour passer en Cave.' };
   if (apresDepart.valeur > PH_SAUCISSON)
     return {
-      cible,
-      derniere,
+      ...base,
       bloque: false,
+      atteinte: false,
       peutPasserEnCave: false,
       message: 'pH encore au-dessus de 5,3 : prolonge l’étuvage et remesure à 72 h.',
     };
-  return { cible, derniere, bloque: false, peutPasserEnCave: true };
+  return { ...base, bloque: false, atteinte: true, peutPasserEnCave: true };
 }
 
 /** Moment proposé pour une mesure de pH d'un saucisson, d'après le temps écoulé depuis l'entrée. */
@@ -310,4 +340,94 @@ export function etatStock(a: ArticleStock, maintenant: Date | number): EtatStock
   const j = joursCalendaires(maintenant, a.limite);
   if (j < 0) return 'depasse';
   return j <= 7 ? 'bientot' : 'ok';
+}
+
+// ───── Réglages de la chambre, étape par étape ─────
+
+export interface ReglageDuLot {
+  index: number;
+  /** Clé de l'étape cochée dans `lot.controles` (« reglage:2 »). */
+  cle: string;
+  etape: EtapeReglage;
+  /** Date de l'étape (absente pour une étape rattachée à une étape de la recette, sans jour). */
+  quand?: Date;
+  exacte: boolean;
+  /** Phase de la recette pendant laquelle tombe l'étape (0 sans phases). */
+  phase: number;
+  /** Étape d'entrée dans cette phase (ex. « Entrée en mode Cave »). */
+  entree: boolean;
+  coche?: ControleCoche;
+}
+
+/** Jour (dans les réglages) de l'entrée dans chaque phase après la première : 1re étape datée dans le mode de la phase. */
+function joursEntreePhases(r: RecetteChambre): (number | undefined)[] {
+  const etapes = r.reglages?.etapes ?? [];
+  return (r.phases ?? []).map((p, k) => (k === 0 || !p.mode ? undefined : (etapes.find((e) => e.j !== null && e.mode === p.mode)?.j ?? undefined)));
+}
+
+/** Rang de l'étape de réglage qui marque l'entrée dans la phase k (pour la cocher au passage de phase). */
+export function indexEntreeReglage(r: RecetteChambre, k: number): number {
+  const j = joursEntreePhases(r)[k];
+  const mode = r.phases?.[k]?.mode;
+  return j === undefined ? -1 : (r.reglages?.etapes ?? []).findIndex((e) => e.j === j && e.mode === mode);
+}
+
+/**
+ * Dates des réglages d'un lot. Une étape tombée pendant une phase suivante (Cave après le salage ou l'étuvage) se
+ * compte depuis la vraie entrée dans cette phase, quand elle est notée (sinon depuis le jour prévu par la recette).
+ */
+export function reglagesDuLot(lot: Lot, heureRappels = 8): ReglageDuLot[] {
+  const r = lot.recette;
+  const etapes = r.reglages?.etapes ?? [];
+  const entrees = joursEntreePhases(r);
+  const courte = r.duree.max_j <= 3;
+  return etapes.map((e, index) => {
+    const cle = `reglage:${index}`;
+    const coche = lot.controles[cle];
+    if (e.j === null) return { index, cle, etape: e, exacte: false, phase: 0, entree: false, coche };
+    let phase = 0;
+    for (let k = entrees.length - 1; k >= 1; k--)
+      if (entrees[k] !== undefined && e.j >= entrees[k]!) {
+        phase = k;
+        break;
+      }
+    const jEntree = phase ? entrees[phase]! : 0;
+    const debutReel = phase ? lot.phases[phase]?.debut : lot.entree;
+    const base = debutReel ? new Date(debutReel) : apres(lot.entree, jEntree);
+    let quand = apres(base, e.j - jEntree);
+    const exacte = courte || e.j === 0 || !Number.isInteger(e.j) || (!!phase && !!lot.phases[phase]?.debut && e.j === jEntree);
+    if (!exacte) quand = aHeure(quand, heureRappels);
+    return { index, cle, etape: e, quand, exacte, phase, entree: !!phase && e.j === jEntree, coche };
+  });
+}
+
+/**
+ * Réglages à faire aujourd'hui (ou en retard) sur la chambre : étapes datées, dans un mode de la chambre, non cochées.
+ * Celles du démarrage se font en lançant le lot ; une entrée de phase attend que le passage soit possible (pH du
+ * saucisson) ; les étapes d'une phase suivante attendent que le lot y soit entré.
+ */
+export function reglagesAFaire(lot: Lot, maintenant: Date | number, heureRappels = 8): ReglageDuLot[] {
+  if (lot.statut !== 'en-cours') return [];
+  const limite = finDuJour(maintenant);
+  return reglagesDuLot(lot, heureRappels).filter((g) => {
+    if (g.coche || !g.quand || !g.etape.mode || g.etape.j === 0 || g.quand > limite) return false;
+    if (g.entree) return lot.phaseCourante === g.phase - 1 && passageSuivant(lot).possible;
+    return lot.phaseCourante >= g.phase;
+  });
+}
+
+// ───── Congélation ─────
+
+/** Congélation d'un produit du stock : sa copie, sinon celle de la recette. */
+export function congelationDuStock(a: ArticleStock, r?: RecetteChambre): Congelation | undefined {
+  return a.congelation ?? r?.congelation;
+}
+
+/** Conservation « Congélateur » d'un produit (celle de la recette, sinon d'après sa congélation), si c'est possible. */
+export function conservationCongelateur(a: ArticleStock, r?: RecetteChambre): Conservation | undefined {
+  const c = congelationDuStock(a, r);
+  if (c?.possible !== 'oui') return undefined;
+  const ligne = r?.conservation.find((x) => x.mode === 'Congélateur');
+  if (ligne) return { ...ligne };
+  return { mode: 'Congélateur', comment: c.texte, duree: c.duree ?? '', jours: c.jours ?? 0 };
 }

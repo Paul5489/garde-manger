@@ -1,95 +1,481 @@
 [
   {
-    "id": "vinriz", "nom": "Vinaigre de riz", "famille": "vin", "mois": [10],
-    "lieu": "cuisine", "mode": null, "technique": "vinaigre", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 2,
+    "id": "vinriz",
+    "nom": "Vinaigre de riz",
+    "famille": "vin",
+    "mois": [
+      10
+    ],
+    "lieu": "cuisine",
+    "mode": null,
+    "technique": "vinaigre",
+    "etiquettes": [
+      "odeur_forte"
+    ],
+    "place": 0,
+    "difficulte": 2,
     "rendement": "Environ 1 L",
-    "base": {"ingredient": "Riz rond cuit", "quantite": 500, "unite": "g"},
-    "duree": {"min_j": 90, "max_j": 120},
-    "fin": {"type": "gout", "texte": "Franchement acide, plus de goût d’alcool."},
-    "materiel": ["Bocal large de 2 L", "Tissu serré et élastique", "Torchon fin pour filtrer", "Bouteilles"],
+    "base": {
+      "ingredient": "Riz rond cuit",
+      "quantite": 500,
+      "unite": "g"
+    },
+    "duree": {
+      "min_j": 90,
+      "max_j": 120
+    },
+    "fin": {
+      "type": "gout",
+      "texte": "Franchement acide, plus de goût d’alcool."
+    },
+    "materiel": [
+      "Bocal large de 2 L",
+      "Tissu serré et élastique",
+      "Torchon fin pour filtrer",
+      "Bouteilles"
+    ],
     "ingredients": [
-      {"nom": "Riz rond cuit", "qte": 500, "unite": "g"},
-      {"nom": "Koji de riz", "qte": 250, "unite": "g"},
-      {"nom": "Eau", "qte": 750, "unite": "g"},
-      {"nom": "Levure de boulanger ou de vin", "qte": 2, "unite": "g"},
-      {"nom": "Vinaigre non pasteurisé (la mère)", "qte": 200, "unite": "g", "note": "Ajouté après le makgeolli"}
+      {
+        "nom": "Riz rond cuit",
+        "qte": 500,
+        "unite": "g"
+      },
+      {
+        "nom": "Koji de riz",
+        "qte": 250,
+        "unite": "g"
+      },
+      {
+        "nom": "Eau",
+        "qte": 750,
+        "unite": "g"
+      },
+      {
+        "nom": "Levure de boulanger ou de vin",
+        "qte": 2,
+        "unite": "g"
+      },
+      {
+        "nom": "Vinaigre non pasteurisé (la mère)",
+        "qte": 200,
+        "unite": "g",
+        "note": "Ajouté après le makgeolli"
+      }
     ],
     "etapes": [
-      {"titre": "Makgeolli", "texte": "Mélanger riz cuit tiède, koji, eau et levure dans le bocal, couvrir d’un tissu. Remuer chaque jour 1 à 2 semaines vers 20–25 °C, jusqu’à la fin des bulles.", "duree": "1 à 2 sem."},
-      {"titre": "Filtrer", "texte": "Filtrer dans un torchon en pressant. Le liquide est un alcool de riz laiteux.", "duree": "20 min"},
-      {"titre": "Acétifier", "texte": "Ajouter la mère, couvrir d’un tissu, 6 à 10 semaines à 22–28 °C : en cuisine, ou en passager de la chambre pendant le koji.", "duree": "6 à 10 sem."},
-      {"titre": "Mettre en bouteilles", "texte": "Quand il est franchement acide, filtrer et mettre en bouteilles. Option : 10 min à 70 °C au thermoplongeur pour qu’il ne refasse pas de mère.", "duree": "20 min"}
+      {
+        "titre": "Makgeolli",
+        "texte": "Mélanger riz cuit tiède, koji, eau et levure dans le bocal, couvrir d’un tissu. Remuer chaque jour 1 à 2 semaines vers 20–25 °C, jusqu’à la fin des bulles.",
+        "duree": "1 à 2 sem."
+      },
+      {
+        "titre": "Filtrer",
+        "texte": "Filtrer dans un torchon en pressant. Le liquide est un alcool de riz laiteux.",
+        "duree": "20 min"
+      },
+      {
+        "titre": "Acétifier",
+        "texte": "Ajouter la mère, couvrir d’un tissu, 6 à 10 semaines à 22–28 °C : en cuisine, ou en passager de la chambre pendant le koji.",
+        "duree": "6 à 10 sem."
+      },
+      {
+        "titre": "Mettre en bouteilles",
+        "texte": "Quand il est franchement acide, filtrer et mettre en bouteilles. Option : 10 min à 70 °C au thermoplongeur pour qu’il ne refasse pas de mère.",
+        "duree": "20 min"
+      }
     ],
     "controles": [],
-    "conservation": [{"mode": "Placard", "comment": "bouteille", "duree": "plusieurs années", "jours": 1095}]
+    "conservation": [
+      {
+        "mode": "Placard",
+        "comment": "bouteille",
+        "duree": "plusieurs années",
+        "jours": 1095
+      }
+    ],
+    "reglages": {
+      "resume": "Hors chambre : en cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+      "etapes": [
+        {
+          "j": 0,
+          "quand": "Au démarrage",
+          "titre": "Hors chambre",
+          "mode": null,
+          "ihc_phase": null,
+          "actions": [
+            "En cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+            "Rien à régler dans la chambre."
+          ],
+          "etape_recette": null
+        },
+        {
+          "j": null,
+          "quand": "À l’étape « Mettre en bouteilles »",
+          "titre": "Thermoplongeur",
+          "mode": null,
+          "ihc_phase": null,
+          "actions": [
+            "Quand il est franchement acide, filtrer et mettre en bouteilles. Option : 10 min à 70 °C au thermoplongeur pour qu’il ne refasse pas de mère."
+          ],
+          "etape_recette": "Mettre en bouteilles"
+        }
+      ]
+    },
+    "congelation": {
+      "possible": "inutile",
+      "duree": null,
+      "jours": null,
+      "texte": "Un vinaigre se garde des années au placard."
+    }
   },
   {
-    "id": "vinframboise", "nom": "Vinaigre de framboise", "famille": "vin", "mois": [6, 7],
-    "lieu": "cuisine", "mode": null, "technique": "vinaigre", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "id": "vinframboise",
+    "nom": "Vinaigre de framboise",
+    "famille": "vin",
+    "mois": [
+      6,
+      7
+    ],
+    "lieu": "cuisine",
+    "mode": null,
+    "technique": "vinaigre",
+    "etiquettes": [
+      "odeur_forte"
+    ],
+    "place": 0,
+    "difficulte": 1,
     "rendement": "Environ 2 L",
-    "base": {"ingredient": "Framboises", "quantite": 1000, "unite": "g"},
-    "duree": {"min_j": 60, "max_j": 90},
-    "fin": {"type": "gout", "texte": "Franchement acide, parfumé."},
-    "materiel": ["Bocal large de 3 L", "Tissu serré et élastique", "Passoire", "Bouteilles"],
+    "base": {
+      "ingredient": "Framboises",
+      "quantite": 1000,
+      "unite": "g"
+    },
+    "duree": {
+      "min_j": 60,
+      "max_j": 90
+    },
+    "fin": {
+      "type": "gout",
+      "texte": "Franchement acide, parfumé."
+    },
+    "materiel": [
+      "Bocal large de 3 L",
+      "Tissu serré et élastique",
+      "Passoire",
+      "Bouteilles"
+    ],
     "ingredients": [
-      {"nom": "Framboises écrasées", "qte": 1000, "unite": "g"},
-      {"nom": "Eau", "qte": 1500, "unite": "g"},
-      {"nom": "Sucre", "qte": 175, "unite": "g"},
-      {"nom": "Vinaigre non pasteurisé (la mère)", "qte": 400, "unite": "g", "note": "Environ 20 % du liquide filtré"}
+      {
+        "nom": "Framboises écrasées",
+        "qte": 1000,
+        "unite": "g"
+      },
+      {
+        "nom": "Eau",
+        "qte": 1500,
+        "unite": "g"
+      },
+      {
+        "nom": "Sucre",
+        "qte": 175,
+        "unite": "g"
+      },
+      {
+        "nom": "Vinaigre non pasteurisé (la mère)",
+        "qte": 400,
+        "unite": "g",
+        "note": "Environ 20 % du liquide filtré"
+      }
     ],
     "etapes": [
-      {"titre": "Fermentation alcoolique", "texte": "Fruits, eau et sucre dans le bocal, couvert d’un tissu. Remuer chaque jour 1 à 2 semaines jusqu’à la fin des bulles.", "duree": "1 à 2 sem."},
-      {"titre": "Filtrer et ajouter la mère", "texte": "Filtrer, ajouter la mère, couvrir d’un tissu.", "duree": "15 min"},
-      {"titre": "Acétifier", "texte": "4 à 8 semaines en cuisine, sans bouger le bocal.", "duree": "4 à 8 sem."},
-      {"titre": "Mettre en bouteilles", "texte": "Filtrer, mettre en bouteilles. Option : 10 min à 70 °C au thermoplongeur.", "duree": "20 min"}
+      {
+        "titre": "Fermentation alcoolique",
+        "texte": "Fruits, eau et sucre dans le bocal, couvert d’un tissu. Remuer chaque jour 1 à 2 semaines jusqu’à la fin des bulles.",
+        "duree": "1 à 2 sem."
+      },
+      {
+        "titre": "Filtrer et ajouter la mère",
+        "texte": "Filtrer, ajouter la mère, couvrir d’un tissu.",
+        "duree": "15 min"
+      },
+      {
+        "titre": "Acétifier",
+        "texte": "4 à 8 semaines en cuisine, sans bouger le bocal.",
+        "duree": "4 à 8 sem."
+      },
+      {
+        "titre": "Mettre en bouteilles",
+        "texte": "Filtrer, mettre en bouteilles. Option : 10 min à 70 °C au thermoplongeur.",
+        "duree": "20 min"
+      }
     ],
     "controles": [],
-    "conservation": [{"mode": "Placard", "comment": "bouteille", "duree": "plusieurs années", "jours": 1095}]
+    "conservation": [
+      {
+        "mode": "Placard",
+        "comment": "bouteille",
+        "duree": "plusieurs années",
+        "jours": 1095
+      }
+    ],
+    "reglages": {
+      "resume": "Hors chambre : en cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+      "etapes": [
+        {
+          "j": 0,
+          "quand": "Au démarrage",
+          "titre": "Hors chambre",
+          "mode": null,
+          "ihc_phase": null,
+          "actions": [
+            "En cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+            "Rien à régler dans la chambre."
+          ],
+          "etape_recette": null
+        },
+        {
+          "j": null,
+          "quand": "À l’étape « Mettre en bouteilles »",
+          "titre": "Thermoplongeur",
+          "mode": null,
+          "ihc_phase": null,
+          "actions": [
+            "Filtrer, mettre en bouteilles. Option : 10 min à 70 °C au thermoplongeur."
+          ],
+          "etape_recette": "Mettre en bouteilles"
+        }
+      ]
+    },
+    "congelation": {
+      "possible": "inutile",
+      "duree": null,
+      "jours": null,
+      "texte": "Un vinaigre se garde des années au placard."
+    }
   },
   {
-    "id": "vincassis", "nom": "Vinaigre de cassis", "famille": "vin", "mois": [7],
-    "lieu": "cuisine", "mode": null, "technique": "vinaigre", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "id": "vincassis",
+    "nom": "Vinaigre de cassis",
+    "famille": "vin",
+    "mois": [
+      7
+    ],
+    "lieu": "cuisine",
+    "mode": null,
+    "technique": "vinaigre",
+    "etiquettes": [
+      "odeur_forte"
+    ],
+    "place": 0,
+    "difficulte": 1,
     "rendement": "Environ 2 L",
-    "base": {"ingredient": "Cassis", "quantite": 1000, "unite": "g"},
-    "duree": {"min_j": 60, "max_j": 90},
-    "fin": {"type": "gout", "texte": "Franchement acide, parfumé."},
-    "materiel": ["Bocal large de 3 L", "Tissu serré et élastique", "Passoire", "Bouteilles"],
+    "base": {
+      "ingredient": "Cassis",
+      "quantite": 1000,
+      "unite": "g"
+    },
+    "duree": {
+      "min_j": 60,
+      "max_j": 90
+    },
+    "fin": {
+      "type": "gout",
+      "texte": "Franchement acide, parfumé."
+    },
+    "materiel": [
+      "Bocal large de 3 L",
+      "Tissu serré et élastique",
+      "Passoire",
+      "Bouteilles"
+    ],
     "ingredients": [
-      {"nom": "Cassis égrappés et écrasés", "qte": 1000, "unite": "g"},
-      {"nom": "Eau", "qte": 1500, "unite": "g"},
-      {"nom": "Sucre", "qte": 200, "unite": "g"},
-      {"nom": "Vinaigre non pasteurisé (la mère)", "qte": 400, "unite": "g"}
+      {
+        "nom": "Cassis égrappés et écrasés",
+        "qte": 1000,
+        "unite": "g"
+      },
+      {
+        "nom": "Eau",
+        "qte": 1500,
+        "unite": "g"
+      },
+      {
+        "nom": "Sucre",
+        "qte": 200,
+        "unite": "g"
+      },
+      {
+        "nom": "Vinaigre non pasteurisé (la mère)",
+        "qte": 400,
+        "unite": "g"
+      }
     ],
     "etapes": [
-      {"titre": "Fermentation alcoolique", "texte": "Fruits, eau et sucre, couvert d’un tissu, remuer chaque jour 1 à 2 semaines jusqu’à la fin des bulles.", "duree": "1 à 2 sem."},
-      {"titre": "Filtrer et ajouter la mère", "texte": "Filtrer, ajouter la mère.", "duree": "15 min"},
-      {"titre": "Acétifier", "texte": "4 à 8 semaines en cuisine.", "duree": "4 à 8 sem."},
-      {"titre": "Mettre en bouteilles", "texte": "Filtrer, mettre en bouteilles.", "duree": "20 min"}
+      {
+        "titre": "Fermentation alcoolique",
+        "texte": "Fruits, eau et sucre, couvert d’un tissu, remuer chaque jour 1 à 2 semaines jusqu’à la fin des bulles.",
+        "duree": "1 à 2 sem."
+      },
+      {
+        "titre": "Filtrer et ajouter la mère",
+        "texte": "Filtrer, ajouter la mère.",
+        "duree": "15 min"
+      },
+      {
+        "titre": "Acétifier",
+        "texte": "4 à 8 semaines en cuisine.",
+        "duree": "4 à 8 sem."
+      },
+      {
+        "titre": "Mettre en bouteilles",
+        "texte": "Filtrer, mettre en bouteilles.",
+        "duree": "20 min"
+      }
     ],
     "controles": [],
-    "conservation": [{"mode": "Placard", "comment": "bouteille", "duree": "plusieurs années", "jours": 1095}]
+    "conservation": [
+      {
+        "mode": "Placard",
+        "comment": "bouteille",
+        "duree": "plusieurs années",
+        "jours": 1095
+      }
+    ],
+    "reglages": {
+      "resume": "Hors chambre : en cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+      "etapes": [
+        {
+          "j": 0,
+          "quand": "Au démarrage",
+          "titre": "Hors chambre",
+          "mode": null,
+          "ihc_phase": null,
+          "actions": [
+            "En cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+            "Rien à régler dans la chambre."
+          ],
+          "etape_recette": null
+        }
+      ]
+    },
+    "congelation": {
+      "possible": "inutile",
+      "duree": null,
+      "jours": null,
+      "texte": "Un vinaigre se garde des années au placard."
+    }
   },
   {
-    "id": "vinmures", "nom": "Vinaigre de mûres", "famille": "vin", "mois": [8, 9],
-    "lieu": "cuisine", "mode": null, "technique": "vinaigre", "etiquettes": ["odeur_forte"], "place": 0, "difficulte": 1,
+    "id": "vinmures",
+    "nom": "Vinaigre de mûres",
+    "famille": "vin",
+    "mois": [
+      8,
+      9
+    ],
+    "lieu": "cuisine",
+    "mode": null,
+    "technique": "vinaigre",
+    "etiquettes": [
+      "odeur_forte"
+    ],
+    "place": 0,
+    "difficulte": 1,
     "rendement": "Environ 2 L",
-    "base": {"ingredient": "Mûres", "quantite": 1000, "unite": "g"},
-    "duree": {"min_j": 60, "max_j": 90},
-    "fin": {"type": "gout", "texte": "Franchement acide, parfumé."},
-    "materiel": ["Bocal large de 3 L", "Tissu serré et élastique", "Passoire", "Bouteilles"],
+    "base": {
+      "ingredient": "Mûres",
+      "quantite": 1000,
+      "unite": "g"
+    },
+    "duree": {
+      "min_j": 60,
+      "max_j": 90
+    },
+    "fin": {
+      "type": "gout",
+      "texte": "Franchement acide, parfumé."
+    },
+    "materiel": [
+      "Bocal large de 3 L",
+      "Tissu serré et élastique",
+      "Passoire",
+      "Bouteilles"
+    ],
     "ingredients": [
-      {"nom": "Mûres écrasées", "qte": 1000, "unite": "g"},
-      {"nom": "Eau", "qte": 1500, "unite": "g"},
-      {"nom": "Sucre", "qte": 175, "unite": "g"},
-      {"nom": "Vinaigre non pasteurisé (la mère)", "qte": 400, "unite": "g"}
+      {
+        "nom": "Mûres écrasées",
+        "qte": 1000,
+        "unite": "g"
+      },
+      {
+        "nom": "Eau",
+        "qte": 1500,
+        "unite": "g"
+      },
+      {
+        "nom": "Sucre",
+        "qte": 175,
+        "unite": "g"
+      },
+      {
+        "nom": "Vinaigre non pasteurisé (la mère)",
+        "qte": 400,
+        "unite": "g"
+      }
     ],
     "etapes": [
-      {"titre": "Fermentation alcoolique", "texte": "Fruits, eau et sucre, couvert d’un tissu, remuer chaque jour 1 à 2 semaines.", "duree": "1 à 2 sem."},
-      {"titre": "Filtrer et ajouter la mère", "texte": "Filtrer, ajouter la mère.", "duree": "15 min"},
-      {"titre": "Acétifier", "texte": "4 à 8 semaines en cuisine.", "duree": "4 à 8 sem."},
-      {"titre": "Mettre en bouteilles", "texte": "Filtrer, mettre en bouteilles.", "duree": "20 min"}
+      {
+        "titre": "Fermentation alcoolique",
+        "texte": "Fruits, eau et sucre, couvert d’un tissu, remuer chaque jour 1 à 2 semaines.",
+        "duree": "1 à 2 sem."
+      },
+      {
+        "titre": "Filtrer et ajouter la mère",
+        "texte": "Filtrer, ajouter la mère.",
+        "duree": "15 min"
+      },
+      {
+        "titre": "Acétifier",
+        "texte": "4 à 8 semaines en cuisine.",
+        "duree": "4 à 8 sem."
+      },
+      {
+        "titre": "Mettre en bouteilles",
+        "texte": "Filtrer, mettre en bouteilles.",
+        "duree": "20 min"
+      }
     ],
     "controles": [],
-    "conservation": [{"mode": "Placard", "comment": "bouteille", "duree": "plusieurs années", "jours": 1095}]
+    "conservation": [
+      {
+        "mode": "Placard",
+        "comment": "bouteille",
+        "duree": "plusieurs années",
+        "jours": 1095
+      }
+    ],
+    "reglages": {
+      "resume": "Hors chambre : en cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+      "etapes": [
+        {
+          "j": 0,
+          "quand": "Au démarrage",
+          "titre": "Hors chambre",
+          "mode": null,
+          "ihc_phase": null,
+          "actions": [
+            "En cuisine, à température ambiante (16 à 22 °C), à l’abri du soleil.",
+            "Rien à régler dans la chambre."
+          ],
+          "etape_recette": null
+        }
+      ]
+    },
+    "congelation": {
+      "possible": "inutile",
+      "duree": null,
+      "jours": null,
+      "texte": "Un vinaigre se garde des années au placard."
+    }
   }
 ]

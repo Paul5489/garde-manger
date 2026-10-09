@@ -58,7 +58,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 248 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 257 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -185,7 +185,8 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   (température) et IHC-200-WIFI (humidité), tapis, ventilateur, déshumidificateur, pH-mètre. **L'appli ne pilote
   rien** : elle dit quelles valeurs entrer, comment, pourquoi, quoi brancher. Module **chargé à la demande**
   (`import('./chambre/module')` dans App.svelte, ~64 Ko gzip, mis en cache par le service worker).
-  - `contenu/*.json` (lecture seule, version `modes.json` « 2026-10-07d ») ; `donnees.ts` les importe et
+  - `contenu/*.json` (lecture seule ; dossier de Paul du 07/10/2026 16 h 05, avec `reglages`, `congelation`, `partage`,
+    `ph` dans les recettes et `partage` dans les modes ; `modes.json` « 2026-10-07d ») ; `donnees.ts` les importe et
     `verifierContenu()` reprend **toutes** les vérifications de `outils/valider_donnees.py` de Paul (erreur affichée
     dans l'onglet si une donnée est incohérente ; testé). **Ne jamais changer une valeur de sécurité** (sel,
     températures, durées, pH, pertes de poids, réglages des contrôleurs) sans l'accord de Paul ; **jamais de nitrite**.
@@ -219,13 +220,23 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
     = bocaux à signaler + chambre ; icône = Badging API (`setAppBadge`), sur iPhone seulement appli installée et
     notifications autorisées (⚙️ de la Chambre › « Autoriser la pastille »). Le module Chambre est préchargé
     1,5 s après le démarrage pour que la pastille soit juste.
-  - `compatibilite.ts` : pour une recette et un mois, `partage` (mode commun — phases comprises —, pas de paire
-    d'étiquettes en conflit, places + lots en cours du même mode ≤ 1), `parallele` (hors chambre), `incompatibles`
-    avec raisons (« mode différent », « odeur forte et viande », « spores et charcuterie », « air sec et air
-    humide », « chambre pleine », « thermoplongeur déjà pris » : deux usages dont l'un ≥ 1 jour, ou un lot en cours
-    au thermoplongeur ; étapes « option / express / ou bien » ignorées). Recettes de saison du mois seulement.
-    Écran `CompatibiliteChambre` (`#/chambre/compatibilite/<id>[/<mois>]`) ; une étoile posée propose « Ce qui va
-    avec » (`prevoir.ts`).
+  - `compatibilite.ts` (refait le 09/10/2026) : ne dépend plus du mois mais du mode. `partage` = `partage.avec` de la
+    recette (tous les mois ; ces listes suivent exactement la règle de cohabitation, vérifié), `precautions` (note de
+    la recette, des recettes qui partagent, `modes.json › partage.precautions`), `parallele` (hors chambre, de saison
+    le mois choisi), `incompatibles` (toutes les autres recettes de la chambre, raison par `raisons()`), `presents`
+    (lots en cours dans la chambre, leur mode du moment, place), `prevus` (rendez-vous du calendrier et étoiles du
+    mois), thermoplongeur. Écran `CompatibiliteChambre` ; une étoile posée propose « Ce qui va avec » (`prevoir.ts`).
+  - Réglages par recette (`reglages.etapes`) : `reglagesDuLot` date chaque étape ; une étape tombée dans une phase
+    suivante se compte depuis la **vraie** entrée dans cette phase (décision de Paul du 09/10/2026), l'étape d'entrée
+    se coche au passage de phase (`indexEntreeReglage`). `reglagesAFaire` (mode de la chambre, j > 0, entrée seulement
+    si le passage est possible) → « Réglage à faire » (page du lot, Aujourd'hui, .ics) avec `ValeursReglage` (valeurs
+    complètes de modes.json) ; mode différent du mode actif → bouton de l'assistant ; en Cave, garder 80 % si une
+    autre pièce est entrée depuis moins de 3 semaines. Étapes sans `j` affichées sous l'étape de recette.
+  - pH des lacto : `cibleDuPh` lit `recette.ph` (seuil, `pret`, note ; `securite: null` = protégé par le sel) ;
+    `etatPh` : « Jeter, sans goûter » au-dessus de 4,6 après `delaiPhJeter` (délai lu dans le contrôle de pH de la
+    recette : 5 jours pour les trois kimchis — décision de Paul —, sinon 7).
+  - Congélation : ligne Congélateur toujours affichée (fiche, stock, fin du lot) ; le stock copie `congelation` ;
+    `lots.congeler()` passe un produit au congélateur (date limite depuis le jour où il est congelé).
   - `assistant.ts` : écrans de « Changer de mode » (nettoyage de la transition, refroidir après un mode chaud, ITC
     puis IHC code par code avec la touche et la valeur, thermostat, branchements, ventilateur, sondes, à vide).
   - `chambre.svelte.ts` : état gardé dans la table `reglages` (clés `chambre:…` : mode choisi, mise en service,
@@ -389,6 +400,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   du koji de riz → « Cuisson à la vapeur » (identique sinon à une fiche du livre, bloqué par le garde-fou) ;
   pastille de l'icône = autoriser une fois les notifications (iOS) ; cible de pH : 4,2 pour toutes les lacto
   (fiche du pH-mètre de modes.json : « lacto et sauces »), aucune pour les vinaigres.
+- 09/10/2026 : nouveau dossier de la chambre (réglages, congélation, partage, pH) : réglages datés depuis la vraie
+  entrée dans chaque phase ; « jeter » des kimchis à 5 jours comme leur fiche ; bouton « Mettre au congélateur ».
+  Toujours à voir avec Paul : le shoyu (« Remuer » chaque jour sans `fin_j`).
 - 06/10/2026 : recette du **bissap à l'ananas** (bonbons à la menthe à la place de la menthe fraîche) préparée en fichier
   `~/Documents/Cuisine/mes-recettes/garde-manger-recette-bissap.json` (hors dépôt), à ajouter via Mes recettes.
 
@@ -425,6 +439,10 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.14.0** (09/10/2026) : dossier de la chambre mis à jour par Paul : réglages de la chambre étape par étape (fiche,
+  lot, Aujourd'hui, Calendrier), congélation (fiche, stock, « Mettre au congélateur »), compatibilité par mode avec
+  listes et précautions des données, lots présents et recettes prévues, pH des lacto par recette (« Jeter, sans
+  goûter »), nouvelles vérifications des données.
 - **1.13.0** (07/10/2026) : Chambre, étape 6 : compatibilité (partager la chambre, en parallèle, incompatible avec
   la raison), depuis le calendrier, la fiche, et l'étoile « prévu ».
 - **1.12.0** (07/10/2026) : Chambre, étape 4 : rappels .ics des lots, de la chambre (un an) et du stock ;

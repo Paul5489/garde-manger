@@ -202,19 +202,39 @@ export function dureeLisible(min: number, max = min): string {
 }
 
 export interface CiblePh {
-  valeur: number;
+  /** pH à atteindre (null : le sel ou la sécheresse protègent, pas de pH à viser). */
+  valeur: number | null;
   texte: string;
+  /** pH habituel quand c'est prêt (« 4,2 à 4,5 »). */
+  pret?: string;
+  note?: string;
+}
+
+/** Au-dessus de ce pH après le délai de fermentation : jeter, sans goûter (techniques lacto). */
+export const PH_JETER = 4.6;
+
+/**
+ * Cible de pH d'un lot : 5,3 en 48 h pour le saucisson, sinon le champ `ph` de la recette (seuil de sécurité,
+ * moment, pH habituel, note). Pas de cible pour les recettes sans `ph` (vinaigres, koji…).
+ */
+export function cibleDuPh(r: RecetteChambre): CiblePh | undefined {
+  if (r.technique === 'saucisson') return { valeur: 5.3, texte: '5,3 ou moins en 48 h (72 h au plus)' };
+  if (!r.ph) return undefined;
+  const note = r.ph.note || undefined;
+  if (r.ph.securite === null) return { valeur: null, texte: 'Pas de pH à viser', note };
+  return { valeur: r.ph.securite, texte: `${nombre(r.ph.securite)} ou moins${r.ph.quand ? ` ${r.ph.quand}` : ''}`, pret: r.ph.pret || undefined, note };
 }
 
 /**
- * Cible de pH d'un lot : celle de la recette (fin « ph »), 5,3 en 48 h pour le saucisson, 4,2 avant une
- * conservation longue pour les lacto et les sauces (fiche du pH-mètre, modes.json). Pas de cible pour les vinaigres.
+ * Délai (jours de fermentation) au-delà duquel un pH encore au-dessus de 4,6 fait jeter : celui que donne la recette
+ * dans son contrôle de pH (« au bout de 5 jours » pour les kimchis), sinon 7 jours (techniques lacto).
  */
-export function cibleDuPh(r: RecetteChambre): CiblePh | undefined {
-  if (r.fin.type === 'ph' && r.fin.cible !== undefined) return { valeur: r.fin.cible, texte: `${nombre(r.fin.cible)} ou moins` };
-  if (r.technique === 'saucisson') return { valeur: 5.3, texte: '5,3 ou moins en 48 h (72 h au plus)' };
-  if (r.famille === 'lacto') return { valeur: 4.2, texte: '4,2 ou moins avant une conservation longue' };
-  return undefined;
+export function delaiPhJeter(r: RecetteChambre): number {
+  for (const c of r.controles) {
+    const m = `${c.action} ${c.probleme}`.match(/4,6[^.]*?(?:au bout de|après) (\d+) jours/);
+    if (m) return Number(m[1]);
+  }
+  return 7;
 }
 
 export const DIFFICULTES = ['', 'Facile', 'Moyenne', 'Difficile'];

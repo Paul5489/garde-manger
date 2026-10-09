@@ -36,7 +36,7 @@
     "securite": [
       "Peser le sel au gramme : 2 % minimum du poids des légumes.",
       "Jeter en cas d’odeur putride, de moisissure colorée ou duveteuse, ou de texture visqueuse.",
-      "Avant une conservation longue, vérifier au pH-mètre que le jus est à 4,2 ou moins."
+      "pH : 4,6 ou moins en 7 jours au plus, sinon jeter sans goûter ; avant une conservation longue, le seuil indiqué par la recette, 4,2 le plus souvent. Seules exceptions : les recettes très salées (kosho, citrons confits), protégées par le sel."
     ]
   },
   "lacto_bocal": {
@@ -75,7 +75,8 @@
     "securite": [
       "Saumure à 3 % minimum.",
       "Les légumes restent toujours sous le liquide.",
-      "Jeter en cas de moisissure colorée ou duveteuse, ou d’odeur putride."
+      "Jeter en cas de moisissure colorée ou duveteuse, ou d’odeur putride.",
+      "pH : 4,6 ou moins en 7 jours au plus, sinon jeter sans goûter ; avant une conservation longue, le seuil indiqué par la recette, 4,2 le plus souvent. Seules exceptions : les recettes très salées (kosho, citrons confits), protégées par le sel."
     ]
   },
   "salaison_entiere": {

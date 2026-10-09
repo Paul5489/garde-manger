@@ -1,11 +1,13 @@
-// Compatibilité (modes.json › cohabitation) : avec une recette choisie, pour un mois donné, ce qui peut partager la
-// chambre, ce qui se fait en parallèle hors de la chambre, et ce qui est incompatible, avec la raison en clair.
-//  - Partager la chambre : un mode commun (phases comprises), aucune paire d'étiquettes en conflit, et la somme des
-//    places (plus celles des lots déjà dans la chambre) qui ne dépasse pas la capacité.
-//  - Hors de la chambre : en parallèle, sans contrainte de mode.
-//  - Le thermoplongeur ne fait qu'une chose à la fois.
+// Compatibilité (07/10/2026) : elle ne dépend que du mode, plus du mois de lancement. Chaque recette de la chambre
+// donne sa liste (`partage.avec`, plus `partage.note`), chaque mode ses précautions (modes.json › partage).
+// Pour une recette cochée :
+//  - ce qui peut partager la chambre (sa liste), avec les précautions ;
+//  - ce qui se fait en parallèle hors de la chambre le mois choisi ;
+//  - ce qui est incompatible, avec la raison (règle de modes.json › cohabitation, qui a servi à faire les listes) ;
+//  - ce qui est déjà dans la chambre (lots en cours, place comprise) ou prévu au même moment (calendrier, étoiles).
+// Le thermoplongeur ne fait qu'une chose à la fois.
 
-import { CONTENU, mode as modeParId } from './donnees';
+import { CONTENU, mode as modeParId, recette as recetteParId } from './donnees';
 import { finPrevue, modeDuLot } from './lots';
 import type { IdMode, Lot, RecetteChambre } from './types';
 
@@ -30,6 +32,16 @@ export function conflits(a: RecetteChambre, b: RecetteChambre): string[] {
     if ((a.etiquettes.includes(x) && b.etiquettes.includes(y)) || (a.etiquettes.includes(y) && b.etiquettes.includes(x)))
       res.push(NOMS_CONFLITS[`${x}|${y}`] ?? `${CO.etiquettes[x]} / ${CO.etiquettes[y]}`);
   }
+  return res;
+}
+
+/** Pourquoi deux recettes de la chambre ne vont pas ensemble (vide : elles peuvent partager). */
+export function raisons(x: RecetteChambre, y: RecetteChambre): string[] {
+  const mx = modesDeLaRecette(x);
+  const my = modesDeLaRecette(y);
+  if (!mx.some((m) => my.includes(m))) return ['mode différent'];
+  const res = conflits(x, y);
+  if (arrondi(x.place + y.place) > CO.capacite) res.push('chambre pleine');
   return res;
 }
 
@@ -63,9 +75,21 @@ function thermoEnConflit(a: RecetteChambre, b: RecetteChambre): boolean {
 
 // ───── Résultat ─────
 
-export interface Incompatible {
+export interface Avec {
   recette: RecetteChambre;
   raisons: string[];
+}
+
+export interface Present {
+  lot: Lot;
+  /** Mode où le lot se trouve en ce moment. */
+  mode: IdMode;
+  raisons: string[];
+}
+
+export interface Prevu extends Avec {
+  /** D'après le calendrier (rendez-vous du mois), ou une recette marquée d'une étoile. */
+  source: 'calendrier' | 'programme';
 }
 
 export interface Compatibilite {
@@ -73,67 +97,106 @@ export interface Compatibilite {
   modes: IdMode[];
   /** Modes prévus au calendrier ce mois-là. */
   modesDuMois: IdMode[];
-  /** Part de la chambre déjà prise par les lots en cours, par mode. */
-  occupation: Partial<Record<IdMode, number>>;
+  /** Peut partager la chambre (liste de la recette ; si elle est hors chambre : ce qui y est prévu ce mois-là). */
+  partage: RecetteChambre[];
+  /** Précautions : celle de la recette, celles des recettes qui partagent, celles du mode. */
+  precautions: string[];
+  /** Ce qui va ensemble dans chaque mode (modes.json › partage). */
+  ensemble: string[];
+  parallele: RecetteChambre[];
+  incompatibles: Avec[];
+  /** Lots en cours, dans la chambre en ce moment. */
+  presents: Present[];
+  /** Part de la chambre déjà prise par les lots présents dans le mode de la recette. */
+  occupation: number;
+  prevus: Prevu[];
   /** Lot en cours qui occupe le thermoplongeur (garum, amazake…). */
   thermoPris?: Lot;
-  partage: RecetteChambre[];
-  parallele: RecetteChambre[];
-  incompatibles: Incompatible[];
-  /** La recette choisie elle-même ne tient pas (chambre pleine, thermoplongeur pris, mode absent ce mois-ci). */
   avertissements: string[];
 }
 
 const arrondi = (x: number) => Math.round(x * 100) / 100;
+const unique = (l: string[]) => [...new Set(l.filter(Boolean))];
 
-/** @param lots Lots en cours, qui occupent déjà la chambre : à ne passer que pour le mois en cours. */
-export function compatibilite(x: RecetteChambre, mois: number, lots: Lot[] = [], maintenant: Date | number = Date.now()): Compatibilite {
+/**
+ * @param lots Lots en cours (ce qui est déjà dans la chambre).
+ * @param etoiles Recettes prévues (« coppa@11 »).
+ */
+export function compatibilite(
+  x: RecetteChambre,
+  mois: number,
+  lots: Lot[] = [],
+  maintenant: Date | number = Date.now(),
+  etoiles: string[] = [],
+): Compatibilite {
   const modes = modesDeLaRecette(x);
-  const modesDuMois = [...new Set((CONTENU.calendrier.mois[String(mois)]?.chambre ?? []).map((s) => s.mode).filter((m): m is IdMode => m !== 'nettoyage'))];
+  const moisCal = CONTENU.calendrier.mois[String(mois)] ?? {};
+  const modesDuMois = [...new Set((moisCal.chambre ?? []).map((s) => s.mode).filter((m): m is IdMode => m !== 'nettoyage'))];
   const enCours = lots.filter((l) => l.statut === 'en-cours');
-  const occupation: Partial<Record<IdMode, number>> = {};
-  for (const l of enCours) {
-    const m = modeDuLot(l);
-    if (m && l.recetteId !== x.id) occupation[m] = arrondi((occupation[m] ?? 0) + l.recette.place);
-  }
   const thermoPris = enCours.find(
     (l) => l.recette.lieu === 'thermoplongeur' && finPrevue(l).max.getTime() > new Date(maintenant).getTime() && (usageThermoplongeur(l.recette) ?? 0) >= 1,
   );
+  const chambre = CONTENU.recettes.filter((r) => modesDeLaRecette(r).length);
+  const avec = new Set(x.partage?.avec ?? []);
+
+  // Peut partager : la liste de la recette (tous les mois). Hors chambre : ce qui est prévu dans la chambre ce mois-là.
+  const partage = modes.length
+    ? chambre.filter((r) => avec.has(r.id))
+    : chambre.filter((r) => r.mois?.includes(mois) && modesDeLaRecette(r).some((m) => modesDuMois.includes(m)));
+  const precautions = unique([
+    x.partage?.note ?? '',
+    ...partage.map((r) => r.partage?.note ?? ''),
+    ...modes.flatMap((m) => modeParId(m).partage?.precautions ?? []),
+  ]);
+  const ensemble = unique(modes.map((m) => modeParId(m).partage?.ensemble ?? ''));
+
+  // En parallèle hors de la chambre : recettes de saison ce mois-là (le thermoplongeur ne fait qu'une chose à la fois).
+  const parallele: RecetteChambre[] = [];
+  const incompatibles: Avec[] = [];
+  for (const y of CONTENU.recettes) {
+    if (y.id === x.id || modesDeLaRecette(y).length || !y.mois?.includes(mois)) continue;
+    if (usageThermoplongeur(y) !== undefined && (thermoEnConflit(x, y) || thermoPris)) incompatibles.push({ recette: y, raisons: ['thermoplongeur déjà pris'] });
+    else parallele.push(y);
+  }
+  // Incompatible dans la chambre : toutes les autres recettes de la chambre, avec la raison.
+  if (modes.length)
+    for (const y of chambre) if (y.id !== x.id && !avec.has(y.id)) incompatibles.push({ recette: y, raisons: raisons(x, y) });
+
+  // Déjà dans la chambre : lots en cours, avec leur mode du moment.
+  const presents: Present[] = [];
+  let occupation = 0;
+  for (const l of enCours) {
+    const m = modeDuLot(l);
+    if (!m) continue;
+    let r: string[] = [];
+    if (modes.length && l.recetteId !== x.id) {
+      if (!modes.includes(m)) r = [`mode différent (${modeParId(m).nom})`];
+      else if (!avec.has(l.recetteId)) r = conflits(x, l.recette).length ? conflits(x, l.recette) : ['pas dans sa liste'];
+    }
+    if (modes.includes(m)) occupation = arrondi(occupation + l.recette.place);
+    presents.push({ lot: l, mode: m, raisons: r });
+  }
+
+  // Prévu au même moment : rendez-vous du calendrier ce mois-là, et recettes marquées d'une étoile.
+  const prevus: Prevu[] = [];
+  const vus = new Set<string>();
+  const ajouterPrevu = (id: string, source: Prevu['source']) => {
+    const y = recetteParId(id);
+    if (!y || y.id === x.id || vus.has(id) || !modesDeLaRecette(y).length) return;
+    vus.add(id);
+    prevus.push({ recette: y, source, raisons: modes.length && !avec.has(id) ? raisons(x, y) : [] });
+  };
+  for (const e of moisCal.rendez_vous ?? []) for (const id of e.recettes) ajouterPrevu(id, 'calendrier');
+  for (const e of etoiles) {
+    const [id, mo] = e.split('@');
+    if (Number(mo) === mois) ajouterPrevu(id, 'programme');
+  }
 
   const avertissements: string[] = [];
-  for (const m of modes) {
-    if (!modesDuMois.includes(m)) avertissements.push(`Le mode ${modeParId(m).nom} n’est pas prévu au calendrier ce mois-ci.`);
-    else if (arrondi((occupation[m] ?? 0) + x.place) > CO.capacite) avertissements.push(`Chambre pleine en mode ${modeParId(m).nom}.`);
-  }
+  for (const m of modes) if (!modesDuMois.includes(m)) avertissements.push(`Le mode ${modeParId(m).nom} n’est pas prévu au calendrier ce mois-ci.`);
+  if (modes.length && arrondi(occupation + x.place) > CO.capacite)
+    avertissements.push(`Chambre pleine : les lots présents en prennent déjà ${Math.round(occupation * 100)} %.`);
   if (thermoPris && usageThermoplongeur(x) !== undefined) avertissements.push(`Thermoplongeur déjà pris (${thermoPris.nom}).`);
 
-  const res: Compatibilite = { modes, modesDuMois, occupation, thermoPris, partage: [], parallele: [], incompatibles: [], avertissements };
-  for (const y of CONTENU.recettes) {
-    if (y.id === x.id || !y.mois?.includes(mois)) continue;
-    const raisons: string[] = [];
-    if (usageThermoplongeur(y) !== undefined && (thermoEnConflit(x, y) || thermoPris)) raisons.push('thermoplongeur déjà pris');
-    const my = modesDeLaRecette(y);
-    if (!my.length) {
-      // Hors de la chambre : en parallèle.
-      if (raisons.length) res.incompatibles.push({ recette: y, raisons });
-      else res.parallele.push(y);
-      continue;
-    }
-    if (!modes.length) {
-      // La recette choisie se fait hors de la chambre : la chambre reste à ce qui y est prévu ce mois-ci.
-      if (!my.some((m) => modesDuMois.includes(m))) raisons.push('mode pas prévu ce mois-ci');
-      if (raisons.length) res.incompatibles.push({ recette: y, raisons });
-      else res.partage.push(y);
-      continue;
-    }
-    const communs = my.filter((m) => modes.includes(m));
-    if (!communs.length) raisons.push('mode différent');
-    else {
-      raisons.push(...conflits(x, y));
-      if (communs.every((m) => arrondi((occupation[m] ?? 0) + x.place + y.place) > CO.capacite)) raisons.push('chambre pleine');
-    }
-    if (raisons.length) res.incompatibles.push({ recette: y, raisons });
-    else res.partage.push(y);
-  }
-  return res;
+  return { modes, modesDuMois, partage, precautions, ensemble, parallele, incompatibles, presents, occupation, prevus, thermoPris, avertissements };
 }

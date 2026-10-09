@@ -1,13 +1,15 @@
 <script lang="ts">
   // Stock : les produits finis, triés par date limite, avec une alerte 7 jours avant.
-  import { CalendarPlus, Check, RotateCcw, Trash2 } from '@lucide/svelte';
+  import { CalendarPlus, Check, RotateCcw, Snowflake, Trash2 } from '@lucide/svelte';
+  import { annonce } from '../../lib/annonce.svelte';
+  import { recette } from '../donnees';
   import FeuilleRappels from '../composants/FeuilleRappels.svelte';
   import { evenementsStock } from '../ics';
   import { date } from '../../lib/format';
   import { lienChambre } from '../../lib/routeur.svelte';
   import { t } from '../affichage';
   import { chambre } from '../chambre.svelte';
-  import { etatStock } from '../lots';
+  import { congelationDuStock, conservationCongelateur, etatStock } from '../lots';
   import { lots } from '../lots.svelte';
   import { joursCalendaires } from '../temps';
   import type { ArticleStock } from '../types';
@@ -25,6 +27,16 @@
     if (j < 0) return `Dépassée depuis le ${date(a.limite)}`;
     if (j === 0) return 'À finir aujourd’hui';
     return j <= 7 ? `À finir dans ${j} jour${j > 1 ? 's' : ''} (${date(a.limite)})` : `Jusqu’au ${date(a.limite)}`;
+  }
+
+  const recetteDe = (a: ArticleStock) => lots.lot(a.lotId ?? '')?.recette ?? recette(a.recetteId);
+  const congelation = (a: ArticleStock) => congelationDuStock(a, recetteDe(a));
+
+  async function congeler(a: ArticleStock) {
+    const c = conservationCongelateur(a, recetteDe(a));
+    if (!c || !confirm(`Mettre « ${a.nom} » au congélateur aujourd'hui ? (Garde : ${c.duree}.)`)) return;
+    await lots.congeler(a.id);
+    annonce.afficher(`${a.nom} : au congélateur, ${c.duree}.`);
   }
 
   async function supprimer(a: ArticleStock) {
@@ -45,6 +57,16 @@
             <a href={a.lotId ? lienChambre('lot', a.lotId) : lienChambre('recette', a.recetteId)}><strong>{a.nom}</strong></a>
             <span class="petit discret">{a.conservation.mode} {t(a.conservation.comment)}{a.quantite ? ` · ${a.quantite}` : ''}</span>
             <span class="petit echeance">{echeance(a)}</span>
+            {#if a.conservation.mode !== 'Congélateur'}
+              {@const cg = congelation(a)}
+              <span class="petit congelateur">
+                Congélateur :
+                {#if !cg}?{:else if cg.possible === 'oui'}possible, {t(cg.duree ?? '')} — {t(cg.texte)}{:else}{cg.possible === 'non' ? 'non' : 'inutile'} — {t(cg.texte)}{/if}
+              </span>
+              {#if cg?.possible === 'oui'}
+                <button class="bouton secondaire congeler" onclick={() => congeler(a)}><Snowflake size={16} /> Mettre au congélateur</button>
+              {/if}
+            {/if}
           </div>
           <button class="bouton-icone" onclick={() => lots.stockFini(a.id)} aria-label="{a.nom} : fini"><Check size={20} /></button>
           <button class="bouton-icone" onclick={() => supprimer(a)} aria-label="Retirer {a.nom} du stock"><Trash2 size={18} /></button>
@@ -126,6 +148,19 @@
   .texte a {
     color: inherit;
     text-decoration: none;
+  }
+
+  .congelateur {
+    color: var(--texte-2);
+    margin-top: 2px;
+  }
+
+  .congeler {
+    align-self: flex-start;
+    min-height: 36px;
+    margin-top: 6px;
+    padding: 0 12px;
+    font-size: 15px;
   }
 
   .bientot .echeance {

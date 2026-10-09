@@ -15,7 +15,9 @@ import {
   finPrevue,
   passageSuivant,
   perteDePoids,
+  reglagesAFaire,
   type Occurrence,
+  type ReglageDuLot,
 } from './lots';
 import { lots } from './lots.svelte';
 import { modeActif, tachesDuJour, type DatesTaches, type ModeManuel, type Tache } from './taches';
@@ -24,8 +26,9 @@ import type { ArticleStock, IdMode, Lot } from './types';
 
 export interface ActionLot {
   lot: Lot;
-  type: 'controle' | 'phase' | 'fin' | 'bloque';
+  type: 'controle' | 'phase' | 'fin' | 'bloque' | 'jeter' | 'reglage';
   occ?: Occurrence;
+  reglage?: ReglageDuLot;
   /** Nom de la phase à commencer. */
   phase?: string;
 }
@@ -106,12 +109,23 @@ class Chambre {
     const res: ActionLot[] = [];
     const ce = finDuJour(this.maintenant);
     for (const lot of lots.enCours) {
-      if (etatPh(lot).bloque) res.push({ lot, type: 'bloque' });
+      const ph = etatPh(lot);
+      if (ph.bloque) res.push({ lot, type: 'bloque' });
+      if (ph.jeter) res.push({ lot, type: 'jeter' });
+      // Réglages de la chambre à faire (entrée en Cave, passage de l'IHC à 76 %, phase 2 du koji…).
+      const reglages = reglagesAFaire(lot, this.maintenant, this.heureRappels);
+      for (const reglage of reglages) res.push({ lot, type: 'reglage', reglage });
       for (const occ of aFaire(lot, this.maintenant, this.heureRappels)) res.push({ lot, type: 'controle', occ });
       const phases = lot.recette.phases ?? [];
       const suivante = phases[lot.phaseCourante + 1];
-      // Phase suivante à commencer (jamais en Cave tant que le pH du saucisson ne le permet pas).
-      if (suivante && debutsDesPhases(lot).min[lot.phaseCourante + 1] <= ce && passageSuivant(lot).possible)
+      // Phase suivante à commencer (jamais en Cave tant que le pH du saucisson ne le permet pas), sauf si son
+      // réglage d'entrée est déjà affiché.
+      if (
+        suivante &&
+        debutsDesPhases(lot).min[lot.phaseCourante + 1] <= ce &&
+        passageSuivant(lot).possible &&
+        !reglages.some((g) => g.entree && g.phase === lot.phaseCourante + 1)
+      )
         res.push({ lot, type: 'phase', phase: suivante.nom });
       else if (!suivante) {
         const perte = lot.recette.fin.type === 'perte_poids' ? perteDePoids(lot) : undefined;

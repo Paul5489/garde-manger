@@ -484,7 +484,14 @@
       ],
       "notes": [
         "Grand nettoyage après la campagne : les spores s’installent partout."
-      ]
+      ],
+      "partage": {
+        "ensemble": "Koji de riz et koji blé-soja peuvent partager la campagne d’avril. Passagers possibles : vinaigre de riz sous un tissu, pâtes à pain en boîte fermée.",
+        "precautions": [
+          "Jamais de viande ni de charcuterie : les spores du koji se déposent partout.",
+          "Grand nettoyage après la campagne."
+        ]
+      }
     },
     {
       "id": "sechage",
@@ -557,7 +564,14 @@
       "passagers": [],
       "notes": [
         "Test du bocal : 1 semaine en bocal fermé ; s’il se forme de la buée, remettre à sécher."
-      ]
+      ],
+      "partage": {
+        "ensemble": "Koji en poudre, piments en flocons, poudres de lacto et champignons séchés peuvent sécher ensemble.",
+        "precautions": [
+          "Les piments et les poudres de lacto sentent fort : pour un koji en poudre au goût parfaitement net, sèche-le d’abord, seul.",
+          "Une couche par grille, sans chevauchement."
+        ]
+      }
     },
     {
       "id": "biltong",
@@ -629,7 +643,14 @@
       "passagers": [],
       "notes": [
         "Le biltong est seul dans la chambre ; grand nettoyage juste après."
-      ]
+      ],
+      "partage": {
+        "ensemble": "Le biltong est seul dans la chambre.",
+        "precautions": [
+          "Son odeur de vinaigre et d’épices imprègne tout, et il prend toute la place.",
+          "Grand nettoyage juste après."
+        ]
+      }
     },
     {
       "id": "froid",
@@ -704,7 +725,16 @@
         "Saumures en boîte fermée",
         "Bacon pendant sa pellicule"
       ],
-      "notes": []
+      "notes": [],
+      "partage": {
+        "ensemble": "Côte de bœuf, faux-filet, magrets maturés, carré d’agneau, bacon, petit salé, jambon blanc, et coppa, guanciale et filet mignon pendant leur salage : tout peut aller ensemble, dans la limite de la place.",
+        "precautions": [
+          "Magrets sur la grille du bas : la volaille ne doit jamais goutter sur le reste.",
+          "Saumures en boîte fermée et sacs sous vide en bas.",
+          "Viandes maturées sur grille, sans se toucher ni toucher les parois.",
+          "Rien qui sente fort : ni lacto, ni fromage."
+        ]
+      }
     },
     {
       "id": "cave",
@@ -791,7 +821,16 @@
       "passagers": [],
       "notes": [
         "Les pièces ne se touchent pas. Une pesée par semaine."
-      ]
+      ],
+      "partage": {
+        "ensemble": "Coppa, guanciale, filet mignon, magret séché, saucissons, saucisses et rosette : tout peut sécher ensemble, dans la limite de la place.",
+        "precautions": [
+          "Les pièces ne se touchent pas.",
+          "Magrets séchés en bas.",
+          "Une pièce avec une moisissure verte, noire, rose ou duveteuse sort aussitôt : elle contaminerait les autres.",
+          "Chaque nouvelle entrée remet l’humidité à 80 % pour 3 semaines."
+        ]
+      }
     },
     {
       "id": "tempere",
@@ -868,7 +907,14 @@
       "notes": [
         "Ouvrir la porte 1 minute matin et soir : air frais pour les champignons, et le nuka se remue en même temps.",
         "Champignons dans un bac de fructification fermé et percé, avec de la perlite humide au fond."
-      ]
+      ],
+      "partage": {
+        "ensemble": "Fruits lacto, kimchi de concombre, pâte d’herbes, cornichons, salsa, ketchup, nukazuke, champignons dans leur bac, pâtes et levains : tout peut aller ensemble, dans la limite de la place.",
+        "precautions": [
+          "Tout reste fermé : bocaux, sacs, nukazuke sous son couvercle, champignons dans leur bac percé, pâtes en boîte.",
+          "Pour récolter les champignons, sors leur bac de la chambre : leurs spores se répandent."
+        ]
+      }
     },
     {
       "id": "pause",
@@ -908,7 +954,11 @@
       "passagers": [],
       "notes": [
         "Porte entrouverte et calée pour éviter odeurs et moisissures."
-      ]
+      ],
+      "partage": {
+        "ensemble": "",
+        "precautions": []
+      }
     }
   ],
   "nettoyage": {

@@ -1,8 +1,8 @@
 // Lots et stock de la chambre, en mémoire + Dexie (tables « lots » et « stock », sauvegardées).
 
 import { db, nouvelId } from '../lib/db';
-import { CONTENU } from './donnees';
-import { dateLimite, nouveauLot, type NouveauLot } from './lots';
+import { CONTENU, recette as recetteParId } from './donnees';
+import { conservationCongelateur, dateLimite, indexEntreeReglage, nouveauLot, type NouveauLot } from './lots';
 import type { ArticleStock, Conservation, ControleCoche, Lot, MesurePh, RecetteChambre } from './types';
 
 class Lots {
@@ -83,7 +83,10 @@ class Lots {
       const i = l.phaseCourante + 1;
       if (i >= l.phases.length) return l;
       const phases = l.phases.map((p, k) => (k === i ? { ...p, debut: le.toISOString(), ...(poids ? { poids } : {}) } : p));
-      return { ...l, phases, phaseCourante: i };
+      // L'étape de réglage « Entrée en mode … » est faite en même temps.
+      const r = indexEntreeReglage(l.recette, i);
+      const controles = r >= 0 ? { ...l.controles, [`reglage:${r}`]: { etat: 'ok' as const, le: new Date().toISOString() } } : l.controles;
+      return { ...l, phases, phaseCourante: i, controles };
     });
   }
 
@@ -91,7 +94,9 @@ class Lots {
     await this.#modifier(id, (l) => {
       if (l.phaseCourante === 0) return l;
       const phases = l.phases.map((p, k) => (k === l.phaseCourante ? {} : p));
-      return { ...l, phases, phaseCourante: l.phaseCourante - 1 };
+      const controles = { ...l.controles };
+      delete controles[`reglage:${indexEntreeReglage(l.recette, l.phaseCourante)}`];
+      return { ...l, phases, phaseCourante: l.phaseCourante - 1, controles };
     });
   }
 
@@ -112,6 +117,7 @@ class Lots {
         nom: l.nom,
         quantite: fin.quantite?.trim() || undefined,
         conservation: { ...fin.conservation },
+        congelation: l.recette.congelation ? { ...l.recette.congelation } : undefined,
         depuis: fin.le.toISOString(),
         limite: dateLimite(fin.le, fin.conservation),
         statut: 'en-stock',
@@ -140,6 +146,15 @@ class Lots {
   async stockFini(id: string, fini = true) {
     const a = this.stock.find((s) => s.id === id);
     if (a) await this.#ecrireStock({ ...a, statut: fini ? 'fini' : 'en-stock' });
+  }
+
+  /** Met un produit du stock au congélateur : nouvelle date limite comptée depuis aujourd'hui. */
+  async congeler(id: string, le: Date = new Date()) {
+    const a = this.stock.find((s) => s.id === id);
+    if (!a) return;
+    const conservation = conservationCongelateur(a, this.lot(a.lotId ?? '')?.recette ?? recetteParId(a.recetteId));
+    if (!conservation) return;
+    await this.#ecrireStock({ ...a, conservation, depuis: le.toISOString(), limite: dateLimite(le, conservation) });
   }
 
   async supprimerStock(id: string) {

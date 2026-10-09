@@ -223,6 +223,47 @@ export function verifierContenu(c: Contenu = CONTENU): Verification {
     for (const cs of r.conservation) if (!Number.isInteger(cs.jours)) E(`${id} : conservation sans nombre de jours`);
     for (const l of r.liens ?? []) if (!ids.has(l)) E(`${id} : lien vers une recette inconnue (${l})`);
     for (const ing of r.ingredients) if (typeof ing.qte !== 'number') E(`${id} : quantité non numérique (${ing.nom})`);
+    // Partage de la chambre : recettes connues, et réciproque.
+    for (const autre of r.partage?.avec ?? []) {
+      const x = c.recettes.find((y) => y.id === autre);
+      if (!x) E(`${id} : partage avec une recette inconnue (${autre})`);
+      else if (!x.partage?.avec.includes(id)) E(`${id} : partage non réciproque avec ${autre}`);
+    }
+    // Congélation : toujours renseignée, et cohérente avec la conservation.
+    const cg = r.congelation;
+    if (!cg || !['oui', 'non', 'inutile'].includes(cg.possible) || !cg.texte) E(`${id} : congélation non renseignée`);
+    else {
+      const entrees = r.conservation.filter((x) => x.mode === 'Congélateur');
+      if (cg.possible === 'oui' && (!entrees.length || entrees[0].jours !== cg.jours))
+        E(`${id} : congélation possible mais absente ou différente dans conservation`);
+      if (cg.possible !== 'oui' && entrees.length) E(`${id} : congélation ${cg.possible} mais présente dans conservation`);
+    }
+    // Réglages de la chambre, étape par étape.
+    const rg = r.reglages;
+    if (!rg?.resume || !rg.etapes?.length) E(`${id} : réglages absents`);
+    else {
+      const titres = new Set(r.etapes.map((e) => e.titre));
+      const vus = new Set<string>();
+      for (const st of rg.etapes) {
+        for (const k of ['j', 'quand', 'titre', 'mode', 'ihc_phase', 'actions', 'etape_recette'] as const)
+          if (!(k in st)) E(`${id} : étape de réglage sans ${k}`);
+        if (st.mode !== null) {
+          const md = m.modes.find((x) => x.id === st.mode);
+          if (!md) E(`${id} : réglage en mode inconnu ${st.mode}`);
+          else {
+            vus.add(st.mode);
+            if (st.ihc_phase === null || !(st.ihc_phase >= 0 && st.ihc_phase < md.ihc_phases.length)) E(`${id} : phase IHC invalide (${st.ihc_phase})`);
+          }
+        }
+        if (st.j === null && !titres.has(st.etape_recette ?? '')) E(`${id} : réglage sans jour ni étape de recette`);
+      }
+      const phasesModes = (r.phases ?? []).map((p) => p.mode).filter((x): x is IdMode => !!x);
+      const attendus = phasesModes.length ? phasesModes : r.lieu === 'chambre' && r.mode ? [r.mode] : [];
+      const manquants = attendus.filter((x) => !vus.has(x));
+      if (manquants.length) E(`${id} : réglages sans le mode ${manquants.join(', ')}`);
+    }
+    if (r.ph && r.ph.securite !== null && !(r.ph.securite >= 2.5 && r.ph.securite <= 4.6))
+      E(`${id} : seuil de pH hors de 2,5 à 4,6 (${nb(r.ph.securite)})`);
     const texte = JSON.stringify(r).toLowerCase();
     for (const mot of ['nitrit', 'nitrat', 'poudre de céleri', 'céleri en poudre', 'curing salt', 'prague'])
       for (let k = texte.indexOf(mot); k >= 0; k = texte.indexOf(mot, k + 1)) {

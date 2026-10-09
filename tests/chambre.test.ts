@@ -10,7 +10,7 @@ import {
   modePrevu,
   prochainsChangements,
 } from '../src/chambre/calendrier';
-import { compatibilite, conflits, modesDeLaRecette, usageThermoplongeur } from '../src/chambre/compatibilite';
+import { compatibilite, conflits, modesDeLaRecette, raisons, usageThermoplongeur } from '../src/chambre/compatibilite';
 import { CONTENU, mode, recette, verifierContenu, type Contenu } from '../src/chambre/donnees';
 import { evenementsChambre, evenementsLot, evenementsStock, fichierIcsChambre, regleRepetition } from '../src/chambre/ics';
 import {
@@ -38,10 +38,15 @@ import {
   passageSuivant,
   perteDePoids,
   poidsDemande,
+  congelationDuStock,
+  conservationCongelateur,
+  indexEntreeReglage,
+  reglagesAFaire,
+  reglagesDuLot,
   type NouveauLot,
 } from '../src/chambre/lots';
 import { modeActif, rythmeReservoir, tachesDuJour, type DatesTaches } from '../src/chambre/taches';
-import type { MesurePh } from '../src/chambre/types';
+import type { Lot, MesurePh } from '../src/chambre/types';
 import { apres, joursCalendaires } from '../src/chambre/temps';
 
 const d = (mois: number, jour: number, h = 12, min = 0, annee = mois >= 10 ? 2026 : 2027) => new Date(annee, mois - 1, jour, h, min);
@@ -288,7 +293,8 @@ describe('fiches des recettes', () => {
     expect(dureeLisible(70)).toBe('10 semaines');
     expect(dureeLisible(180, 365)).toBe('6 à 12 mois');
     expect(cibleDuPh(r('cepes'))?.valeur).toBe(4.2);
-    expect(cibleDuPh(r('kimchi'))?.valeur).toBe(4.2);
+    expect(cibleDuPh(r('kimchi'))).toMatchObject({ valeur: 4.6, pret: '4,2 à 4,5' });
+    expect(cibleDuPh(r('kosho'))?.valeur).toBeNull(); // protégé par le sel
     expect(cibleDuPh(r('saucisson'))?.valeur).toBe(5.3);
     expect(cibleDuPh(r('vinriz'))).toBeUndefined();
   });
@@ -373,9 +379,21 @@ describe('lots', () => {
     expect(poidsDemande(l.recette, 1)).toBe(true);
   });
 
-  it('cible de pH des autres lots, sans blocage', () => {
+  it('pH des lacto : seuil de la recette, « Jeter, sans goûter » au-dessus de 4,6 après le délai (5 jours pour le kimchi)', () => {
+    const mesure = (l: Lot, valeur: number, jours: number) => ({
+      ...l,
+      ph: [{ le: apres(l.entree, jours).toISOString(), valeur, moment: 'libre' as const }],
+    });
     const k = lot('kimchi', d(10, 20, 18));
-    expect(etatPh(k)).toMatchObject({ bloque: false, peutPasserEnCave: true, cible: { valeur: 4.2 } });
+    expect(etatPh(k)).toMatchObject({ bloque: false, jeter: false, cible: { valeur: 4.6 } });
+    expect(etatPh(mesure(k, 4.4, 2))).toMatchObject({ atteinte: true, jeter: false });
+    expect(etatPh(mesure(k, 4.8, 3))).toMatchObject({ atteinte: false, jeter: false });
+    expect(etatPh(mesure(k, 4.8, 5))).toMatchObject({ jeter: true });
+    const c = lot('choucroute', d(10, 20, 18));
+    expect(etatPh(mesure(c, 4.4, 5)).atteinte).toBe(false); // seuil 4,2 avant le frigo
+    expect(etatPh(mesure(c, 4.8, 6)).jeter).toBe(false);
+    expect(etatPh(mesure(c, 4.8, 7)).jeter).toBe(true);
+    expect(etatPh(mesure(lot('kosho', d(10, 20, 18)), 5.5, 20)).jeter).toBe(false); // le sel protège
   });
 
   it('début de la vague de Cave : dernière entrée d’un lot en Cave', () => {
@@ -402,10 +420,10 @@ describe('rappels pour le Calendrier (.ics)', () => {
     return nouveauLot(rec, CONTENU.techniques.salaison_entiere, { entree: d(11, 28, 10), quantiteBase: 1500 }, 'lot1');
   };
 
-  it('un lot : contrôles (répétés en une seule entrée), début de la phase suivante, fin ; UID stables', () => {
+  it('un lot : contrôles (répétés en une seule entrée), réglages, fin ; UID stables', () => {
     const ev = evenementsLot(coppa(), d(11, 28, 11));
     const uids = ev.map((e) => e.uid);
-    expect(uids).toContain('lot1-phase-1');
+    expect(uids).toContain('lot1-reglage:1'); // entrée en Cave
     expect(uids).toContain('lot1-fin');
     const pesee = ev.find((e) => e.titre === '⚖️ Coppa : Pesée')!;
     expect(pesee.debut).toEqual(d(12, 26, 8));
@@ -426,7 +444,7 @@ describe('rappels pour le Calendrier (.ics)', () => {
     expect(regleRepetition(0.5, 4)).toBe('FREQ=HOURLY;INTERVAL=12;COUNT=4');
     const ics = fichierIcsChambre(evenementsLot(coppa(), d(11, 28, 11)), 42, new Date(Date.UTC(2026, 10, 28)));
     expect(ics.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true);
-    expect(ics).toContain('UID:lot1-phase-1@garde-manger-chambre');
+    expect(ics).toContain('UID:lot1-reglage:1@garde-manger-chambre');
     expect(ics).toContain('SEQUENCE:42');
     expect(ics).toContain('RRULE:FREQ=DAILY;INTERVAL=7;COUNT=');
     expect(ics).toContain('DTSTART:20261226T080000');
@@ -463,40 +481,67 @@ describe('rappels pour le Calendrier (.ics)', () => {
 describe('compatibilité', () => {
   const r = (id: string) => recette(id)!;
   const ids = (l: { id: string }[]) => l.map((x) => x.id);
-
-  it('novembre, côte de bœuf maturée : Froid partagé, choux et pleurotes en parallèle, séchage écarté', () => {
-    const c = compatibilite(r('cote'), 11);
-    expect(c.modes).toEqual(['froid']);
-    for (const id of ['fauxfilet', 'bacon', 'jambon', 'coppa', 'guanciale', 'filetmignon', 'petitsale']) expect(ids(c.partage), id).toContain(id);
-    for (const id of ['choucroute', 'kimchi', 'suancai', 'cepes', 'pleurotes']) expect(ids(c.parallele), id).toContain(id);
-    for (const id of ['kojipoudre', 'champseches', 'pimentsflocons']) {
-      const inc = c.incompatibles.find((i) => i.recette.id === id);
-      expect(inc?.raisons, id).toEqual(['mode différent']);
-    }
-    expect(c.avertissements).toEqual([]);
+  const nouveau = (id: string, entree: Date, maj: Partial<Lot> = {}) => ({
+    ...nouveauLot(structuredClone(r(id)), undefined, { entree, quantiteBase: r(id).base.quantite }, `lot-${id}`),
+    ...maj,
   });
 
-  it('raisons en clair : odeur forte et viande, spores et charcuterie, chambre pleine, thermoplongeur', () => {
+  it('côte de bœuf : la liste de partage, quel que soit le mois, avec la précaution des magrets', () => {
+    const c = compatibilite(r('cote'), 11);
+    expect(c.modes).toEqual(['froid']);
+    expect(ids(c.partage).sort()).toEqual(['agneau', 'bacon', 'coppa', 'fauxfilet', 'filetmignon', 'guanciale', 'jambon', 'magretsmatures', 'petitsale']);
+    expect(c.precautions.join(' ')).toMatch(/[Mm]agrets sur la grille du bas|grille du bas/);
+    // En novembre : la séance choux et les pleurotes en parallèle, le séchage écarté.
+    for (const id of ['choucroute', 'kimchi', 'suancai', 'cepes', 'pleurotes']) expect(ids(c.parallele), id).toContain(id);
+    for (const id of ['kojipoudre', 'champseches', 'pimentsflocons'])
+      expect(c.incompatibles.find((i) => i.recette.id === id)?.raisons, id).toEqual(['mode différent']);
+    // Le mois ne change rien à la liste de partage.
+    expect(ids(compatibilite(r('cote'), 4).partage).sort()).toEqual(ids(c.partage).sort());
+  });
+
+  it('chaque incompatibilité a sa raison, et les listes suivent la règle de cohabitation', () => {
+    for (const x of CONTENU.recettes.filter((y) => modesDeLaRecette(y).length)) {
+      const c = compatibilite(x, 11);
+      for (const i of c.incompatibles) expect(i.raisons.length, `${x.id} / ${i.recette.id}`).toBeGreaterThan(0);
+      for (const y of c.partage) expect(raisons(x, y), `${x.id} / ${y.id}`).toEqual([]);
+    }
     const viande = { ...r('cote'), etiquettes: ['sensible_odeur', 'sensible_spores'] };
-    const odeur = { ...r('cote'), id: 'test-odeur', etiquettes: ['odeur_forte'] };
-    const spores = { ...r('cote'), id: 'test-spores', etiquettes: ['spores'] };
-    expect(conflits(viande, odeur)).toEqual(['odeur forte et viande']);
-    expect(conflits(spores, viande)).toEqual(['spores et charcuterie']);
-    // Chambre pleine : un lot de jambon (0,3) déjà en Froid, plus une recette qui prend 0,8.
-    const jambon = nouveauLot(structuredClone(r('jambon')), undefined, { entree: d(11, 12, 10), quantiteBase: 2500 }, 'j');
+    expect(conflits(viande, { ...r('cote'), etiquettes: ['odeur_forte'] })).toEqual(['odeur forte et viande']);
+    expect(conflits({ ...r('cote'), etiquettes: ['spores'] }, viande)).toEqual(['spores et charcuterie']);
+    expect(raisons(r('biltong'), r('cote'))).toEqual(['mode différent']);
+  });
+
+  it('déjà dans la chambre : lots présents, leur mode du moment, la place', () => {
+    const jambon = nouveau('jambon', d(11, 12, 10));
+    const saucisson = nouveau('saucisson', d(11, 1, 10), { phaseCourante: 1, phases: [{}, { debut: d(11, 3, 10).toISOString(), poids: 2000 }] });
+    const c = compatibilite(r('cote'), 11, [jambon, saucisson], d(11, 15));
+    expect(c.presents.map((p) => [p.lot.recetteId, p.mode, p.raisons])).toEqual([
+      ['jambon', 'froid', []],
+      ['saucisson', 'cave', ['mode différent (Cave · charcuterie)']],
+    ]);
+    expect(c.occupation).toBe(0.3);
+    expect(c.avertissements).toEqual([]);
     const grosse = { ...r('cote'), place: 0.8 };
-    const c = compatibilite(grosse, 11, [jambon], d(11, 15));
-    expect(c.occupation.froid).toBe(0.3);
-    expect(c.avertissements).toEqual(['Chambre pleine en mode Froid · maturation.']);
-    expect(c.incompatibles.find((i) => i.recette.id === 'fauxfilet')?.raisons).toEqual(['chambre pleine']);
-    // Thermoplongeur : le garum le prend 10 semaines.
+    expect(compatibilite(grosse, 11, [jambon], d(11, 15)).avertissements).toEqual(['Chambre pleine : les lots présents en prennent déjà 30 %.']);
+  });
+
+  it('prévu au même moment : calendrier du mois et étoiles', () => {
+    const c = compatibilite(r('kojipoudre'), 11, [], d(11, 2), ['saucisson@11']);
+    const cote = c.prevus.find((p) => p.recette.id === 'cote')!;
+    expect([cote.source, cote.raisons]).toEqual(['calendrier', ['mode différent']]);
+    expect(c.prevus.find((p) => p.recette.id === 'saucisson')?.source).toBe('programme');
+    expect(c.prevus.find((p) => p.recette.id === 'pimentsflocons')?.raisons).toEqual([]);
+  });
+
+  it('thermoplongeur : une seule chose à la fois', () => {
     expect(usageThermoplongeur(r('garum'))).toBe(70);
     expect(usageThermoplongeur(r('jambon'))).toBe(0.5);
     expect(usageThermoplongeur(r('ketchup'))).toBeUndefined(); // pasteurisation en option
-    const garum = nouveauLot(structuredClone(r('garum')), undefined, { entree: d(10, 20, 10), quantiteBase: 1000 }, 'g');
-    const avecGarum = compatibilite(r('cote'), 11, [garum], d(11, 15));
-    expect(avecGarum.thermoPris?.id).toBe('g');
-    expect(avecGarum.incompatibles.find((i) => i.recette.id === 'jambon')?.raisons).toEqual(['thermoplongeur déjà pris']);
+    const garum = nouveau('garum', d(10, 20, 10));
+    const c = compatibilite(r('kimchi'), 11, [garum], d(11, 15));
+    expect(c.thermoPris?.recetteId).toBe('garum');
+    const amazake = recette('amazake')!;
+    if (amazake.mois?.includes(11)) expect(c.incompatibles.find((i) => i.recette.id === 'amazake')?.raisons).toEqual(['thermoplongeur déjà pris']);
   });
 
   it('une recette hors de la chambre laisse la chambre à ce qui y est prévu ce mois-là', () => {
@@ -511,5 +556,91 @@ describe('compatibilité', () => {
     expect(modesDeLaRecette(r('coppa'))).toEqual(['froid', 'cave']);
     expect(modesDeLaRecette(r('saucisson'))).toEqual(['cave']);
     expect(modesDeLaRecette(r('kimchi'))).toEqual([]);
+  });
+});
+
+describe('réglages de la chambre, étape par étape', () => {
+  const lotDe = (id: string, entree: Date) => {
+    const rec = structuredClone(recette(id)!);
+    return nouveauLot(rec, rec.technique ? CONTENU.techniques[rec.technique] : undefined, { entree, quantiteBase: rec.base.quantite }, 'lot');
+  };
+  const resume = (l: Lot) => reglagesDuLot(l).map((g) => [g.etape.j, g.etape.mode, g.etape.ihc_phase, g.quand]);
+
+  it('coppa démarrée le 28 novembre : jour 0 Froid, jour 21 entrée en Cave à 80 %, jour 42 à 76 %', () => {
+    const l = lotDe('coppa', d(11, 28, 10));
+    expect(resume(l)).toEqual([
+      [0, 'froid', 0, d(11, 28, 10)],
+      [21, 'cave', 0, d(12, 19, 8)],
+      [42, 'cave', 1, d(1, 9, 8)],
+      [77, null, null, d(2, 13, 8)],
+    ]);
+    // Le 19 décembre : l'entrée en Cave est à faire (le salage se termine) ; rien d'autre.
+    expect(reglagesAFaire(l, d(12, 19, 12)).map((g) => g.etape.titre)).toEqual(['Entrée en mode Cave']);
+    // Salage prolongé : entrée réelle le 22 décembre à 15 h ; les 76 % suivent, 3 semaines plus tard.
+    const enCave = { ...l, phaseCourante: 1, phases: [{}, { debut: d(12, 22, 15).toISOString(), poids: 1400 }], controles: { 'reglage:1': { etat: 'ok' as const, le: '' } } };
+    expect(resume(enCave).slice(1, 3)).toEqual([
+      [21, 'cave', 0, d(12, 22, 15)],
+      [42, 'cave', 1, d(1, 12, 8)],
+    ]);
+    expect(reglagesAFaire(enCave, d(1, 11, 12))).toEqual([]);
+    expect(reglagesAFaire(enCave, d(1, 12, 9)).map((g) => g.etape.titre)).toEqual(['Humidité à 76 %']);
+    expect(indexEntreeReglage(l.recette, 1)).toBe(1);
+  });
+
+  it('koji de riz : passage de l’IHC en phase 2 vers 18–20 h, à l’heure exacte', () => {
+    const l = lotDe('kojiriz', d(10, 15, 18));
+    const p2 = reglagesDuLot(l).find((g) => g.etape.ihc_phase === 1)!;
+    expect(p2.quand).toEqual(new Date(d(10, 15, 18).getTime() + Math.round(0.79 * 1440) * 60_000));
+    expect(p2.exacte).toBe(true);
+    expect(reglagesAFaire(l, d(10, 16, 13)).map((g) => g.etape.titre)).toEqual(['Phase 2 de l’IHC']);
+  });
+
+  it('saucisson : l’entrée en Cave attend le pH', () => {
+    const l = lotDe('saucisson', d(1, 10, 18));
+    expect(reglagesAFaire(l, d(1, 12, 20))).toEqual([]);
+    const bon = { ...l, ph: [{ le: d(1, 12, 18).toISOString(), valeur: 5.2, moment: '48h' as const }] };
+    expect(reglagesAFaire(bon, d(1, 12, 20)).map((g) => g.etape.titre)).toEqual(['Entrée en mode Cave']);
+  });
+
+  it('les réglages des lots vont aussi dans le Calendrier', () => {
+    const titres = evenementsLot(lotDe('coppa', d(11, 28, 10)), d(11, 28, 11)).map((e) => e.titre);
+    expect(titres).toContain('⚙️ Coppa : Entrée en mode Cave');
+    expect(titres).toContain('⚙️ Coppa : Humidité à 76 %');
+    expect(titres).not.toContain('➡️ Coppa : commencer « Séchage »'); // remplacé par le réglage d'entrée
+  });
+});
+
+describe('congélation', () => {
+  it('chaque recette dit si on peut congeler, et le stock en garde la ligne', () => {
+    for (const x of CONTENU.recettes) {
+      expect(['oui', 'non', 'inutile'], x.id).toContain(x.congelation.possible);
+      const ligne = x.conservation.find((c) => c.mode === 'Congélateur');
+      if (x.congelation.possible === 'oui') expect(ligne?.jours, x.id).toBe(x.congelation.jours);
+      else expect(ligne, x.id).toBeUndefined();
+    }
+    const coppa = recette('coppa')!;
+    const a = { id: 's', recetteId: 'coppa', nom: 'Coppa', conservation: coppa.conservation[0], congelation: coppa.congelation, depuis: '', statut: 'en-stock' as const, modifieLe: 0 };
+    expect(conservationCongelateur(a, coppa)).toMatchObject({ mode: 'Congélateur', jours: 180 });
+    const poudre = recette('kojipoudre')!;
+    expect(conservationCongelateur({ ...a, recetteId: 'kojipoudre', congelation: undefined }, poudre)).toBeUndefined();
+    expect(congelationDuStock({ ...a, congelation: undefined }, poudre)?.possible).toBe('inutile');
+  });
+});
+
+describe('nouvelles vérifications des données', () => {
+  it('partage réciproque, congélation, réglages, seuil de pH', () => {
+    const c = structuredClone(CONTENU) as Contenu;
+    const cote = c.recettes.find((x) => x.id === 'cote')!;
+    const coppa = c.recettes.find((x) => x.id === 'coppa')!;
+    const kimchi = c.recettes.find((x) => x.id === 'kimchi')!;
+    c.recettes.find((x) => x.id === 'fauxfilet')!.partage!.avec = c.recettes.find((x) => x.id === 'fauxfilet')!.partage!.avec.filter((y) => y !== 'cote');
+    coppa.congelation = { ...coppa.congelation, jours: 90 };
+    cote.reglages.etapes[0].ihc_phase = 5;
+    kimchi.ph!.securite = 5;
+    const { erreurs } = verifierContenu(c);
+    expect(erreurs).toContain('cote : partage non réciproque avec fauxfilet');
+    expect(erreurs).toContain('coppa : congélation possible mais absente ou différente dans conservation');
+    expect(erreurs).toContain('cote : phase IHC invalide (5)');
+    expect(erreurs).toContain('kimchi : seuil de pH hors de 2,5 à 4,6 (5)');
   });
 });

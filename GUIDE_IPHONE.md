@@ -231,8 +231,12 @@ elle s'ajoute à « Mon programme ».
 - le matériel à cocher ;
 - le **calculateur** : pèse l'ingrédient de base (ex. le riz du koji), saisis son poids, toutes les quantités se
   recalculent (au gramme, au dixième sous 10 g ; « environ » pour les gousses, brins, pièces…) ;
-- les étapes, les contrôles (jour par jour, ceux de la technique puis ceux de la recette), la conservation, les
-  notes et les recettes liées.
+- les étapes, les **réglages de la chambre étape par étape** (le mode, la phase de l'IHC, les gestes ; « Toutes
+  les valeurs » montre les codes ITC et IHC, les prises, le thermostat, le ventilateur, le réservoir, le bac de sel,
+  la sonde), les contrôles (jour par jour, ceux de la technique puis ceux de la recette) ;
+- pour les lacto, le **pH** : le seuil, le pH habituel quand c'est prêt, et une note ;
+- la conservation, avec toujours une ligne **Congélateur** (oui avec la durée et la façon de faire, ou non /
+  inutile avec la raison), les notes et les recettes liées.
 
 **Matériel** (tuile Matériel) : les achats par échéance, à cocher, et le matériel des recettes prévues (★).
 
@@ -248,14 +252,22 @@ elle s'ajoute à « Mon programme ».
   avec la date et le poids d'entrée en Cave.
 - **Perte de poids** : note chaque pesée ; l'appli trace la courbe, la cible et la fin estimée d'après les
   dernières pesées, et te dit quand la cible est atteinte.
+- **Réglages de la chambre** : chaque étape a sa date dans le lot (elle suit la vraie entrée en Cave si le salage ou
+  l'étuvage a duré plus longtemps). Le jour venu, « **Réglage à faire** » avec toutes les valeurs : si le mode
+  change, un bouton lance l'assistant ; sinon, il n'y a qu'à vérifier ou changer l'IHC. En Cave, si une autre pièce
+  est entrée depuis moins de 3 semaines, l'appli te dit de garder 80 %.
 - **pH** du saucisson (sur la saucisse témoin) : au départ, à 48 h, à 72 h. Encore au-dessus de 5,3 à 72 h :
   « **Ne pas sécher** : cuire en saucisses fraîches dans les 24 h, ou jeter. » en rouge, et le passage en Cave
-  est bloqué. Pour les autres lots, le pH est facultatif et la cible s'affiche (4,2 pour les lacto).
+  est bloqué.
+- **pH des lacto** : chaque mesure est comparée au seuil de la recette. Encore au-dessus de 4,6 après 7 jours de
+  fermentation (5 jours pour les kimchis) : « **Jeter, sans goûter** » en rouge. Pas de seuil pour le kosho, les
+  citrons confits et le nukazuke : c'est le sel qui les protège.
 - **Terminer le lot** : choisis la conservation et la quantité : il va dans le **Stock** avec sa date limite.
   « Raté, ou jeté » le termine sans stock.
 
 **Stock** (tuile Stock) : tes produits, du plus pressé au moins pressé, en orange 7 jours avant la date limite, en
-rouge si elle est dépassée. ✓ quand c'est fini.
+rouge si elle est dépassée. ✓ quand c'est fini. Chaque produit a sa ligne **Congélateur** ; si c'est possible,
+**Mettre au congélateur** : la nouvelle date limite se compte depuis le jour où tu le congèles.
 
 L'écran Chambre reprend tout ça dans **Aujourd'hui** (contrôles, phase à commencer, fin d'un lot, sauvegarde du
 mois) et **Bientôt** (lots qui finissent, produits à finir).
@@ -277,12 +289,16 @@ ce qu'il y a à faire aujourd'hui. Pour l'avoir aussi sur l'**icône** de l'appl
 **Autoriser la pastille** (l'iPhone demande d'autoriser les notifications ; aucune n'est envoyée).
 
 **Compatibilité** : quand tu mets une ★ à une recette (calendrier ou fiche), l'appli propose **Ce qui va avec**
-(aussi : bouton « Ce qui va avec » sur la fiche, ou l'icône à gauche de l'étoile dans le calendrier). Trois listes
-pour le mois choisi :
-1. ce qui peut **partager la chambre** (même mode, pas de conflit, assez de place, lots déjà en cours compris) ;
-2. ce qui se fait **en parallèle, hors de la chambre** (cuisine, frigo, placard…) ;
-3. ce qui est **incompatible**, avec la raison : « mode différent », « odeur forte et viande », « spores et
-   charcuterie », « chambre pleine », « thermoplongeur déjà pris » (le garum le prend 10 semaines).
+(aussi : bouton « Ce qui va avec » sur la fiche, ou l'icône à gauche de l'étoile dans le calendrier). Elle ne
+dépend que du mode, plus du mois de lancement (la côte de bœuf de novembre et les magrets de décembre se
+retrouvent ensemble en décembre) :
+- **Déjà dans la chambre** : tes lots en cours, compatibles ✓ ou non ✗, et la place qui reste ;
+- **Prévu au même moment** : ce que le calendrier prévoit ce mois-là, et tes recettes ★ ;
+- **Peut partager la chambre** : la liste de la recette, avec les **précautions** (« magrets sur la grille du
+  bas »…) ;
+- **En parallèle, hors de la chambre** ce mois-là (cuisine, frigo, placard…) ;
+- **Incompatible**, avec la raison : « mode différent », « odeur forte et viande », « spores et charcuterie »,
+  « chambre pleine », « thermoplongeur déjà pris » (le garum le prend 10 semaines).
 
 ## 9. Sauvegarder mes données personnelles
 

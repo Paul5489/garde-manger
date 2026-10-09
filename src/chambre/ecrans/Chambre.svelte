@@ -142,13 +142,24 @@
         </li>
       {/if}
       {#each actionsLots as a, i (`${a.lot.id}-${a.type}-${a.occ?.cle ?? i}`)}
-        <li class:bloque={a.type === 'bloque'}>
+        <li class:bloque={a.type === 'bloque' || a.type === 'jeter'}>
           <a href={lienChambre('lot', a.lot.id)}>
-            <span class="pictogramme" aria-hidden="true">{a.type === 'bloque' ? '⛔' : a.type === 'phase' ? '➡️' : a.type === 'fin' ? '🏁' : a.occ?.type === 'pesee' ? '⚖️' : a.occ?.type === 'ph' ? '🧪' : '👀'}</span>
+            <span class="pictogramme" aria-hidden="true"
+              >{a.type === 'bloque' || a.type === 'jeter' ? '⛔' : a.type === 'reglage' ? '⚙️' : a.type === 'phase' ? '➡️' : a.type === 'fin' ? '🏁' : a.occ?.type === 'pesee' ? '⚖️' : a.occ?.type === 'ph' ? '🧪' : '👀'}</span
+            >
             <span class="texte">
               {#if a.type === 'bloque'}
                 <span><strong>{a.lot.nom}</strong> : ne pas sécher</span>
                 <span class="petit">Cuire en saucisses fraîches dans les 24 h, ou jeter.</span>
+              {:else if a.type === 'jeter'}
+                <span><strong>{a.lot.nom}</strong> : jeter, sans goûter</span>
+                <span class="petit">pH encore au-dessus de 4,6 après le délai de fermentation.</span>
+              {:else if a.type === 'reglage' && a.reglage}
+                {@const g = a.reglage}
+                <span>Réglage à faire : <strong>{t(g.etape.titre)}</strong></span>
+                <span class="petit discret">
+                  {a.lot.nom} · {g.etape.mode && g.etape.mode !== actif.id ? `passer en mode ${modeParId(g.etape.mode).nom}` : 'même mode, vérifier les valeurs'}
+                </span>
               {:else if a.type === 'phase'}
                 <span>{a.lot.nom} : commencer <strong>{a.phase}</strong></span>
                 <span class="petit discret">Prévu à partir d'aujourd'hui</span>

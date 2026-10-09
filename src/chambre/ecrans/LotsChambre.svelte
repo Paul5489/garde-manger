@@ -21,7 +21,8 @@
     const perte = l.recette.fin.type === 'perte_poids' ? perteDePoids(l) : undefined;
     const fin = finPrevue(l);
     const phase = l.recette.phases?.[l.phaseCourante]?.nom;
-    return { mode, dus, prochain, perte, fin, phase, bloque: etatPh(l).bloque };
+    const ph = etatPh(l);
+    return { mode, dus, prochain, perte, fin, phase, bloque: ph.bloque, jeter: ph.jeter };
   }
 </script>
 
@@ -47,6 +48,7 @@
               </span>
               <span class="petit">
                 {#if x.bloque}<span class="rouge">Ne pas sécher</span>
+                {:else if x.jeter}<span class="rouge">Jeter, sans goûter</span>
                 {:else if x.dus}<span class="a-faire">{pluriel(x.dus, 'contrôle')} à faire</span>
                 {:else if x.prochain}Prochain contrôle le {dateCourte(x.prochain.quand)}{/if}
                 {#if x.perte} · perte {nombre(x.perte.pct, 1)}&nbsp;%{x.perte.cible !== undefined ? ` / ${x.perte.cible} %` : ''}{/if}

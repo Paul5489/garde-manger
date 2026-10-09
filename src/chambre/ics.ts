@@ -6,7 +6,7 @@
 import { dateLocaleIcs, dateUtcIcs, plier, texteIcs } from '../lib/bocaux';
 import { debutPeriode, modePrevu, type ModeOuNettoyage } from './calendrier';
 import { mode as modeParId } from './donnees';
-import { debutsDesPhases, etatPh, finPrevue, occurrences, type Occurrence } from './lots';
+import { debutsDesPhases, etatPh, finPrevue, occurrences, reglagesDuLot, type Occurrence } from './lots';
 import { transition } from './assistant';
 import { VAGUE_CAVE_J, type DatesTaches } from './taches';
 import { aHeure, apres, minuit } from './temps';
@@ -71,8 +71,9 @@ function descriptionControle(o: Occurrence): string {
  * répétition pour un contrôle qui revient), le début de la phase suivante et la fin.
  */
 export function evenementsLot(lot: Lot, maintenant: Date | number = Date.now(), heureRappels = 8): EvenementIcs[] {
-  // Lot terminé, ou saucisson à ne pas sécher (pH trop haut à 72 h) : plus de rappels.
-  if (lot.statut !== 'en-cours' || etatPh(lot).bloque) return [];
+  // Lot terminé, saucisson à ne pas sécher (pH trop haut à 72 h) ou lacto à jeter : plus de rappels.
+  const ph = etatPh(lot);
+  if (lot.statut !== 'en-cours' || ph.bloque || ph.jeter) return [];
   const seuil = new Date(maintenant).getTime();
   const res: EvenementIcs[] = [];
   const parSerie = new Map<string, Occurrence[]>();
@@ -91,10 +92,27 @@ export function evenementsLot(lot: Lot, maintenant: Date | number = Date.now(), 
       rrule: pas && occ.length > 1 ? regleRepetition(pas, occ.length) : undefined,
     });
   }
+  // Réglages de la chambre à changer (dans un mode de la chambre, après le démarrage).
+  const entreesReglees = new Set<number>();
+  for (const g of reglagesDuLot(lot, heureRappels)) {
+    if (g.coche || !g.quand || !g.etape.mode || g.etape.j === 0 || g.quand.getTime() <= seuil) continue;
+    if (g.entree) entreesReglees.add(g.phase);
+    const m = modeParId(g.etape.mode);
+    const ph = g.etape.ihc_phase !== null ? m.ihc_phases[g.etape.ihc_phase] : undefined;
+    res.push({
+      uid: `${lot.id}-${g.cle}`,
+      titre: `⚙️ ${lot.nom} : ${g.etape.titre}`,
+      debut: g.quand,
+      description: [
+        `Mode ${m.nom}${ph ? ` · IHC : HS ${ph.HS} %, DD ${ph.DD} %, AH ${ph.AH} %, AL ${ph.AL} %` : ''}.`,
+        ...g.etape.actions,
+      ].join('\n'),
+    });
+  }
   const courte = lot.recette.duree.max_j <= 3;
   const phases = lot.recette.phases ?? [];
   const i = lot.phaseCourante + 1;
-  if (phases[i]) {
+  if (phases[i] && !entreesReglees.has(i)) {
     const debut = debutsDesPhases(lot).min[i];
     const quand = courte ? debut : aHeure(debut, heureRappels);
     if (quand.getTime() > seuil)

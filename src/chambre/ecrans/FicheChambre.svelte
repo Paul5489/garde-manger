@@ -6,6 +6,7 @@
   import { lienChambre } from '../../lib/routeur.svelte';
   import { couleurMode, t } from '../affichage';
   import { chambre } from '../chambre.svelte';
+  import ValeursReglage from '../composants/ValeursReglage.svelte';
   import { prevoir } from '../prevoir';
   import { lots } from '../lots.svelte';
   import { CONTENU, MODES_PAR_ID, NOMS_FAMILLES, NOMS_LIEUX, recette } from '../donnees';
@@ -40,6 +41,8 @@
 
   const coches = $derived(chambre.materielFiches[id] ?? []);
   const lotsDeLaRecette = $derived(lots.enCours.filter((l) => l.recetteId === id));
+  /** Réglages rattachés à une étape de la recette (thermoplongeur…). */
+  const reglagesDeLEtape = (titre: string) => r?.reglages?.etapes.filter((g) => g.j === null && g.etape_recette === titre) ?? [];
   const FINS: Record<string, string> = {
     aspect: 'À l’aspect',
     gout: 'Au goût',
@@ -89,7 +92,9 @@
       </dd>
       {#if ph}
         <dt>pH</dt>
-        <dd>{ph.texte}</dd>
+        <dd>
+          {t(ph.texte)}{#if ph.pret}<span class="sous">Prêt : souvent {t(ph.pret)}</span>{/if}{#if ph.note}<span class="sous">{t(ph.note)}</span>{/if}
+        </dd>
       {/if}
     </dl>
 
@@ -183,10 +188,48 @@
           <div>
             <strong>{e.titre}</strong>{#if e.duree}<span class="etiquette">{t(e.duree)}</span>{/if}
             <p>{t(e.texte)}</p>
+            {#each reglagesDeLEtape(e.titre) as g (g.titre)}
+              <div class="reglage-etape">
+                <strong>⚙️ {g.titre}</strong>
+                <ul>
+                  {#each g.actions as a (a)}<li>{t(a)}</li>{/each}
+                </ul>
+              </div>
+            {/each}
           </div>
         </li>
       {/each}
     </ol>
+
+    {#if r.reglages?.etapes.length}
+      <h2 class="titre-section">Réglages de la chambre</h2>
+      <p class="resume-reglages">{t(r.reglages.resume)}</p>
+      <ol class="reglages">
+        {#each r.reglages.etapes as g, i (i)}
+          {@const m = g.mode ? MODES_PAR_ID.get(g.mode) : undefined}
+          <li class="carte" style:--couleur={couleurMode(m)}>
+            <p class="quand">{t(g.quand)}{g.j !== null && g.j > 0 ? ` · ${libelleJour(g.j)}` : ''}{g.etape_recette ? ` · étape « ${g.etape_recette} »` : ''}</p>
+            <h3>{t(g.titre)}</h3>
+            {#if m}
+              <p class="mode-reglage">
+                <a href={lienChambre('mode', m.id)}>Mode {m.nom}</a>{m.ihc_phases.length > 1 && g.ihc_phase !== null ? ` · IHC : ${m.ihc_phases[g.ihc_phase].nom.toLowerCase()}` : ''}
+              </p>
+            {/if}
+            {#if g.actions.length}
+              <ul>
+                {#each g.actions as a (a)}<li>{t(a)}</li>{/each}
+              </ul>
+            {/if}
+            {#if m}
+              <details>
+                <summary>Toutes les valeurs</summary>
+                <ValeursReglage mode={m.id} phase={g.ihc_phase} />
+              </details>
+            {/if}
+          </li>
+        {/each}
+      </ol>
+    {/if}
 
     {#if controles.length}
       <h2 class="titre-section">Contrôles</h2>
@@ -218,9 +261,20 @@
 
     <h2 class="titre-section">Conservation</h2>
     <ul class="liste lignes">
-      {#each r.conservation as c, i (i)}
+      {#each r.conservation.filter((c) => c.mode !== 'Congélateur') as c, i (i)}
         <li><span><strong>{c.mode}</strong> <span class="discret">{t(c.comment)}</span></span><span>{t(c.duree)}</span></li>
       {/each}
+      <li class="congelateur">
+        <span>
+          <strong>Congélateur</strong>
+          {#if r.congelation.possible === 'oui'}
+            <span class="discret">{t(r.congelation.texte)}</span>
+          {:else}
+            <span class="discret">{r.congelation.possible === 'non' ? 'Non' : 'Inutile'} : {t(r.congelation.texte)}</span>
+          {/if}
+        </span>
+        <span>{r.congelation.possible === 'oui' ? t(r.congelation.duree ?? '') : '—'}</span>
+      </li>
     </ul>
 
     {#if securite.length && !securiteEnHaut}
@@ -470,6 +524,70 @@
 
   .etapes .etiquette {
     margin-left: 8px;
+  }
+
+  .reglage-etape {
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    font-size: 15px;
+  }
+
+  .reglage-etape ul,
+  .reglages ul {
+    margin: 4px 0 0;
+    padding-left: 1.1em;
+  }
+
+  .resume-reglages {
+    margin: -4px 4px 10px;
+    color: var(--texte-2);
+  }
+
+  .reglages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reglages > li {
+    padding: 12px 14px;
+    border-left: 5px solid var(--couleur);
+  }
+
+  .reglages h3 {
+    font-size: 17px;
+    margin: 2px 0 4px;
+  }
+
+  .mode-reglage {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .mode-reglage a {
+    color: var(--couleur);
+    font-weight: 600;
+  }
+
+  .reglages details {
+    margin-top: 8px;
+  }
+
+  .reglages summary {
+    min-height: 36px;
+    color: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .congelateur > span:first-child {
+    display: flex;
+    flex-direction: column;
   }
 
   .depuis-cave {

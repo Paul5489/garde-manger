@@ -33,6 +33,8 @@ export interface Mode {
   energie: { estimation_kwh_jour: string; ce_qui_consomme: string; leviers: string[] };
   passagers: string[];
   notes: string[];
+  /** Ce qui va ensemble dans ce mode, et les précautions. */
+  partage?: { ensemble: string; precautions: string[] };
 }
 
 export interface Appareil {
@@ -142,6 +144,36 @@ export interface Conservation {
   jours: number;
 }
 
+export interface EtapeReglage {
+  /** Jours après le début (null : rattachée à une étape de la recette). */
+  j: number | null;
+  quand: string;
+  titre: string;
+  /** Mode de la chambre (null : hors de la chambre ou au thermoplongeur). */
+  mode: IdMode | null;
+  /** Indice dans `ihc_phases` du mode. */
+  ihc_phase: number | null;
+  actions: string[];
+  etape_recette: string | null;
+}
+
+export interface Congelation {
+  possible: 'oui' | 'non' | 'inutile';
+  duree?: string;
+  jours?: number;
+  /** Comment congeler, ou pourquoi ce n'est pas possible ou pas utile. */
+  texte: string;
+}
+
+export interface PhRecette {
+  /** pH maximum à atteindre (null : le sel ou la sécheresse protègent). */
+  securite: number | null;
+  quand: string;
+  /** pH habituel quand c'est prêt (« 4,2 à 4,5 »). */
+  pret: string;
+  note: string;
+}
+
 export interface RecetteChambre {
   id: string;
   nom: string;
@@ -167,6 +199,12 @@ export interface RecetteChambre {
   securite?: string[];
   liens?: string[];
   notes?: string;
+  /** Réglages de la chambre, étape par étape. */
+  reglages: { resume: string; etapes: EtapeReglage[] };
+  congelation: Congelation;
+  /** Recettes de la chambre : ce qui peut la partager (quel que soit le mois) et une précaution. */
+  partage?: { avec: string[]; note: string };
+  ph?: PhRecette;
 }
 
 export interface SegmentCalendrier {
@@ -259,6 +297,8 @@ export interface ArticleStock {
   /** Quantité notée à la fin (« 1,2 kg », « 6 saucissons »). */
   quantite?: string;
   conservation: Conservation;
+  /** Copie de la congélation de la recette (ligne Congélateur du stock). */
+  congelation?: Congelation;
   /** Fin du lot (ISO) : point de départ de la date limite. */
   depuis: string;
   /** Date limite (ISO), absente si la conservation n'en a pas (jours = 0). */
