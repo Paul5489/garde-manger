@@ -379,6 +379,26 @@ describe('lots', () => {
     expect(poidsDemande(l.recette, 1)).toBe(true);
   });
 
+  it('saucisson (dossier du 21/10/2026) : 1 à 2 jours d’étuvage, 2 à 7 semaines en Cave, cible 40 % depuis l’entrée en Cave', () => {
+    let l = lot('saucisson', d(1, 10, 18));
+    const debuts = debutsDesPhases(l);
+    expect([debuts.min[1], debuts.max[1]]).toEqual([d(1, 11, 18), d(1, 12, 18)]);
+    const fin = finPrevue(l);
+    expect([fin.min, fin.max]).toEqual([d(1, 25, 18), d(3, 2, 18)]);
+    // Entrée en Cave le 12 janvier, 2 000 g ; 1 800 g une semaine plus tard.
+    l = { ...l, phaseCourante: 1, phases: [{}, { debut: d(1, 12, 18).toISOString(), poids: 2000 }] };
+    l = { ...l, pesees: [{ le: d(1, 19, 9).toISOString(), g: 1800 }] };
+    const p = perteDePoids(l)!;
+    expect(p.reference.g).toBe(2000);
+    expect(p.cible).toBe(40);
+    expect(Math.round(p.pct)).toBe(10);
+    expect(Math.abs(p.finEstimee!.getTime() - d(2, 8, 6).getTime())).toBeLessThan(86_400_000);
+    l = { ...l, pesees: [...l.pesees, { le: d(2, 2, 9).toISOString(), g: 1250 }] };
+    expect(perteDePoids(l)!.atteinte).toBe(false); // 37,5 %
+    l = { ...l, pesees: [...l.pesees, { le: d(2, 9, 9).toISOString(), g: 1200 }] };
+    expect(perteDePoids(l)!.atteinte).toBe(true);
+  });
+
   it('pH des lacto : seuil de la recette, « Jeter, sans goûter » au-dessus de 4,6 après le délai (5 jours pour le kimchi)', () => {
     const mesure = (l: Lot, valeur: number, jours: number) => ({
       ...l,

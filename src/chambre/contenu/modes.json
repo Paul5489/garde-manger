@@ -39,8 +39,11 @@
         "role": "La chaleur en modes Koji, Biltong, Cave et Tempéré ; antigel en mode Froid.",
         "caracteristiques": "21 W, 52 × 25 cm, étanche, sans thermostat : c’est l’ITC qui l’allume et l’éteint.",
         "a_savoir": [
-          "Trop long pour une clayette : à plat sur le fond, bac à légumes retiré, en diagonale si besoin, ou debout contre une paroi latérale.",
-          "Jamais plié, jamais recouvert, jamais contre la plaque du fond."
+          "Posé à plat en bas de la chambre, sur la clayette en verre qui couvre le bac à légumes : sa chaleur monte et se mélange au froid qui descend de la plaque du fond.",
+          "S’il dépasse en largeur, le bout remonte doucement le long d’une paroi, sans pli.",
+          "Dessus, seulement des bouteilles d’eau fermées ou une plaque en métal : elles gardent et répartissent la chaleur. Jamais de koji, de viande, de pâte ni de déshumidificateur (le contact dépasse vite 40 °C), et rien d’isolant (torchon, carton, mousse).",
+          "Jamais plié, jamais recouvert d’un isolant, jamais contre la plaque du fond.",
+          "Sonde de l’ITC à 15 cm au moins du tapis."
         ]
       },
       {
@@ -51,7 +54,8 @@
         "a_savoir": [
           "Il lui faut un chargeur USB 5 V, branché hors de la chambre : seul le câble USB passe par la porte.",
           "Il tourne en continu, sauf en Pause ; seules la vitesse et l’orientation changent selon le mode.",
-          "Dirigé vers la plaque du fond, il aide le frigo : le froid se répartit plus vite et le compresseur tourne moins longtemps."
+          "Dirigé vers la plaque du fond, il aide le frigo : le froid se répartit plus vite et le compresseur tourne moins longtemps.",
+          "Posé en bas, il souffle vers le haut et le fond : il mélange la chaleur du tapis et le froid de la plaque."
         ]
       },
       {
@@ -105,7 +109,7 @@
     ],
     "sondes": [
       "Sonde ITC : au milieu de la chambre, à hauteur des produits, loin du tapis et du déshumidificateur, sans toucher la plaque du fond.",
-      "Mode Koji : sonde ITC plantée au cœur du riz, protégée par un film alimentaire.",
+      "Mode Koji : sonde ITC dans l’air, à côté du riz, jusqu’à l’émiettage ; ensuite plantée au cœur du riz, sous un film alimentaire. Un thermomètre de cuisine planté dans le riz surveille la première phase.",
       "Sonde IHC : à mi-hauteur, loin de la sortie du déshumidificateur et du bac de sel."
     ],
     "cables": "Tous les câbles passent par la porte côté charnières, à plat. Une feuille de papier coincée dans la porte fermée doit résister quand on la tire. Ne jamais percer le frigo : des tuyaux de froid passent dans les parois.",
@@ -151,8 +155,8 @@
     },
     {
       "titre": "Placer le tapis",
-      "texte": "Mesure l’intérieur. Pose-le à plat sur le fond, bac à légumes retiré, en diagonale si besoin ; sinon debout contre une paroi latérale. Jamais plié, jamais recouvert, jamais contre la plaque du fond.",
-      "si_echec": ""
+      "texte": "Vérifie d’abord qu’il n’est pas abîmé : pli marqué, gaine fendue ou trace de chauffe. Puis pose-le à plat sur la clayette en verre la plus basse, celle du bac à légumes. S’il dépasse en largeur, laisse le bout remonter doucement le long d’une paroi, sans le plier. Dessus, seulement des bouteilles d’eau fermées ou une plaque en métal.",
+      "si_echec": "S’il est abîmé, ne le rebranche pas : remplace-le."
     },
     {
       "titre": "Câbles et joint",
@@ -161,8 +165,8 @@
     },
     {
       "titre": "Essai à vide",
-      "texte": "Mode Koji, chambre vide, 3 heures : la chambre doit atteindre 32 °C. Dans l’appli INKBIRD, la courbe doit montrer que le tapis s’arrête de temps en temps.",
-      "si_echec": "S’il n’atteint pas 32 °C ou chauffe sans arrêt, la pièce est trop froide pour le koji : installe la chambre dans une pièce plus chaude."
+      "texte": "Mode Koji, chambre vide, 3 heures : la chambre doit atteindre 32 °C. Dans l’appli INKBIRD, la courbe doit montrer que le tapis s’arrête de temps en temps. Avec un thermomètre de cuisine, compare le haut et le bas de la chambre : moins de 2 °C d’écart.",
+      "si_echec": "S’il n’atteint pas 32 °C ou chauffe sans arrêt, la pièce est trop froide : installe la chambre dans une pièce plus chaude, ou prends la version 30 W du tapis. Plus de 2 °C d’écart entre le haut et le bas : oriente le ventilateur vers le haut, ou passe-le à la vitesse moyenne."
     },
     {
       "titre": "Mesurer la consommation (option)",
@@ -216,8 +220,8 @@
       "pourquoi": "Le compresseur évacue sa chaleur par l’arrière : sans air, il chauffe et s’use."
     },
     {
-      "regle": "Tapis jamais plié ni recouvert.",
-      "pourquoi": "Plié ou recouvert, il surchauffe."
+      "regle": "Tapis jamais plié, ni recouvert d’un isolant (torchon, carton, mousse).",
+      "pourquoi": "Plié ou isolé, il surchauffe. Des bouteilles d’eau ou une plaque en métal posées dessus, au contraire, répartissent sa chaleur."
     },
     {
       "regle": "Câbles côté charnières, joint vérifié ; ne jamais percer le frigo.",
@@ -455,9 +459,9 @@
         "tous_les_j": 1,
         "texte": "Chaque jour en phase 2 : le koji rejette beaucoup d’eau."
       },
-      "sonde_itc": "Plantée au cœur du riz, sous un film.",
+      "sonde_itc": "Dans l’air, à côté du riz, jusqu’à l’émiettage ; ensuite plantée au cœur du riz, sous un film.",
       "pourquoi": [
-        "La sonde est dans le riz : on règle la température du koji, pas celle de l’air.",
+        "Sonde dans l’air au début : le riz ne chauffe pas encore, et une sonde plantée dans un riz froid ferait chauffer l’air bien au-delà de 32 °C. Sonde dans le riz dès l’émiettage : le koji chauffe alors tout seul, et c’est sa température qu’il faut tenir.",
         "CD 4 : le frigo ne démarre qu’à 36 °C et fait des cycles longs, au lieu de s’allumer toutes les quelques minutes quand le koji chauffe.",
         "6 °C entre l’allumage du tapis (30 °C) et celui du frigo (36 °C) : ils ne se relaient jamais en boucle.",
         "Démarrer à 36 °C reste dans les limites du frigo : il est prévu pour une pièce jusqu’à 38 °C au moins. Les 20 premières heures, le koji ne chauffe pas encore et le frigo ne démarre pas.",
@@ -820,6 +824,7 @@
       },
       "passagers": [],
       "notes": [
+        "Les pièces pendent à la grille du haut par une boucle de ficelle de boucher, attachée près des bords, au-dessus des rails. Elles ne touchent ni les parois, ni la plaque du fond, ni le tapis, ni la sortie du déshumidificateur.",
         "Les pièces ne se touchent pas. Une pesée par semaine."
       ],
       "partage": {

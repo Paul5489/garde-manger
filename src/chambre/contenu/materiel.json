@@ -7,6 +7,7 @@
       "Couscoussier ou cuit-vapeur, 2 plateaux, torchons en coton",
       "Sonde de température à planter dans le riz",
       "Chargeur USB 5 V pour le ventilateur (un ancien chargeur de téléphone suffit)",
+      "2 grilles en inox à la largeur des rails des clayettes, pour remplacer le verre : mesure une clayette avant d’acheter",
       "Sacs sous vide gaufrés, bocaux à joint, poids de fermentation",
       "Un vinaigre non pasteurisé, comme mère",
       "Eau distillée ; pour le pH-mètre, solutions tampons 4,00 et 6,86 et solution de conservation, si elles ne sont pas fournies"
@@ -24,12 +25,13 @@
   {
     "echeance": "Avant fin novembre, pour la charcuterie",
     "articles": [
-      "Hachoir électrique, grille de 6 à 8 mm",
-      "Poussoir vertical à piston, 3 à 5 L",
+      "Hachoir : électrique, au moins 500 W en continu, tête et engrenages en métal, grilles de 4,5 et 8 mm, marche arrière ; ou manuel en fonte n° 8 pour un petit budget",
+      "Poussoir vertical 3 L en inox, 2 vitesses, engrenages en métal, canules de 16 à 38 mm",
       "Sel fin non iodé (environ 1 kg), ferments pour saucisson, dextrose",
       "Gants jetables et désinfectant alimentaire pour le plan de travail",
       "Boyaux naturels en trois calibres : 24–28 mm, 40–45 mm, 60–70 mm",
       "Boyau de bœuf ou film collagène pour la coppa, filet élastique, ficelle",
+      "Ficelle de boucher en coton, pour suspendre à la grille du haut ; quelques crochets en S en inox, facultatifs, pour décrocher plus vite à la pesée",
       "Balance au 0,1 g",
       "Seringue à saumure",
       "Gros sel (environ 2 kg) et un bac large et plat, pour le bac de sel de la Cave"
@@ -47,7 +49,6 @@
     "articles": [
       "Prise wattmètre, pour mesurer la consommation réelle",
       "Multiprise, si le Séchage doit un jour brancher aussi le tapis",
-      "Humidificateur à ultrasons, sur la prise WORK1 de l’IHC",
       "Générateur de fumée froide, pour le fumage plus tard"
     ]
   }

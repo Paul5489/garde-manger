@@ -58,7 +58,7 @@ Cahier des charges complet (à relire pour les étapes restantes) : `../prompt-c
 
 ```bash
 npm run dev       # serveur de test sur le Wi-Fi, port 5180 (le 5173 est pris par un autre projet de Paul : ne pas y toucher)
-npm test          # Vitest, 257 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
+npm test          # Vitest, 258 tests, dont sur la VRAIE archive (../archive-recettes ; ignorés si absente)
                   # et sur une base IndexedDB simulée (fake-indexeddb : tests/donnees-perso.test.ts)
 npm run check     # vérification TypeScript/Svelte (doit afficher 0 erreur, 0 avertissement)
 npm run build     # build + vérification anti-recettes
@@ -185,8 +185,10 @@ npm run icones    # régénère les icônes PNG depuis public/icone.svg
   (température) et IHC-200-WIFI (humidité), tapis, ventilateur, déshumidificateur, pH-mètre. **L'appli ne pilote
   rien** : elle dit quelles valeurs entrer, comment, pourquoi, quoi brancher. Module **chargé à la demande**
   (`import('./chambre/module')` dans App.svelte, ~64 Ko gzip, mis en cache par le service worker).
-  - `contenu/*.json` (lecture seule ; dossier de Paul du 07/10/2026 16 h 05, avec `reglages`, `congelation`, `partage`,
-    `ph` dans les recettes et `partage` dans les modes ; `modes.json` « 2026-10-07d ») ; `donnees.ts` les importe et
+  - `contenu/*.json` (lecture seule ; **dossier de Paul du 21/10/2026**, identique au sien sauf le titre d'étape
+    « Cuisson à la vapeur » du koji de riz ; `modes.json` « 2026-10-07d », numéro non changé par Paul) ; pour une
+    nouvelle version du dossier : comparer fichier par fichier, copier ses `donnees/`, remettre ce titre, lancer son
+    `outils/valider_donnees.py` (lecture seule, sans risque) et `npm test` ; `donnees.ts` les importe et
     `verifierContenu()` reprend **toutes** les vérifications de `outils/valider_donnees.py` de Paul (erreur affichée
     dans l'onglet si une donnée est incohérente ; testé). **Ne jamais changer une valeur de sécurité** (sel,
     températures, durées, pH, pertes de poids, réglages des contrôleurs) sans l'accord de Paul ; **jamais de nitrite**.
@@ -439,6 +441,15 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
   et suppression, ménage des pages hors cuisine, recherche « mes recettes d'abord ». Les deux versions (05/10 et
   06/10, menées en parallèle) ont été réunies avec l'accord de Paul.
 
+- **1.14.1** (27/10/2026, conversation dans le cloud) : contenu de la chambre mis à jour avec le dossier de Paul du
+  21/10/2026 (`dossier-chambre-claude-code.zip`) : saucisson revu (75 % de maigre / 25 % de gras, vin rouge et ail
+  macéré la veille, muscade facultative, repos de la mêlée 12 à 24 h avant les ferments, variante koji en essai,
+  boyaux de 30 à 32 mm possibles, étuvage possible dans la chambre libre à 22 °C, Cave 14 à 49 jours, perte visée
+  40 %), saucisse sèche et rosette à 40 %, cinq conseils dans la technique du saucisson ; plus la fin de la mise à
+  jour du 09/10, arrivée après la 1.14.0 : matériel (grilles en inox, ficelle, critères du hachoir et du poussoir,
+  humidificateur retiré), tapis à plat sur la clayette du bac à légumes, sonde du koji dans l'air jusqu'à l'émiettage,
+  suspension des pièces en Cave. Aucune valeur des contrôleurs ne change ; données seulement, code inchangé.
+  Les lots déjà démarrés gardent leur copie de la recette.
 - **1.14.0** (09/10/2026) : dossier de la chambre mis à jour par Paul : réglages de la chambre étape par étape (fiche,
   lot, Aujourd'hui, Calendrier), congélation (fiche, stock, « Mettre au congélateur »), compatibilité par mode avec
   listes et précautions des données, lots présents et recettes prévues, pH des lacto par recette (« Jeter, sans
@@ -477,6 +488,9 @@ tests/                            archive-reelle.ts (accès à la vraie archive 
 ~~2. réglages, mise en service, assistant (1.9.0)~~ · ~~3. fiches, calendrier, matériel (1.10.0)~~ · ~~4. lots, stock (1.11.0)~~ · ~~5. rappels .ics, pastille (1.12.0)~~ · ~~6. compatibilité (1.13.0)~~ · 7. installation expliquée (message du
 07/10/2026). **À faire tester par Paul sur l'iPhone** : import .ics depuis l'appli installée (« Ajouter au
 Calendrier », sinon « Envoyer le fichier… » › Fichiers › « Ajouter tout »), pastille de l'icône, mode avion.
+Signalé à Paul le 27/10/2026 : saucisson, `duree` 16 à 52 jours alors que ses phases font 15 à 51 jours (1 à 2 j
+d'étuvage + 14 à 49 j de Cave) ; la fiche affiche la `duree`, un lot calcule sa fin par les phases ; sans effet sur la
+sécurité (la fin se juge à 40 % de perte). Non modifié sans son accord.
 À signaler à Paul : le shoyu a un contrôle « Remuer » chaque jour sans `fin_j` (donc pendant 6 à 12 mois) en plus
 de « Remuer chaque semaine » dès le 30e jour : un `fin_j: 30` manque peut-être.
 

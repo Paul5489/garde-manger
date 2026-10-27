@@ -130,7 +130,12 @@
     "conseils": [
       "Viande, gras et pièces du hachoir au congélateur 1 h avant : la mêlée doit rester sous 2 °C.",
       "Goûter le sel sur une boulette poêlée, jamais crue.",
-      "Sans nitrite, la chair devient brun-gris : c’est normal."
+      "Sans nitrite, la chair devient brun-gris : c’est normal.",
+      "Gras de dos : 25 % de la mêlée environ, de 20 à 30 %. Moins, les saucisses fines sèchent dures ; plus, le gras rancit plus vite sans nitrite.",
+      "Vin rouge : 15 ml par kg, 20 au plus ; l’ail peut y macérer la veille. Au-delà, l’alcool freine les ferments.",
+      "Laisser reposer la mêlée assaisonnée 12 à 24 h au frigo, puis ajouter les ferments juste avant l’embossage.",
+      "En option, un ferment bioprotecteur anti-Listeria en plus des ferments d’acidification, comme dans les essais professionnels sans nitrite.",
+      "Hachage selon le boyau : 4,5 à 6 mm pour 24 à 28 mm, 6 mm pour 30 à 32 mm, 8 mm pour 40 à 45 mm, 8 à 10 mm au-delà de 50 mm."
     ],
     "controles": [
       {
@@ -185,7 +190,7 @@
       }
     ],
     "securite": [
-      "Sans nitrite, quatre règles font la sécurité et aucune n’est facultative : hygiène et froid (viande ultra fraîche, mêlée sous 2 °C), sel à 28 g par kg minimum, acidification par les ferments (pH à 5,3 ou moins en 48 h, mesuré au pH-mètre), séchage à 15 °C maximum jusqu’à 35 % de perte.",
+      "Sans nitrite, quatre règles font la sécurité et aucune n’est facultative : hygiène et froid (viande ultra fraîche, mêlée sous 2 °C), sel à 28 g par kg minimum, acidification par les ferments (pH à 5,3 ou moins en 48 h, mesuré au pH-mètre), séchage à 15 °C maximum jusqu’à 40 % de perte au moins.",
       "Mesure du pH : pH-mètre étalonné le jour même (6,86 puis 4,00). Mesurer sur une petite saucisse témoin faite avec la même mêlée, pas sur les saucissons : sonde pointue piquée au cœur, ou 10 g de chair écrasés dans 10 g d’eau distillée, mesure après 5 minutes, à température ambiante.",
       "pH encore au-dessus de 5,3 après 72 h : ne pas sécher ; cuire en saucisses fraîches ou jeter.",
       "Ferments obligatoires.",

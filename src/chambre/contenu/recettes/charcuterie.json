@@ -1803,45 +1803,47 @@
       {
         "nom": "Séchage",
         "mode": "cave",
-        "min_j": 28,
-        "max_j": 42
+        "min_j": 14,
+        "max_j": 49
       }
     ],
-    "rendement": "6 à 8 saucissons, environ 1,3 kg secs",
+    "rendement": "Environ 1,3 kg secs : 6 à 8 saucissons en boyaux de 40 à 45 mm, 9 à 10 en 30 à 32 mm",
     "base": {
       "ingredient": "Mêlée (maigre + gras)",
       "quantite": 2000,
       "unite": "g"
     },
     "duree": {
-      "min_j": 30,
-      "max_j": 44
+      "min_j": 16,
+      "max_j": 52
     },
     "fin": {
       "type": "perte_poids",
-      "cible": 35,
-      "texte": "35 % de perte."
+      "cible": 40,
+      "texte": "40 % de perte."
     },
     "materiel": [
-      "Hachoir, grille de 6 à 8 mm",
+      "Hachoir, grilles de 6 et 8 mm",
       "Poussoir vertical",
       "Balance au 0,1 g",
       "pH-mètre",
-      "Boyaux naturels de 40 à 45 mm (environ 3 m)",
+      "Boyaux naturels de 40 à 45 mm (environ 3 m) ou de 30 à 32 mm (environ 5 m)",
       "Ficelle",
       "Aiguille",
       "Grande boîte fermée pour l’étuvage"
     ],
     "ingredients": [
       {
-        "nom": "Épaule de porc (maigre)",
-        "qte": 1400,
-        "unite": "g"
+        "nom": "Épaule de porc (maigre), bien parée",
+        "qte": 1500,
+        "unite": "g",
+        "note": "75 % de la mêlée"
       },
       {
-        "nom": "Gras de dos ferme",
-        "qte": 600,
-        "unite": "g"
+        "nom": "Gras de dos ferme (bardière)",
+        "qte": 500,
+        "unite": "g",
+        "note": "25 % de la mêlée : moins, les saucisses fines sèchent dures ; plus, le gras rancit plus vite sans nitrite"
       },
       {
         "nom": "Sel fin non iodé",
@@ -1872,28 +1874,52 @@
       {
         "nom": "Ail frais écrasé",
         "qte": 6,
-        "unite": "g"
+        "unite": "g",
+        "note": "Macéré la veille dans le vin"
+      },
+      {
+        "nom": "Vin rouge",
+        "qte": 30,
+        "unite": "g",
+        "note": "Environ 30 ml, soit 15 ml/kg ; 20 ml/kg au plus"
+      },
+      {
+        "nom": "Muscade râpée",
+        "qte": 1,
+        "unite": "g",
+        "note": "Facultatif"
       },
       {
         "nom": "Ferments pour saucisson",
         "qte": 0.5,
         "unite": "g",
-        "note": "Dose du fabricant, dilués dans 20 g d’eau"
+        "note": "Dose du fabricant, dilués dans 20 g d’eau, ajoutés après le repos de la mêlée"
       },
       {
         "nom": "Variante noix : cerneaux concassés",
         "qte": 120,
         "unite": "g",
-        "note": "Facultatif"
+        "note": "Facultatif : 60 g/kg, noix sèches de l’année"
       },
       {
         "nom": "Variante cèpes : cèpes séchés réhydratés et hachés",
         "qte": 30,
         "unite": "g",
         "note": "Facultatif, poids sec"
+      },
+      {
+        "nom": "Variante koji : koji en poudre",
+        "qte": 20,
+        "unite": "g",
+        "note": "Facultatif, essai : 10 g/kg, sans dose de référence publiée"
       }
     ],
     "etapes": [
+      {
+        "titre": "La veille",
+        "texte": "Écraser l’ail et le laisser macérer dans le vin, au frigo.",
+        "duree": "5 min"
+      },
       {
         "titre": "Tout refroidir",
         "texte": "Viande, gras, grille et couteau du hachoir au congélateur 1 h. Dessaler les boyaux 1 h dans l’eau tiède, rincer l’intérieur.",
@@ -1901,38 +1927,48 @@
       },
       {
         "titre": "Hacher",
-        "texte": "Hacher le maigre à la grille de 8 mm, le gras en petits dés ou à la même grille. Peser la mêlée.",
+        "texte": "Hacher le maigre à la grille de 8 mm pour des boyaux de 40 à 45 mm, de 6 mm pour 30 à 32 mm ; le gras en petits dés ou à la même grille. La mêlée reste sous 2 °C. Peser la mêlée.",
         "duree": "20 min"
       },
       {
         "titre": "Assaisonner",
-        "texte": "Ajouter sels, sucres, épices, ferments dilués et, si tu veux, les noix ou les cèpes. Malaxer 3 à 5 min, jusqu’à ce que la mêlée colle aux doigts, pas plus.",
+        "texte": "Ajouter le sel, les sucres, les épices, l’ail et son vin. Malaxer 3 à 5 min, jusqu’à ce que la mêlée colle aux doigts, pas plus.",
         "duree": "10 min"
       },
       {
         "titre": "Goûter",
-        "texte": "Poêler une petite boulette pour vérifier l’assaisonnement. Ne jamais goûter cru. Mesurer le pH.",
+        "texte": "Poêler une petite boulette pour vérifier l’assaisonnement. Ne jamais goûter cru.",
         "duree": "5 min"
       },
       {
+        "titre": "Reposer",
+        "texte": "Couvrir et laisser la mêlée 12 à 24 h au frigo : elle se tient mieux et prend du goût.",
+        "duree": "12 à 24 h"
+      },
+      {
+        "titre": "Ferments et variantes",
+        "texte": "Ajouter les ferments dilués. Pour comparer, partager la mêlée et ajouter les noix, les cèpes ou le koji dans leur part. Malaxer 1 à 2 min, puis mesurer le pH de départ.",
+        "duree": "10 min"
+      },
+      {
         "titre": "Embosser",
-        "texte": "Remplir les boyaux au poussoir sans laisser d’air, ficeler tous les 25 à 30 cm, piquer les bulles.",
+        "texte": "Remplir les boyaux au poussoir sans laisser d’air, ficeler tous les 25 à 30 cm, piquer les bulles. Faire une petite saucisse témoin pour le pH. Marquer chaque variante : une par tourillon, ou une ficelle de couleur.",
         "duree": "40 min"
       },
       {
         "titre": "Peser",
-        "texte": "Peser chaque saucisson, noter son poids et sa cible (moins 35 %).",
+        "texte": "Peser chaque saucisson, noter son poids et sa cible (moins 40 %).",
         "duree": "10 min"
       },
       {
         "titre": "Étuver",
-        "texte": "24 à 48 h à 20–24 °C dans une boîte fermée avec un bol d’eau, jusqu’à pH 5,3 ou moins.",
+        "texte": "24 à 48 h à 20–24 °C, dans une boîte fermée avec un bol d’eau ou dans la chambre libre à 22 °C, jusqu’à pH 5,3 ou moins. Encore au-dessus de 5,3 à 72 h : ne pas sécher.",
         "duree": "24 à 48 h"
       },
       {
         "titre": "Sécher",
-        "texte": "Suspendre en mode Cave, sans que les pièces se touchent. 4 à 6 semaines, une pesée par semaine.",
-        "duree": "4 à 6 sem."
+        "texte": "Suspendre en mode Cave, sans que les pièces se touchent, jusqu’à 40 % de perte : 2 à 3 semaines en boyaux de 30 à 32 mm, 5 à 7 semaines en 40 à 45 mm. Une pesée par semaine.",
+        "duree": "2 à 7 sem."
       }
     ],
     "controles": [],
@@ -1956,9 +1992,9 @@
         "jours": 180
       }
     ],
-    "notes": "Classique et aux noix à la séance de janvier, aux cèpes séchés à celle de février.",
+    "notes": "Classique et aux noix à la séance de janvier, aux cèpes séchés à celle de février. Revue le 21 octobre 2026 : proportions recoupées avec le cahier des charges de l’IGP Saucisson de l’Ardèche, des recettes d’artisans et d’amateurs, le guide de sécurité du BCCDC (2024) et l’étude ADIV (2024) sur le saucisson sans nitrite, d’où 25 % de gras (entre la tradition, 30 %, et les essais professionnels sans nitrite, 15 à 20 %) et 40 % de perte. La variante koji reste un essai.",
     "reglages": {
-      "resume": "Étuvage hors chambre (2 j), puis séchage en mode Cave (80 % puis 76 %).",
+      "resume": "Étuvage en cuisine, ou dans la chambre libre à 22 °C (2 j), puis séchage en mode Cave (80 % puis 76 %).",
       "etapes": [
         {
           "j": 0,
@@ -1967,7 +2003,8 @@
           "mode": null,
           "ihc_phase": null,
           "actions": [
-            "Étuvage en cuisine, 20 à 24 °C, en boîte fermée avec un bol d’eau : rien à régler dans la chambre."
+            "Étuvage en cuisine, 20 à 24 °C, en boîte fermée avec un bol d’eau : rien à régler dans la chambre.",
+            "Ou dans la chambre, si elle est libre : ITC TS 22, HD 1, CD 2, AH 26, AL 18, PT 10. Déshumidificateur débranché, pas de bac de sel, un bol d’eau chaude. IHC en simple surveillance, AL 80. Ventilateur lent vers la paroi du fond."
           ],
           "etape_recette": null
         },
@@ -1978,6 +2015,7 @@
           "mode": "cave",
           "ihc_phase": 0,
           "actions": [
+            "Si l’étuvage s’est fait dans la chambre : retirer le bol d’eau, rebrancher le déshumidificateur sur WORK2.",
             "Peser chaque pièce et noter le poids d’entrée.",
             "IHC à 80 % pendant 3 semaines après cette entrée.",
             "Bac de sel en place, ventilateur lent vers la paroi du fond."
@@ -2059,7 +2097,7 @@
         "max_j": 21
       }
     ],
-    "rendement": "Environ 700 g secs",
+    "rendement": "Environ 600 g secs",
     "base": {
       "ingredient": "Mêlée (maigre + gras)",
       "quantite": 1000,
@@ -2071,8 +2109,8 @@
     },
     "fin": {
       "type": "perte_poids",
-      "cible": 30,
-      "texte": "30 % de perte."
+      "cible": 40,
+      "texte": "40 % de perte."
     },
     "materiel": [
       "Hachoir",
@@ -2085,13 +2123,15 @@
     "ingredients": [
       {
         "nom": "Épaule de porc",
-        "qte": 700,
-        "unite": "g"
+        "qte": 750,
+        "unite": "g",
+        "note": "75 % de la mêlée"
       },
       {
         "nom": "Gras de dos",
-        "qte": 300,
-        "unite": "g"
+        "qte": 250,
+        "unite": "g",
+        "note": "25 % de la mêlée"
       },
       {
         "nom": "Sel fin non iodé",
@@ -2144,7 +2184,7 @@
       },
       {
         "titre": "Sécher",
-        "texte": "Cave 2 à 3 semaines jusqu’à 30 % de perte.",
+        "texte": "Cave 2 à 3 semaines jusqu’à 40 % de perte.",
         "duree": "2 à 3 sem."
       }
     ],
@@ -2252,7 +2292,7 @@
         "max_j": 90
       }
     ],
-    "rendement": "1 rosette d’environ 1 kg sèche",
+    "rendement": "1 rosette d’environ 900 g sèche",
     "base": {
       "ingredient": "Mêlée (maigre + gras)",
       "quantite": 1500,
@@ -2264,8 +2304,8 @@
     },
     "fin": {
       "type": "perte_poids",
-      "cible": 35,
-      "texte": "35 % de perte."
+      "cible": 40,
+      "texte": "40 % de perte."
     },
     "materiel": [
       "Hachoir, grille de 6 mm",
@@ -2342,7 +2382,7 @@
       },
       {
         "titre": "Sécher",
-        "texte": "Cave 2 à 3 mois jusqu’à 35 % de perte. Surveiller le croûtage.",
+        "texte": "Cave 2 à 3 mois jusqu’à 40 % de perte. Surveiller le croûtage.",
         "duree": "2 à 3 mois"
       }
     ],

@@ -82,12 +82,12 @@
       },
       {
         "titre": "Incuber en ballot",
-        "texte": "Rassembler le riz dans le torchon humide, fermer en ballot, poser sur un plateau dans la chambre en mode Koji, phase 1. Planter la sonde de l’ITC au cœur du riz.",
+        "texte": "Rassembler le riz dans le torchon humide, fermer en ballot, poser sur un plateau dans la chambre en mode Koji, phase 1. Sonde de l’ITC dans l’air, à côté du ballot (chambre préchauffée à 32 °C) ; thermomètre de cuisine planté dans le riz.",
         "duree": "18 à 20 h"
       },
       {
         "titre": "Émietter et étaler",
-        "texte": "Vers 18–20 h, ouvrir : odeur de châtaigne, points blancs. Émietter les mottes, étaler sur 2 plateaux en couche de 3 à 4 cm, couvrir du torchon humide. Passer l’IHC en phase 2.",
+        "texte": "Vers 18–20 h, ouvrir : odeur de châtaigne, points blancs. Émietter les mottes, étaler sur 2 plateaux en couche de 3 à 4 cm, couvrir du torchon humide. Passer l’IHC en phase 2. Planter alors la sonde de l’ITC au cœur du riz, sous un film.",
         "duree": "10 min"
       },
       {
@@ -183,7 +183,8 @@
           "mode": "koji",
           "ihc_phase": 0,
           "actions": [
-            "Sonde de l’ITC plantée au cœur du riz, sous un film.",
+            "Chambre préchauffée à vide 2 à 3 h, pour que le riz n’entre jamais dans une chambre froide.",
+            "Sonde de l’ITC dans l’air, à côté du riz ; thermomètre de cuisine planté dans le riz : normal entre 30 et 34 °C.",
             "Torchon humide sur le koji."
           ],
           "etape_recette": null
@@ -195,6 +196,7 @@
           "mode": "koji",
           "ihc_phase": 1,
           "actions": [
+            "Plante la sonde de l’ITC au cœur du riz, sous un film : le koji commence à chauffer tout seul.",
             "IHC : HS 70, DD 8, AH 95, AL 45 (HD et PT ne changent pas).",
             "Réservoir du déshumidificateur vidé chaque jour à partir de maintenant.",
             "Le koji va chauffer : le frigo démarrera à 36 °C, c’est normal."
@@ -306,12 +308,12 @@
       },
       {
         "titre": "Ensemencer et étaler",
-        "texte": "Saupoudrer les spores en deux fois en mélangeant. Étaler sur 2 plateaux en couche de 3 cm, couvrir du torchon humide, chambre en mode Koji, sonde dans le mélange.",
+        "texte": "Saupoudrer les spores en deux fois en mélangeant. Étaler sur 2 plateaux en couche de 3 cm, couvrir du torchon humide, chambre en mode Koji, sonde de l’ITC dans l’air à côté des plateaux (chambre préchauffée à 32 °C), thermomètre de cuisine planté dans le mélange.",
         "duree": "10 min"
       },
       {
         "titre": "Brasser",
-        "texte": "Vers 18–20 h, puis vers 30 h, émietter et remuer pour casser les mottes et évacuer la chaleur.",
+        "texte": "Vers 18–20 h, puis vers 30 h, émietter et remuer pour casser les mottes et évacuer la chaleur. Au premier brassage, planter la sonde de l’ITC dans le mélange, sous un film.",
         "duree": "5 min"
       },
       {
@@ -371,7 +373,8 @@
           "mode": "koji",
           "ihc_phase": 0,
           "actions": [
-            "Sonde de l’ITC plantée au cœur du riz, sous un film.",
+            "Chambre préchauffée à vide 2 à 3 h, pour que le riz n’entre jamais dans une chambre froide.",
+            "Sonde de l’ITC dans l’air, à côté du riz ; thermomètre de cuisine planté dans le riz : normal entre 30 et 34 °C.",
             "Torchon humide sur le koji."
           ],
           "etape_recette": null
@@ -383,6 +386,7 @@
           "mode": "koji",
           "ihc_phase": 1,
           "actions": [
+            "Plante la sonde de l’ITC au cœur du riz, sous un film : le koji commence à chauffer tout seul.",
             "IHC : HS 70, DD 8, AH 95, AL 45 (HD et PT ne changent pas).",
             "Réservoir du déshumidificateur vidé chaque jour à partir de maintenant.",
             "Le koji va chauffer : le frigo démarrera à 36 °C, c’est normal."
